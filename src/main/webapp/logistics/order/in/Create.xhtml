@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<f:metadata>
+	<f:event type="preRenderView"
+		listener="#{lgOrderInBean.setMode('create')}" />
+</f:metadata>
+<h:head>
+	<title>#{lgOrderInBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="Логистика > Заказы > Новый заказ товаров (материалов)" />
+				</ui:include>
+			</ui:insert>
+
+			<div class="ui-grid-row">
+				<div style="width: 95%; margin: auto;">
+					<h2>#{lgOrderInBean.pageHeader}</h2>
+				</div>
+			</div>
+
+			<div class="ui-grid ui-grid-responsive">
+				<h:form id="form">
+					<div class="ui-grid-row" style="padding-bottom: 10px;">
+						<div class="ui-grid-col-4">
+							<p:panel header="#{msg['logistics.order.order_data']}"
+								style="margin-bottom:20px">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="№"></p:outputLabel>
+									<p:outputLabel value="#{lgOrderInBean.title}"></p:outputLabel>
+
+
+									<p:outputLabel value="#{msg['logistics.order.werks_from']}"></p:outputLabel>
+									<p:selectOneMenu value="#{lgOrderInBean.order.werks_from}">
+										<f:selectItems value="#{lgOrderInBean.fromWerksList}" var="w"
+											itemLabel="#{w.text45}" itemValue="#{w.werks}" />
+									</p:selectOneMenu>
+
+									<p:outputLabel value="На склад"></p:outputLabel>
+									<p:selectOneMenu value="#{lgOrderInBean.order.werks_to}">
+										<f:selectItems value="#{lgOrderInBean.toWerksList}" var="w"
+											itemLabel="#{w.text45}" itemValue="#{w.werks}" />
+									</p:selectOneMenu>
+
+									<p:outputLabel></p:outputLabel>
+									<p:commandButton value="#{msg.save}" update=":messages"
+										actionListener="#{lgOrderInBean.Save()}"></p:commandButton>
+
+								</h:panelGrid>
+							</p:panel>
+						</div>
+
+						<div class="ui-grid-col-8">
+							<p:panel header="Материалы для заказа" style="margin-bottom:20px"
+								id="orderMatnrPanel">
+
+								<p:dataTable id="orderMatnrTable"
+									value="#{lgOrderInBean.orderItems}" var="item"
+									emptyMessage="#{msg.no_records}" rowKey="#{item.matnr_id}">
+
+									<p:column headerText="Материал">
+										<p:outputLabel value="#{item.matnrName}"></p:outputLabel>
+									</p:column>
+
+									<p:column headerText="Количество">
+										<p:inputText value="#{item.quantity}"></p:inputText>
+									</p:column>
+
+									<p:column headerText="Примечание">
+										<p:inputText style="margin:auto;width:95%;"
+											value="#{item.info}"></p:inputText>
+									</p:column>
+									<p:column style="width:30px;">
+										<p:commandButton icon="ui-icon-closethick"
+											update="orderMatnrTable"
+											actionListener="#{lgOrderInBean.removeOrderItem(item)}"></p:commandButton>
+									</p:column>
+								</p:dataTable>
+
+								<f:facet name="actions">
+									<p:commandButton icon="ui-icon-plus"
+										actionListener="#{loin01Bean.loadMatnrList()}"
+										update=":MatnrListDlgForm"
+										oncomplete="PF('MatnrListDialog').show();" value="Добавить"></p:commandButton>
+								</f:facet>
+							</p:panel>
+						</div>
+					</div>
+				</h:form>
+			</div>
+
+			<p:dialog id="MatnrListDlg" widgetVar="MatnrListDialog" modal="true"
+				resizable="false" appendTo="@(body)" header="Список материалов"
+				width="800" height="500">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<h:form id="MatnrDlgSearchForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('MatnrDlgSearchForm:MatnrDlgSearchBtn').click();return false;}">
+							<h:panelGrid columns="4" cellpadding="10">
+								<p:outputLabel rendered="false" value="#{msg.company}"></p:outputLabel>
+								<p:selectOneMenu rendered="false" disabled="true"
+									value="#{lgOrderInBean.mlSearchModel.bukrs}">
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel rendered="false" value="Название материала"></p:outputLabel>
+								<p:inputText rendered="false" value="TODO"></p:inputText>
+
+								<p:outputLabel rendered="false" value="Код материала"></p:outputLabel>
+								<p:inputText rendered="false" value="#{lgOrderInBean.mlSearchModel.barcode}"></p:inputText>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="Загрузить"
+									id="MatnrDlgSearchBtn"
+									update=":MatnrListDlgForm:matnrListDlgTable"
+									actionListener="#{lgOrderInBean.loadMatnrList()}"></p:commandButton>
+							</h:panelGrid>
+						</h:form>
+					</div>
+				</div>
+				<h:form id="MatnrListDlgForm">
+					<h:panelGroup>
+
+
+						<p:dataTable id="matnrListDlgTable" var="item"
+							value="#{lgOrderInBean.matnrList}"
+							selection="#{lgOrderInBean.selectedMatnrList}"
+							rowKey="#{item.matnr}" style="margin-bottom:0"
+							selectionMode="multiple" paginator="true"
+							paginatorPosition="bottom" rows="40">
+
+							<f:facet name="header">Материалы</f:facet>
+							<p:column headerText="Материал" filterBy="#{item.matnrName}">
+								<h:outputText value="#{item.matnrName}" />
+							</p:column>
+							<p:column headerText="Код" filterBy="#{item.matnrCode}">
+								<h:outputText value="#{item.matnrCode}" />
+							</p:column>
+							<p:column headerText="Количество на складе"
+								sortBy="#{item.menge}">
+								<h:outputText value="#{item.menge}" />
+							</p:column>
+
+							<f:facet name="footer">
+								<p:commandButton
+									actionListener="#{lgOrderInBean.assignSelectedMatnrList()}" value="Ok"
+									update=":form,:messages"
+									oncomplete="PF('MatnrListDialog').hide()">
+								</p:commandButton>
+					&nbsp;
+					<p:commandButton value="Отмена"
+									oncomplete="PF('MatnrListDialog').hide()" />
+							</f:facet>
+						</p:dataTable>
+					</h:panelGroup>
+
+
+
+				</h:form>
+			</p:dialog>
+
+		</div>
+	</div>
+
+
+</h:body>
+</html>

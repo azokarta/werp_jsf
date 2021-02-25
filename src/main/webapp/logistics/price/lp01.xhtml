@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>Добавить/Редактировать прайс</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP');
+                         $(this).toggleClass('shiftLeft');
+                         $('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="Логистика > Прайс > Добавить прайс" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Новый прайс товара" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg.save}"
+									icon="ui-icon ui-icon-check" actionListener="#{lp01Bean.Save}"
+									update=":messages, form" />
+							</f:facet>
+						</p:toolbar>
+
+						<p:fieldset legend="Добавление/Редактирование материала"
+							style="margin-bottom:20px">
+							<div class="ui-grid ui-grid-responsive">
+								<div class="ui-grid-row">
+									<div class="ui-grid-col-8">
+										<p:panelGrid style="width:90%;">
+											<f:facet name="header">
+												<p:row>
+													<p:column colspan="4">
+                                                            &nbsp;
+                                                        </p:column>
+												</p:row>
+											</f:facet>
+											<p:row>
+												<p:column>
+													<p:outputLabel>Компания</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:selectOneMenu id="bukrs"
+														value="#{lp01Bean.newPrice.bukrs}">
+														<p:ajax update=":matnr-list,branch_id"></p:ajax>
+														<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+															var="bukrs" itemLabel="#{bukrs.name}"
+															itemValue="#{bukrs.bukrs}" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:outputLabel>Материал</p:outputLabel>
+												</p:column>
+												<p:column>
+													<h:inputText id="b_matnr"
+														rendered="#{!empty lp01Bean.selectedMatnr}"
+														value="#{lp01Bean.selectedMatnr.text45}" size="45"
+														maxlength="45" styleClass="input1" disabled="true" />
+													<p:commandButton icon="ui-icon-newwin" type="push"
+														oncomplete="PF('matnrWidget').show();"
+														styleClass="f4button">
+													</p:commandButton>
+												</p:column>
+											</p:row>
+
+											<p:row>
+												<p:column>
+													<p:outputLabel>Филиал</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:selectOneMenu id="branch_id"
+														value="#{lp01Bean.newPrice.branch_id}">
+														<f:selectItem itemLabel="Выберите филиал" itemValue="0"></f:selectItem>
+														<f:selectItems
+															value="#{branchF4Bean.getAllBranchByBukrs(lp01Bean.newPrice.bukrs)}"
+															var="br" itemLabel="#{br.text45}"
+															itemValue="#{br.branch_id}" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:outputLabel>Вид рассрочки</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:selectOneMenu value="#{lp01Bean.newPrice.month_type}">
+														<f:selectItem itemLabel="Наличка" itemValue="0"></f:selectItem>
+														<f:selectItem itemLabel="1" itemValue="1"></f:selectItem>
+														<f:selectItem itemLabel="2" itemValue="2"></f:selectItem>
+														<f:selectItem itemLabel="3" itemValue="3"></f:selectItem>
+														<f:selectItem itemLabel="4" itemValue="4"></f:selectItem>
+														<f:selectItem itemLabel="5" itemValue="5"></f:selectItem>
+														<f:selectItem itemLabel="6" itemValue="6"></f:selectItem>
+														<f:selectItem itemLabel="7" itemValue="7"></f:selectItem>
+														<f:selectItem itemLabel="8" itemValue="8"></f:selectItem>
+														<f:selectItem itemLabel="9" itemValue="9"></f:selectItem>
+														<f:selectItem itemLabel="10" itemValue="10"></f:selectItem>
+													</p:selectOneMenu>
+												</p:column>
+											</p:row>
+
+											<p:row>
+												<p:column>
+													<p:outputLabel>#{msg.country}</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:selectOneMenu value="#{lp01Bean.newPrice.country_id}">
+														<f:selectItem itemLabel="#{msg['hr.customer.select']}"
+															itemValue="0" />
+														<f:selectItems value="#{countryF4Bean.country_list}"
+															var="wa_country" itemLabel="#{wa_country.country}"
+															itemValue="#{wa_country.country_id}" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:outputLabel>Валюта</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:selectOneMenu value="#{lp01Bean.newPrice.waers}">
+														<f:selectItem itemLabel="Выберите" itemValue="" />
+														<f:selectItems value="#{currencyF4Bean.currency_list}"
+															var="wa_currency" itemLabel="#{wa_currency.text20}"
+															itemValue="#{wa_currency.currency}" />
+													</p:selectOneMenu>
+												</p:column>
+											</p:row>
+											<p:row>
+												<p:column>
+													<p:outputLabel>From Date</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:calendar yearRange="1940:2020" pattern="dd.MM.yyyy"
+														autocomplete="off" navigator="true"
+														locale="#{systemLocale.currentLocale.getLanguage()}"
+														value="#{lp01Bean.newPrice.from_date}"
+														converterMessage="Date is invalid.">
+													</p:calendar>
+												</p:column>
+
+												<p:column>Премия дел.</p:column>
+												<p:column>
+													<p:selectOneMenu value="#{lp01Bean.newPrice.prem_div}">
+														<f:selectItem itemLabel="1" itemValue="1"></f:selectItem>
+														<f:selectItem itemLabel="2" itemValue="2"></f:selectItem>
+														<f:selectItem itemLabel="3" itemValue="3"></f:selectItem>
+														<f:selectItem itemLabel="4" itemValue="4"></f:selectItem>
+														<f:selectItem itemLabel="5" itemValue="5"></f:selectItem>
+														<f:selectItem itemLabel="6" itemValue="6"></f:selectItem>
+														<f:selectItem itemLabel="7" itemValue="7"></f:selectItem>
+														<f:selectItem itemLabel="8" itemValue="8"></f:selectItem>
+														<f:selectItem itemLabel="9" itemValue="9"></f:selectItem>
+														<f:selectItem itemLabel="10" itemValue="10"></f:selectItem>
+														<f:selectItem itemLabel="11" itemValue="11"></f:selectItem>
+														<f:selectItem itemLabel="12" itemValue="12"></f:selectItem>
+														<f:selectItem itemLabel="13" itemValue="13"></f:selectItem>
+														<f:selectItem itemLabel="14" itemValue="14"></f:selectItem>
+													</p:selectOneMenu>
+												</p:column>
+											</p:row>
+											<p:row>
+												<p:column>
+													<p:outputLabel>Month</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:inputText value="#{lp01Bean.newPrice.month}" />
+												</p:column>
+
+												<p:column>
+													<p:outputLabel>Price</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:inputText value="#{lp01Bean.newPrice.price}" />
+												</p:column>
+											</p:row>
+										</p:panelGrid>
+									</div>
+								</div>
+
+								<div class="ui-grid-row" style="margin-top: 10px;">
+									<div class="ui-grid-col-8">
+										<p:dataTable id="paymentTemplate" value="#{lp01Bean.ptL}"
+											var="item" rowKey="#{item.pt_order}" rows="30"
+											style="width:90%;">
+
+											<f:facet name="header" id="tableHeader">
+                                                    График платежей
+                                                    <p:commandButton
+													icon="ui-icon-plus" actionListener="#{lp01Bean.addRow}"
+													update=":form:paymentTemplate"
+													style="float:right;margin-right:5px;">
+												</p:commandButton>
+												<div style="clear: both;"></div>
+											</f:facet>
+
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Order" />
+												</f:facet>
+												<h:inputText value="#{item.pt_order}"></h:inputText>
+											</p:column>
+
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Months" />
+												</f:facet>
+												<h:inputText value="#{item.month_num}"></h:inputText>
+											</p:column>
+											
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Monthly payment sum" />
+												</f:facet>
+												<h:inputText value="#{item.monthly_payment_sum}"></h:inputText>
+											</p:column>
+											
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Info" />
+												</f:facet>
+												<h:inputText value="#{item.info}"></h:inputText>
+											</p:column>
+											
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="Действия" />
+												</f:facet>
+												<p:commandButton value="Удалить"
+													actionListener="#{lp01Bean.removeRow(item)}"
+													update=":form:paymentTemplate">
+												</p:commandButton>
+											</p:column>
+										</p:dataTable>
+									</div>
+								</div>
+							</div>
+						</p:fieldset>
+					</h:form>
+
+					<p:dialog header="#{msg['logistics.matnr_list']}"
+						widgetVar="matnrWidget" dynamic="true" width="500" height="500"
+						id="matnrTableWidget">
+						<h:form id="matnr-list">
+							<p:dataTable scrollable="true" scrollHeight="400"
+								paginator="true" paginatorPosition="bottom" rows="50"
+								id="singleMatnr" var="matnr" rowKey="#{matnr.matnr}"
+								value="#{matnrF4Bean.matnr_list}"
+								selectionMode="single" selection="#{lp01Bean.tempSelectedMatnr}">
+								<f:facet name="header">
+									<p:commandButton actionListener="#{lp01Bean.assignMatnr}"
+										update=":form:b_matnr" onclick="PF('matnrWidget').hide();"
+										value="Выбрать" />
+								</f:facet>
+
+
+								<p:column headerText="ID" footerText="ID" style="width:10px">
+									<h:outputText value="#{matnr.matnr}" />
+								</p:column>
+								<p:column headerText="Название" footerText="Название"
+									filterBy="#{matnr.text45}" style="width:200px">
+									<h:outputText value="#{matnr.text45}" />
+								</p:column>
+								<p:column headerText="Code" footerText="Code"
+									filterBy="#{matnr.code}" style="width:200px">
+									<h:outputText value="#{matnr.code}" />
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</p:dialog>
+				</f:view>
+			</div>
+
+		</div>
+	</div>
+
+
+</h:body>
+</html>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<div class="ui-grid-col-3">
+		<p:panel header="Панель для поиска" toggleable="true"
+			toggleOrientation="vertical" collapsed="false">
+			<h:panelGrid columns="2" cellpadding="10">
+				<p:outputLabel value="Компания" />
+				<p:selectOneMenu value="#{crmVisitCrudBean.searchModel.bukrs}"
+					disabled="#{crmVisitCrudBean.disabledBukrs}">
+					<p:ajax listener="#{crmVisitCrudBean.onBukrsChange}" event="change"
+						update="branchId" />
+					<f:selectItem itemLabel="Не выбрано" itemValue=""></f:selectItem>
+					<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+						itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+				</p:selectOneMenu>
+
+				<p:outputLabel value="Филиал" />
+				<p:selectOneMenu id="branchId"
+					disabled="#{crmVisitCrudBean.disabledBranch}"
+					value="#{crmVisitCrudBean.searchModel.branchId}">
+					<p:ajax event="change"
+						listener="#{crmVisitCrudBean.onBranchChange}" update="managerId" />
+					<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+					<f:selectItems
+						value="#{branchBean.getUserBranches(crmVisitCrudBean.searchModel.bukrs)}"
+						var="b" itemLabel="#{b.text45}" itemValue="#{b.branch_id}" />
+				</p:selectOneMenu>
+
+
+
+				<p:outputLabel value="Менеджер" />
+				<p:selectOneMenu value="#{crmVisitCrudBean.selectedManagerId}"
+					id="managerId" disabled="#{crmVisitCrudBean.disabledManager}">
+					<p:ajax event="change"
+						listener="#{crmVisitCrudBean.onManagerChange}" update="visitorId" />
+					<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+					<f:selectItems value="#{crmVisitCrudBean.managers}" var="m"
+						itemLabel="#{m.p_staff.getLF()}" itemValue="#{m.staff_id}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="Посетитель" />
+				<p:selectOneMenu value="#{crmVisitCrudBean.searchModel.visitorId}"
+					id="visitorId">
+					<p:ajax event="change"
+						listener="#{crmVisitCrudBean.onVisitorChange}" />
+					<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+					<f:selectItems value="#{crmVisitCrudBean.visitors}" var="v"
+						itemLabel="#{v.p_staff.getLF()}" itemValue="#{v.staff_id}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="" />
+				<p:commandButton actionListener="#{crmVisitListBean.loadItems()}"
+					update="visitItemsDataTable" value="Загрузить" />
+
+			</h:panelGrid>
+		</p:panel>
+	</div>
+</ui:composition>
+</html>

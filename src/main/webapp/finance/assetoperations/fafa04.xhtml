@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" /> 
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="finance/accounting/facur01.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" />
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+
+								<p:growl id="messages" sticky="false" showDetail="true" /> 
+								<p:fieldset>
+									<legend>Document Header</legend>
+									<table>
+										<tr>
+											<td><p:outputLabel value="Asset Type" /> <p:inputText
+													value="#{fafa04transBean.asset_type}" /></td>
+											<td><p:outputLabel value="Branch" /> <p:inputText
+													value="#{fafa04transBean.branch}" /></td>
+											<td><p:outputLabel value="Initial amount" /> <p:inputText
+													value="#{fafa04transBean.init_amount}" /></td>
+										</tr>
+										<tr>
+											<td><p:outputLabel for="desc" value="Description" /> <p:inputTextarea
+													id="desc" value="#{fafa04transBean.description}" /></td>
+											<td><p:commandButton value="Add Asset"
+													icon="ui-icon-disk"
+													action="#{fafa04transBean.insert_into_database}" /></td>
+										</tr>
+									</table>
+								</p:fieldset>
+
+								<f:facet name="header">
+									<p:outputPanel>
+										<h:outputText value="Fixed Assets" />
+									</p:outputPanel>
+								</f:facet>
+
+								<p:dataTable value="#{fafa04transBean.fafa04_list}" var="dt"
+									paginator="false" widgetVar="assetTable" id="table1"
+									scrollHeight="true" style="width:100%; ">
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Order" />
+										</f:facet>
+										<h:outputText value="#{dt.order}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Branch" />
+										</f:facet>
+										<h:outputText value="#{dt.branch}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Serial #" />
+										</f:facet>
+										<h:outputText value="#{dt.asset_sn}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Asset Type" />
+										</f:facet>
+										<h:outputText value="#{dt.asset_type}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Posting Date" />
+										</f:facet>
+										<h:outputText value="#{dt.asset_pd}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Write-off date" />
+										</f:facet>
+										<h:outputText value="#{dt.asset_wd}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Initial amount" />
+										</f:facet>
+										<h:outputText value="#{dt.init_amount}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Amortization amount" />
+										</f:facet>
+										<h:outputText value="#{dt.amort_amount}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Amount left" />
+										</f:facet>
+										<h:outputText value="#{dt.amount_left}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputText value="Description" />
+										</f:facet>
+										<h:outputText value="#{dt.description}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<p:outputLabel value="Action" />
+										</f:facet>
+										<p:commandButton value="Delete"
+											action="#{fafa04transBean.deleteAction}">
+											<f:setPropertyActionListener value="#{dt.asset_sn}"
+												target="#{fafa04transBean.asset_sn}" />
+										</p:commandButton>
+									</p:column>
+								</p:dataTable>
+							</h:form>
+						</f:view>
+					</div> 
+
+		</div>
+	</div>
+</h:body>
+</html>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['hr.pyramid.hierarchy']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<style>
+.disabled-row {
+	background-color: red;
+}
+</style>
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{hrp04Bean.breadcrumb}" />
+				</ui:include>
+			</ui:insert>
+			<div class="ui-grid-row" style="margin-top: 10px;">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel style="margin-bottom:10px">
+							<h:panelGrid columns="7" cellpadding="2">
+								<p:outputLabel value="#{msg.company}"></p:outputLabel>
+								<p:selectOneMenu styleClass="bukrs" id="search_bukrs"
+									value="#{hrp04Bean.searchModel.bukrs}">
+									<f:selectItem itemLabel="#{msg.select_company}" itemValue="" />
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="bukrs"
+										itemLabel="#{bukrs.name}" itemValue="#{bukrs.bukrs}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Year"></p:outputLabel>
+								<p:selectOneMenu styleClass="bukrs"
+									value="#{hrp04Bean.searchModel.year}">
+									<f:selectItem itemLabel="2016" itemValue="2016" />
+									<f:selectItem itemLabel="2017" itemValue="2017" />
+									<f:selectItem itemLabel="2018" itemValue="2018" />
+									<f:selectItem itemLabel="2019" itemValue="2019" />
+									<f:selectItem itemLabel="2020" itemValue="2020" />
+									<f:selectItem itemLabel="2021" itemValue="2021" />
+									
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Month"></p:outputLabel>
+								<p:selectOneMenu styleClass="bukrs"
+									value="#{hrp04Bean.searchModel.month}">
+									<f:selectItems value="#{monthBean.items}" var="m"
+										itemLabel="#{m.value}" itemValue="#{m.id}" />
+								</p:selectOneMenu>
+
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" update=":form:treeTable,:messages"
+									actionListener="#{hrp04Bean.search}"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<div id="divTreetable">
+							<p:treeTable id="treeTable" value="#{hrp04Bean.root}"
+								var="pyramid" style="margin-bottom:20px" resizableColumns="true">
+								<f:facet name="header">
+
+									<div style="clear: both;"></div>
+								</f:facet>
+
+								<p:column headerText="#{msg['hr.pyramid.fio']}">
+									<h:outputText
+										value="#{staffBean.getStaffLabel(pyramid.staff_id)}" />
+								</p:column>
+								<p:column headerText="#{msg['hr.pyramid.position_name']}">
+									<h:outputText
+										value="#{positionBean.getPositionLabel(pyramid.position_id)}" />
+								</p:column>
+								<p:column headerText="#{msg['hr.pyramid.branch_name']}">
+									<h:outputText
+										value="#{branchBean.getBranchLabel(pyramid.branch_id)}" />
+								</p:column>
+							</p:treeTable>
+						</div>
+					</h:form>
+				</f:view>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+	<f:viewParam name="staff_id" value="#{faesBean.new_prl.staff_id}" />
+	<f:viewParam name="branch_id" value="#{faesBean.new_prl.branch_id}" />
+	<f:viewParam name="drcrk" value="#{faesBean.new_prl.drcrk}" />
+	<f:viewParam name="bukrs" value="#{faesBean.new_prl.bukrs}" />
+	<f:event type="preRenderView" listener="#{faesBean.init}" />
+</f:metadata>
+
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("form:sc_fiz_yur_input").value == 1) {
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+
+				document.getElementById("form:sc_name").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+			} else if (document.getElementById("form:sc_fiz_yur_input").value == 2) {
+				document.getElementById("form:sc_birthday_input").disabled = false;
+				document.getElementById("form:sc_passport_id").disabled = false;
+				document.getElementById("form:sc_firstname").disabled = false;
+				document.getElementById("form:sc_lastname").disabled = false;
+				document.getElementById("form:sc_middlename").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			} else {
+				document.getElementById("form:sc_iin_bin").value = null;
+				document.getElementById("form:sc_iin_bin").disabled = true;
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			}
+
+		}
+	</script>
+</h:head>
+
+<h:body>
+	<h:outputScript library="js" name="money.js" />
+	<h:outputStylesheet library="css" name="finance/accounting/fa02.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b><h:outputLabel value="#{msg.menu}" /></b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{faesBean.breadcrumb}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{faesBean.breadcrumb}"/>
+									</f:facet>
+								</p:toolbar>
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg.save}" id="saveButton"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{faesBean.to_save}" disabled = "#{faesBean.saveDisable}"/>
+														
+							</f:facet>
+						</p:toolbar>
+
+						<p:growl id="messages" sticky="false" showDetail="true" />
+						<fieldset>
+							<legend><h:outputLabel value="#{msg.header}" /></legend>
+							<p:panelGrid styleClass="searchPanelGrid" >
+								
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.company}" /></p:column>
+        							<p:column>
+										<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{faesBean.new_prl.bukrs}" disabled="true">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+								<p:row>	
+									<p:column><h:outputLabel value="#{msg.branch}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="branch"
+													value="#{faesBean.new_prl.branch_id}" disabled = "true">
+													<f:selectItems
+														value="#{branchF4Bean.getByBukrsOrBusinessArea(faesBean.new_prl.bukrs,userinfo.bukrs,'','', 0,userinfo.branch_id)}"
+														var="branch" itemLabel="#{branch.text45}"
+														itemValue="#{branch.branch_id}" /> 
+												</p:selectOneMenu>
+									</p:column>
+								</p:row>
+								<p:row>  
+									<p:column><h:outputLabel value="#{msg.employee}" /></p:column>
+				                  <p:column>
+				                  <h:outputLabel id="customer_id">
+				                      <h:inputText  value="#{faesBean.searchStaff.lastname} #{faesBean.searchStaff.firstname} #{faesBean.searchStaff.middlename}" size = "30" disabled="true" />
+				                      
+				                        <p:button target="_blank" outcome="/hr/customer/hrc03.xhtml?customerId=#{faesBean.searchStaff.customer_id}"
+				                        icon="ui-icon-zoomin" 
+				                        title="View" id="viewButton1" 
+				                        style="float:right;margin-left:2px;margin-right:2px;" />
+				                    </h:outputLabel>
+				                      </p:column>
+				                </p:row>  
+								<p:row>
+									
+									<p:column><h:outputLabel value="#{msg['bkpf.waers.long']}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="waers"
+													value="#{faesBean.new_prl.waers}">
+													<f:selectItems
+														value="#{faesBean.l_waers}"/> 
+												</p:selectOneMenu>	
+									</p:column>
+								</p:row>
+								<p:row>
+									
+									<p:column><h:outputLabel value="#{msg['amount']}"/></p:column>
+									<p:column>
+										<h:inputText id="dmbtr"
+													value="#{faesBean.new_prl.dmbtr}" size="15" onkeyup="formatMoney($(this))" onfocus="this.select();">
+													<f:convertNumber pattern="#,###,##0.00" />
+												</h:inputText>
+									</p:column>
+								</p:row>
+								<p:row>
+									
+									<p:column><h:outputLabel value="#{msg['bkpf.bktxt.long']}"/></p:column>
+									<p:column>
+												<p:inputText id = "text45"   size = "30" placeholder="#{msg['bkpf.bktxt.long']}" value="#{faesBean.new_prl.text45}" maxlength="250"/>
+											</p:column>
+								</p:row>	
+								
+	
+
+							
+								
+								
+							</p:panelGrid>
+
+						</fieldset>
+						
+
+						
+						
+						
+						
+						
+					</h:form>
+
+
+				</f:view>
+			</div>
+
+		</div>
+	</div>
+
+
+</h:body>
+</html>
+									

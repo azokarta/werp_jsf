@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<style>
+.field-row {
+	margin-top: 10px;
+}
+
+.field-label {
+	border: solid 0px red;
+	font-size: 14px;
+	font-weight: 600;
+	font-style: italic;
+}
+
+.field-label label {
+	float: right;
+	margin-right: 5px;
+}
+
+.field-value {
+	border: solid 0px red;
+}
+
+.field-value input, textarea, .ui-selectonemenu {
+	width: 80%;
+}
+
+.field-value .ui-selectonemenu {
+	
+}
+</style>
+	<p:dialog header="#{crmVisitCrudBean.dialogHeader}"
+		widgetVar="VisitCreateUpdateDialog" id="VisitCreateUpdateDialog"
+		minHeight="100" width="700" style="padding:10px;" appendTo="@(body)"
+		modal="true" resizable="false">
+		<h:form id="VisitCreateUpdateDialogForm"
+			rendered="#{!empty crmVisitCrudBean.selected}">
+			<p:toolbar styleclass="mp_toolbar">
+				<f:facet name="left">
+					<p:commandButton rendered="#{showSaveBtn}" type="push"
+						value="#{msg['dmsc.save']}" icon="ui-icon ui-icon-check"
+						actionListener="#{crmVisitCrudBean.save()}" update=":messages">
+					</p:commandButton>
+
+					<p:commandButton rendered="#{showCustomSaveBtn}" type="push"
+						value="#{msg['dmsc.save']}" icon="ui-icon ui-icon-check"
+						actionListener="#{saveActionBean[saveAction]}" update=":messages">
+					</p:commandButton>
+
+				</f:facet>
+			</p:toolbar>
+			<br />
+			<div class="ui-grid ui-grid-responsive">
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Компания" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmVisitCrudBean.selected.bukrs}"
+							disabled="#{crmVisitCrudBean.disabledBukrs}">
+							<p:ajax update="form_branch_id" />
+							<f:selectItem itemLabel="Не выбрано" itemValue="" />
+							<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+								itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Филиал" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmVisitCrudBean.selected.branchId}"
+							disabled="#{crmVisitCrudBean.disabledBranch}" id="form_branch_id">
+							<p:ajax event="change"
+								listener="#{crmVisitCrudBean.onBranchChange}"
+								update="form_manager_id" />
+							<f:selectItem itemLabel="Не выбрано" itemValue="" />
+							<f:selectItems
+								value="#{branchBean.getUserBranches(crmVisitCrudBean.selected.bukrs)}"
+								var="b" itemLabel="#{b.text45}" itemValue="#{b.branch_id}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Менеджер" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmVisitCrudBean.selectedManagerId}"
+							disabled="#{crmVisitCrudBean.disabledManager}"
+							id="form_manager_id">
+							<p:ajax event="change"
+								listener="#{crmVisitCrudBean.onManagerChange}"
+								update="form_visitor_id" />
+							<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+							<f:selectItems value="#{crmVisitCrudBean.managers}" var="m"
+								itemLabel="#{m.p_staff.getLF()}" itemValue="#{m.staff_id}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Посетитель" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmVisitCrudBean.selected.visitorId}"
+							id="form_visitor_id">
+							<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+							<f:selectItems value="#{crmVisitCrudBean.visitors}" var="v"
+								itemLabel="#{v.p_staff.getLF()}" itemValue="#{v.staff_id}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="SN" />
+					</div>
+					<div class="ui-grid-col-6 field-value">
+						<p:inputText value="#{crmVisitCrudBean.selected.contractNumber}" />
+					</div>
+					<div class="ui-grid-col-3 field-value">
+						<p:commandButton
+							actionListener="#{crmVisitCrudBean.searchContract()}"
+							value="Поиск" update=":messages VisitCreateUpdateDialogForm" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="ФИО клиента" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmVisitCrudBean.selected.clientName}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Дата посещение" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:calendar value="#{crmVisitCrudBean.selected.docDate}"
+							pattern="dd.MM.yyyy" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Адрес" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputTextarea value="#{crmVisitCrudBean.selected.address}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Местоположение" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmVisitCrudBean.selected.locationId}">
+							<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+							<f:selectItems value="#{crmVisitCrudBean.locations.entrySet()}"
+								var="e" itemLabel="#{e.value}" itemValue="#{e.key}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Примечание" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputTextarea value="#{crmVisitCrudBean.selected.note}" />
+					</div>
+				</div>
+
+			</div>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

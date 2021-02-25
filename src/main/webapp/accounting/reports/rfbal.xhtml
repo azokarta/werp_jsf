@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh" content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml"/>
+	
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	
+	<h:outputStylesheet library="css" name="reports/finance/rfbal.css" />
+	
+	
+	
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.rfbal']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+					<f:view>
+
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,rfbalBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+							
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:tabView id = "tabView"  cache="false" activeIndex="#{rfbalBean.tabindex}" >
+									<p:ajax event="tabChange"  update="searchPanelGridId bsegScrollPanel"/>
+							        <p:tab title="#{msg.search_options}">
+							        	<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" id="searchPanelGridId">
+										    <p:row>
+        										<p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+        										<p:column colspan="3">
+        											<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{rfbalBean.p_searchTable.bukrs}">   
+														<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+															itemValue="#{wa_bukrs.bukrs}" />
+													</p:selectOneMenu>
+        										</p:column>
+        										
+											</p:row>
+											<p:row>
+        										<p:column ><h:outputLabel  value="#{msg.period}"/>: <h:outputLabel  value="#{msg.from}"/></p:column>
+        										<p:column ><p:selectOneMenu id="s_month_from"   value="#{rfbalBean.p_searchTable.month_from}"> 
+												    			<f:selectItem itemLabel="#{msg.january}" itemValue ="1"/> 
+												    			<f:selectItem itemLabel="#{msg.february}" itemValue ="2"/> 
+												    			<f:selectItem itemLabel="#{msg.march}" itemValue ="3"/> 
+												    			<f:selectItem itemLabel="#{msg.april}" itemValue ="4"/> 
+												    			<f:selectItem itemLabel="#{msg.may}" itemValue ="5"/> 
+												    			<f:selectItem itemLabel="#{msg.june}" itemValue ="6"/> 
+												    			<f:selectItem itemLabel="#{msg.july}" itemValue ="7"/> 
+												    			<f:selectItem itemLabel="#{msg.august}" itemValue ="8"/> 
+												    			<f:selectItem itemLabel="#{msg.september}" itemValue ="9"/> 
+												    			<f:selectItem itemLabel="#{msg.october}" itemValue ="10"/> 
+												    			<f:selectItem itemLabel="#{msg.november}" itemValue ="11"/> 
+												    			<f:selectItem itemLabel="#{msg.december}" itemValue ="12"/> 
+													        </p:selectOneMenu> 
+		        								</p:column>
+        										<p:column ><h:outputText value="#{msg.to}" /></p:column>
+        										<p:column ><p:selectOneMenu id="s_month_to"   value="#{rfbalBean.p_searchTable.month_to}"> 
+												    			<f:selectItem itemLabel="#{msg.january}" itemValue ="1"/> 
+												    			<f:selectItem itemLabel="#{msg.february}" itemValue ="2"/> 
+												    			<f:selectItem itemLabel="#{msg.march}" itemValue ="3"/> 
+												    			<f:selectItem itemLabel="#{msg.april}" itemValue ="4"/> 
+												    			<f:selectItem itemLabel="#{msg.may}" itemValue ="5"/> 
+												    			<f:selectItem itemLabel="#{msg.june}" itemValue ="6"/> 
+												    			<f:selectItem itemLabel="#{msg.july}" itemValue ="7"/> 
+												    			<f:selectItem itemLabel="#{msg.august}" itemValue ="8"/> 
+												    			<f:selectItem itemLabel="#{msg.september}" itemValue ="9"/> 
+												    			<f:selectItem itemLabel="#{msg.october}" itemValue ="10"/> 
+												    			<f:selectItem itemLabel="#{msg.november}" itemValue ="11"/> 
+												    			<f:selectItem itemLabel="#{msg.december}" itemValue ="12"/> 
+													        </p:selectOneMenu> 
+												</p:column> 
+											</p:row>
+											<p:row>
+        										<p:column ><h:outputText value="#{msg['bkpf.gjahr.long']}" /></p:column>
+        										<p:column colspan="3"><p:selectOneMenu id="s_gjahr"   value="#{rfbalBean.p_searchTable.gjahr}"> 
+												    			<f:selectItem itemLabel="2016" itemValue ="2016"/>  
+												    			<f:selectItem itemLabel="2017" itemValue ="2017"/>  
+													        </p:selectOneMenu> 
+        										</p:column>
+											</p:row>
+											<p:row>
+        										<p:column colspan="4" style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{rfbalBean.to_search}"/></p:column>
+        									</p:row>
+    									</p:panelGrid>
+							        
+							            
+							        </p:tab>
+							        <p:tab title="#{msg.result}">
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel">
+										<p:dataTable value="#{rfbalBean.l_outputTable}" var="o"
+											widgetVar="dataTableWidgetVar" id="outputTable"
+											emptyMessage="#{msg.empty_rows}" 											
+											styleClass="outputTable" headerClass="outputTableHeader"
+											rowClasses="outputTableOddRow,outputTableEvenRow">
+
+											<f:facet name="header">
+ 
+        									</f:facet>
+											<p:columnGroup type="header">
+									            <p:row>
+									                <p:column rowspan="2" headerText="#{msg.number}" />
+									                <p:column rowspan="2" headerText="#{msg['bseg.hkont.long']}" />
+									                <p:column rowspan="2" headerText="#{msg.name}" />
+									                <p:column colspan="2" headerText="#{msg.saldo_begin}" />
+									                <p:column colspan="2" headerText="#{msg.turnover}" />
+									                <p:column colspan="2" headerText="#{msg.saldo_end}" />
+									                <p:column rowspan="2" headerText="#{msg['bkpf.waers.long']}" />
+									            </p:row> 
+									            <p:row>
+									                <p:column headerText="#{msg.debit}" />
+									                <p:column headerText="#{msg.credit}" /> 
+									                <p:column headerText="#{msg.debit}" />
+									                <p:column headerText="#{msg.credit}" /> 
+									                <p:column headerText="#{msg.debit}" />
+									                <p:column headerText="#{msg.credit}" /> 
+									            </p:row>
+									        </p:columnGroup>
+											<p:column>
+												
+												<h:outputText value="#{o.index+1}" />
+											</p:column>
+											<p:column>
+												
+												<h:outputText value="#{o.hkont}" />
+											</p:column>
+											<p:column>
+												
+												<h:outputText value="#{o.hkont_name}" />
+											</p:column>
+											
+											<p:column>
+												
+												<h:outputText value="#{o.beg_debet}" ><f:convertNumber pattern="#,###,##0.00" /> </h:outputText>
+											</p:column>
+											
+											<p:column>
+												
+												<h:outputText value="#{o.beg_kredit}" ><f:convertNumber pattern="#,###,##0.00" /> </h:outputText>
+											</p:column>
+											
+											<p:column> 
+												<h:outputText value="#{o.debet}" ><f:convertNumber pattern="#,###,##0.00" /> </h:outputText>
+											</p:column>
+											
+											<p:column> 
+												<h:outputText value="#{o.kredit}" ><f:convertNumber pattern="#,###,##0.00" /> </h:outputText>
+											</p:column>
+											
+											<p:column> 
+												<h:outputText value="#{o.end_debet}" ><f:convertNumber pattern="#,###,##0.00" /> </h:outputText>
+											</p:column>
+											
+											<p:column> 
+												<h:outputText value="#{o.end_kredit}" ><f:convertNumber pattern="#,###,##0.00" /> </h:outputText>
+											</p:column>
+											<p:column> 
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+
+										</p:dataTable>
+
+									</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							    </p:tabView>
+
+
+
+
+
+
+
+
+ 
+								
+
+
+
+								
+
+
+
+								
+								
+
+							</h:form>
+
+
+						</f:view>
+
+
+			</div>
+
+		</div>
+	</div>
+	
+	
+
+</h:body>
+</html>

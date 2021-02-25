@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>Новый сервис пакет</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="Сервис > Пакеты > Новый сервис пакет" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Новый сервис пакет" />
+				</ui:include>
+			</ui:insert>
+			<div id="content" class="container">
+				<f:view>
+
+					<h:form id="form">
+
+						<p:growl id="messages" sticky="false" showDetail="true" />
+
+						<div class="ui-grid-row" style="padding-bottom: 10px;">
+
+							<fieldset style="border: 1px solid #ddd;">
+								<legend>Заголовок</legend>
+
+								<div style="display: inline; float: left; padding-right: 25px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="Компания" /></td>
+											<td><p:selectOneMenu id="bukrs"
+													value="#{spNewBean.spTitle.bukrs}">
+													<p:ajax listener="#{spNewBean.selectedBukrsDo}" />
+													<f:selectItem itemLabel="Выберите компанию" itemValue="0" />
+													<f:selectItems value="#{spNewBean.bukrs_list}"
+														var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+														itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Страна" /></td>
+											<td><p:selectOneMenu id="country"
+													value="#{spNewBean.spTitle.country_id}">
+													<p:ajax listener="#{spNewBean.assignCurrency}" />
+													<f:selectItem itemLabel="Выберите страну" itemValue="0" />
+													<f:selectItems value="#{spNewBean.country_list}" var="wa_c"
+														itemLabel="#{wa_c.country}" itemValue="#{wa_c.country_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><p:outputLabel value="Дата" /></td>
+											<td><p:calendar id="startDate" styleClass="dateField"
+													value="#{spNewBean.spTitle.start_date}" navigator="true"
+													pattern="dd.MM.yyyy" mask="true"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Категория " /></td>
+											<td><p:selectOneMenu id="category"
+													value="#{spNewBean.spTitle.tovar_category}">
+													<p:ajax listener="#{spNewBean.loadByCategory}" />
+													<f:selectItem itemLabel="Выберите категорию" itemValue="9" />
+													<f:selectItem itemLabel="Уборочная система"
+														itemValue="1" />
+													<f:selectItem itemLabel="Система очистки воды"
+														itemValue="2" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Товар" /></td>
+											<td><p:selectOneMenu id="tovar"
+													value="#{spNewBean.spTitle.tovar_id}"
+													disabled="#{spNewBean.dis_selectTovar}">
+													<f:selectItem itemLabel="Выберите вид товара" itemValue="0" />
+													<f:selectItems value="#{spNewBean.tovar_list}" var="wa_t"
+														itemLabel="#{wa_t.text45}" itemValue="#{wa_t.matnr}" />
+													<p:ajax listener="#{spNewBean.prepareTable}" />
+												</p:selectOneMenu></td>
+										</tr>
+
+									</table>
+								</div>
+
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+
+
+										<tr>
+											<td><h:outputLabel value="Название" /></td>
+											<td><p:inputText id="spname" size="50" disabled="false"
+													value="#{spNewBean.spTitle.name}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Примечание &nbsp;" /></td>
+											<td><p:inputText id="info" size="50" autocomplete="off"
+													value="#{spNewBean.spTitle.info}" disabled="false" /> <h:outputLabel
+													id="currency" rendered="false"
+													value=" &nbsp; #{spNewBean.spTitle.waers}"
+													style="margin-bottom:10px;" /></td>
+										</tr>
+									</table>
+								</div>
+
+							</fieldset>
+
+						</div>
+
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="Сохранить" id="save_button"
+									align="right" disabled="#{spNewBean.dis_save_btn}"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{spNewBean.to_save}" update="messages">
+									<p:confirm header="Confirmation"
+										message="Сохранить новый сервис пакет?" icon="ui-icon-alert" />
+								</p:commandButton>
+							</f:facet>
+
+							<f:facet name="right">
+								<p:commandButton actionListener="#{spNewBean.removeEmptyRows}"
+									value="Сформировать" styleClass="add_button"
+									icon="ui-icon-arrowrefresh-1-s" update="messages" />
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+								<p:commandButton actionListener="#{spNewBean.addPosRow()}"
+									value="Добавить" styleClass="add_button" icon="ui-icon-plus"
+									id="add_button" disabled="false" />
+							</f:facet>
+						</p:toolbar>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+							align="center">
+							<p:commandButton value="Да" type="button" align="center"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Нет" type="button" align="center"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<div class="wrapRTClass">
+								<p:scrollPanel style="width: 100%; height:100%"
+									easing="easeOutElastic" id="olScrollPanel">
+
+									<p:dataTable value="#{spNewBean.spPosL}" var="o"
+										widgetVar="dataTableWidgetVar" id="olTable"
+										emptyMessage="Нет записей" styleClass="employeeTable"
+										headerClass="employeeTableHeader" sortBy="#{o.group}"
+										rowClasses="employeeTableOddRow,employeeTableEvenRow"
+										update="messages">
+
+										<p:column>
+											<f:facet name="header">#</f:facet>
+											<h:outputText id="b_index" value="#{o.index}"
+												styleClass="index" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Операция</f:facet>
+											<p:selectOneMenu id="serv_oper" value="#{o.spPos.operation}"
+												disabled="false">
+												<p:ajax listener="#{spNewBean.updateByOperType(o.index)}" />
+												<f:selectItems value="#{spNewBean.ot_l}" var="wa_ot"
+													itemLabel="#{wa_ot.operName}" itemValue="#{wa_ot.operType}" />
+											</p:selectOneMenu>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Материал</f:facet>
+											<p:commandButton icon="ui-icon-newwin" type="push" id="mat"
+												onclick="PF('matnrWidget').show();" styleClass="f4button"
+												disabled="#{o.dis_mat}">
+												<f:setPropertyActionListener target="#{spNewBean.spPosRow}"
+													value="#{o}" />
+												<f:setPropertyActionListener target="#{spNewBean.forWar}"
+													value="#{false}" />
+											</p:commandButton>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Описание</f:facet>
+											<h:inputText id="infoText" value="#{o.spPos.info}" size="50"
+												maxlength="145" styleClass="input1" disabled="false" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Гарантия<br />(в мес.)</f:facet>
+											<h:inputText value="#{o.spPos.new_war_inm}" size="5"
+												maxlength="5" id="war_text" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Цена</f:facet>
+											<h:inputText id="unitPrice" value="#{o.spPos.price}"
+												size="10" maxlength="10" styleClass="input1"
+												disabled="false">
+												<p:ajax event="keyup"
+													listener="#{spNewBean.calcRow(o.index)}" />
+												<f:convertNumber pattern="#0.00" />
+											</h:inputText>
+											<h:outputLabel value=" #{spNewBean.spTitle.waers}" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Количество</f:facet>
+											<h:inputText id="b_menge" value="#{o.spPos.quantity}"
+												size="8" maxlength="10" styleClass="input1"
+												disabled="#{o.dis_qq}">
+												<p:ajax event="keyup"
+													listener="#{spNewBean.calcRow(o.index)}" />
+												<f:convertNumber pattern="#0" />
+											</h:inputText>
+											<h:outputLabel> шт.</h:outputLabel>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Сумма</f:facet>
+											<h:inputText id="b_wrbtr" value="#{o.spPos.summ}" size="15"
+												maxlength="15" styleClass="input1" disabled="true">
+												<f:convertNumber pattern="#0.00" />
+											</h:inputText>
+											<h:outputLabel value=" #{spNewBean.spTitle.waers}" />
+										</p:column>
+
+										<p:column>
+											<p:commandButton icon="ui-icon-close" type="push"
+												actionListener="#{spNewBean.deleteSPPosRow(o.index)}"
+												styleClass="f4button" disabled="false" />
+										</p:column>
+
+										<p:summaryRow id="summaryRow">
+											<p:column colspan="7" style="text-align:right">
+												<h:outputText value="Итоги:" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{spNewBean.spTitle.summ}"
+													id="summarySC">
+													<f:convertNumber type="currency"
+														currencySymbol="#{spNewBean.spTitle.waers}" />
+												</h:outputText>
+											</p:column>
+										</p:summaryRow>
+									</p:dataTable>
+								</p:scrollPanel>
+
+							</div>
+						</div>
+
+
+
+						<p:outputPanel>
+							<h4>Список запчастей к которым присваиваются гарантии</h4>
+						</p:outputPanel>
+
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="right">
+								<p:commandButton actionListener="#{spNewBean.addWarRow()}"
+									value="Добавить" styleClass="add_button" icon="ui-icon-plus"
+									id="addWar_button" disabled="false" />
+							</f:facet>
+						</p:toolbar>
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<div class="wrapRTClass">
+								<p:scrollPanel style="height:100%" easing="easeOutElastic"
+									id="spWarScrollPanel">
+
+									<p:dataTable value="#{spNewBean.spWarL}" var="o"
+										widgetVar="warTableWidgetVar" id="spWarTable"
+										emptyMessage="Нет записей" styleClass="employeeTable"
+										headerClass="employeeTableHeader" sortBy="#{o.group}"
+										rowClasses="employeeTableOddRow,employeeTableEvenRow"
+										update="messages">
+
+										<p:column>
+											<f:facet name="header">#</f:facet>
+											<h:outputText id="b_index" value="#{o.index}"
+												styleClass="index" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Материал</f:facet>
+											<p:commandButton icon="ui-icon-newwin" type="push" id="mat"
+												onclick="PF('matnrWidget').show();" styleClass="f4button">
+												<f:setPropertyActionListener target="#{spNewBean.spWarRow}"
+													value="#{o}" />
+												<f:setPropertyActionListener target="#{spNewBean.forWar}"
+													value="#{true}" />
+											</p:commandButton>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Описание</f:facet>
+											<h:inputText id="infoText" value="#{o.spWar.info}" size="50"
+												maxlength="145" styleClass="input1" disabled="false" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Гарантия<br />(в мес.)</f:facet>
+											<h:inputText value="#{o.spWar.war_months}" size="5"
+												maxlength="5" id="war_mon" />
+										</p:column>
+
+										<p:column>
+											<p:commandButton icon="ui-icon-close" type="push"
+												actionListener="#{spNewBean.deleteSPWarRow(o.index)}"
+												styleClass="f4button" disabled="false" />
+										</p:column>
+
+									</p:dataTable>
+								</p:scrollPanel>
+
+							</div>
+						</div>
+
+
+
+
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<fieldset style="border: 1px solid #ddd;">
+								<legend>Подзаголовок сервиса</legend>
+
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="Сумма " /></td>
+											<td><p:inputText id="totalSumm" size="15"
+													disabled="true" value="#{spNewBean.spTitle.summ}" /> <p:outputLabel
+													id="summCurrency" value=" #{spNewBean.spTitle.waers}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Скидка " /></td>
+											<td><p:inputText id="discount" size="15"
+													disabled="false" value="#{spNewBean.spTitle.discount}">
+													<p:ajax event="keyup"
+														listener="#{spNewBean.disable_save_button}" />
+												</p:inputText> <p:outputLabel id="discCurrency"
+													value=" #{spNewBean.spTitle.waers}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Сумма к оплате:" /></td>
+											<td><p:inputText id="paymentDue" size="15"
+													disabled="true" value="#{spNewBean.spTitle.price}" /> <p:outputLabel
+													id="paymnetCurrency" value=" #{spNewBean.spTitle.waers}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2">
+												<hr />
+											</td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Премия Мастера " /></td>
+											<td><p:inputText id="masterPremi" size="15"
+													disabled="false" value="#{spNewBean.spTitle.master_bonus}" />
+												<p:outputLabel id="masterCurrency"
+													value=" #{spNewBean.spTitle.waers}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Премия оператора " /></td>
+											<td><p:inputText id="operPremi" size="15"
+													disabled="false" value="#{spNewBean.spTitle.oper_bonus}" />
+												<p:outputLabel id="operCurrency"
+													value=" #{spNewBean.spTitle.waers}" /></td>
+										</tr>
+
+									</table>
+								</div>
+
+							</fieldset>
+						</div>
+
+					</h:form>
+
+					<p:dialog header="Материал" widgetVar="matnrWidget" dynamic="true"
+						width="500" height="535" id="matnrTableWidget">
+
+						<h:form id="matnrForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('matnrForm:selectMatnrBtn').click();return false;}">
+
+							<div class="ui-grid-row">
+								<table>
+									<tr height="40px">
+										<td width="200px"><p:outputLabel value=" Code: " /> <p:inputText
+												value="#{spNewBean.matnrSearch.code}">
+												<p:ajax event="keyup"
+													listener="#{spNewBean.refreshMatnrList}" />
+											</p:inputText></td>
+										<td><p:outputLabel value=" Name: " /> <p:inputText
+												value="#{spNewBean.matnrSearch.text45}">
+												<p:ajax event="keyup"
+													listener="#{spNewBean.refreshMatnrList}" />
+											</p:inputText></td>
+									</tr>
+								</table>
+							</div>
+
+							<p:dataTable scrollable="true" scrollHeight="400"
+								id="singleMatnr" var="matnr" rowKey="#{matnr.matnr}"
+								value="#{spNewBean.p_matnr_list}" selectionMode="single"
+								selection="#{spNewBean.selectedMatnr}">
+								<f:facet name="header">
+
+									<p:commandButton
+										actionListener="#{spNewBean.assignSelectedMatnr}"
+										onclick="PF('matnrWidget').hide();" value="Выбрать" />
+								</f:facet>
+
+								<p:column headerText="Code" footerText="Code" style="width:50px">
+									<h:outputText value="#{matnr.matnr.code}" />
+								</p:column>
+								<p:column headerText="Название" footerText="Название"
+									style="width:200px">
+									<h:outputText value="#{matnr.matnr.text45}" />
+								</p:column>
+								<p:column headerText="Цена" footerText="Цена" style="width:50px">
+									<h:outputText value="#{matnr.price}" />
+								</p:column>
+								<p:column headerText="Валюта" footerText="Валюта"
+									style="width:50px">
+									<h:outputText value="#{matnr.currency}" />
+								</p:column>
+
+							</p:dataTable>
+						</h:form>
+					</p:dialog>
+
+
+				</f:view>
+
+			</div>
+		</div>
+	</div>
+
+</h:body>
+</html>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog header="Форма" id="MessageGroupUpdateUserDialog" widgetVar="MessageGroupUpdateUserDialog" resizable="false" responsive="true" appendTo="@(body)">
+	
+	
+	<h:form id="MessageGroupUpdateUserForm">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<h:outputLabel id="dlgHeader" style="color:red; " value="#{messGrUserListBean.selected.group_id>0 ? 'Изменение' : 'Добавление'}"/>
+			</f:facet>
+		</p:toolbar>
+        <p:panelGrid columns="2"  id="display" layout="grid" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-4,ui-grid-col-8" rendered="#{messGrUserListBean.selected != null}">
+            <p:outputLabel value="Группа" />
+            	
+ 			<p:selectOneMenu value="#{messGrUserListBean.selected.group_id}">
+				
+					<f:selectItem itemLabel="" itemValue="0" />
+					<f:selectItems value="#{messGrUserListBean.l_mg}"	var="wa" itemLabel="#{wa.group_name}"
+											itemValue="#{wa.group_id}" />
+				</p:selectOneMenu>
+				<p:outputLabel value="Пользователь" />
+				<p:autoComplete id="themePojo3" value="#{messGrUserListBean.selected.user_id}" completeMethod="#{messGrUserListBean.autocompleteUS}"
+                        			var="wa" itemLabel="#{wa.username}" itemValue="#{wa.user_id}"  forceSelection="true" />
+				
+				<f:facet name="footer">
+	               <p:commandButton actionListener="#{messGrUserListBean.save}"
+						value="Сохранить"
+						update="display,:MessageGroupUserListForm:datalist,:messages" />
+					<p:commandButton value="Отмена"
+						onclick="PF('MessageGroupUpdateUserDialog').hide()" />
+	            </f:facet>  
+            
+        </p:panelGrid>
+        </h:form>
+    </p:dialog>
+
+</ui:composition>
+</html>

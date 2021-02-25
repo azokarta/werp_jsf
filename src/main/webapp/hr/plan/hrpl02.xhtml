@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>Изменить план</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{hrpl02Bean.breadcrumb}" />
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+				<f:view locale="#{systemLocale.currentLocale}">
+					<h:form id="searchForm">
+						<div class="ui-grid-row">
+							<div class=" ui-grid-col-5">
+								<fieldset>
+									<legend>#{msg.search_options}</legend>
+									<div style="float: left;">
+										<table>
+											<tr>
+												<td><h:outputLabel value="#{msg.company}" /></td>
+												<td><p:selectOneMenu id="bukrs"
+														value="#{hrpl02Bean.searchModel.bukrs}">
+														<p:ajax update="branch" />
+														<f:selectItem itemLabel="#{msg.select_company}"
+															itemValue="" />
+														<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+															var="bukrs" itemLabel="#{bukrs.name}"
+															itemValue="#{bukrs.bukrs}" />
+													</p:selectOneMenu></td>
+												<td><h:outputLabel value="#{msg.branch}" /></td>
+												<td><p:selectOneMenu id="branch"
+														value="#{hrpl02Bean.searchModel.branch_id}">
+														<f:selectItem itemLabel="#{msg.select_branch}"
+															itemValue="0" />
+														<f:selectItems
+															value="#{branchBean.getItemsByBukrs(hrpl02Bean.searchModel.bukrs)}"
+															var="branch" itemLabel="#{branch.text45}"
+															itemValue="#{branch.branch_id}" />
+													</p:selectOneMenu></td>
+
+												<td><p:commandButton type="push" value="#{msg.search}"
+														icon="ui-icon ui-icon-search"
+														actionListener="#{hrpl02Bean.search}"
+														update=":planListForm,:messages">
+													</p:commandButton></td>
+											</tr>
+										</table>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+					</h:form>
+					<h:form id="planListForm">
+					<div class="ui-grid-row">
+						<fieldset>
+							<legend>Список</legend>
+							<p:dataTable value="#{hrpl02Bean.planList}" var="p"
+								rowKey="#{p.sp_id}" emptyMessage="#{msg.no_records}"
+								id="outputTable">
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{msg.branch}" />
+									</f:facet>
+									<p:selectOneMenu id="branch" value="#{p.branch_id}">
+										<f:selectItem itemLabel="#{msg.select_branch}" itemValue="0" />
+										<f:selectItems value="#{branchBean.getItemsByBukrs(hrpl02Bean.searchModel.bukrs)}"
+											var="branch" itemLabel="#{branch.text45}"
+											itemValue="#{branch.branch_id}" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{msg['hr.expence.created_date']}" />
+									</f:facet>
+									<h:outputText value="#{p.created_date}"></h:outputText>
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{msg.plan_summ}" />
+									</f:facet>
+									<p:inputText value="#{p.plan_sum}"></p:inputText>
+								</p:column>
+								
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{msg['hr.plan']}" />
+									</f:facet>
+									<p:inputText value="#{p.plan_count}" ></p:inputText>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{msg.actions}" />
+									</f:facet>
+									<p:commandButton value="#{msg.save}"
+										actionListener="#{hrpl02Bean.update(p)}" update=":messages"></p:commandButton>
+								</p:column>
+							</p:dataTable>
+						</fieldset>
+					</div>
+					</h:form>
+				</f:view>
+			</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

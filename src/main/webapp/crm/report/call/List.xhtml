@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{crmCallListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{crmCallListBean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{crmCallListBean.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel id="horizontal" header="#{msg.advanced_search}"
+							toggleable="true" toggleOrientation="vertical" collapsed="false">
+							<h:panelGrid columns="10" cellpadding="10">
+								<p:outputLabel value="#{msg.company}"
+									rendered="#{userinfo.sys_admin or userinfo.main}"></p:outputLabel>
+								<p:selectOneMenu
+									rendered="#{userinfo.sys_admin or userinfo.main}"
+									value="#{crmCallListBean.bukrs}" disabled="#{!userinfo.main}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg.branch}"></p:outputLabel>
+								<p:selectOneMenu id="branch_id"
+									value="#{crmCallListBean.branchId}">
+									<p:ajax listener="#{crmCallListBean.onBranchChange}"
+										update="manager_id"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems
+										value="#{branchBean.getUserBranches(crmCallListBean.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel>Менеджер</p:outputLabel>
+								<p:selectOneMenu id="manager_id"
+									value="#{crmCallListBean.managerId}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems value="#{crmCallListBean.managers}" var="m"
+										itemLabel="#{m.p_staff.getLF()}" itemValue="#{m.staff_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel>Результат</p:outputLabel>
+								<p:selectOneMenu value="#{crmCallListBean.resultId}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems value="#{crmCallListBean.results.entrySet()}"
+										var="e" itemLabel="#{e.value}" itemValue="#{e.key}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel>Дата с</p:outputLabel>
+								<p:calendar value="#{crmCallListBean.fromDate}"
+									pattern="dd.MM.yyyy" />
+
+								<p:outputLabel>Дата по</p:outputLabel>
+								<p:calendar value="#{crmCallListBean.toDate}"
+									pattern="dd.MM.yyyy" />
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" update=":DataListForm:datalist :messages"
+									actionListener="#{crmCallListBean.loadItems()}"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="DataListForm">
+						<p:dataTable id="datalist" value="#{crmCallListBean.items}"
+							var="item" paginator="true" paginatorPosition="bottom"
+							rowKey="#{item.id}" rows="50" lazy="false">
+
+							<f:facet name="header" id="tableHeader">
+								<p:outputLabel style="float:left;"
+									value="Всего: #{crmCallListBean.totalCount}"></p:outputLabel>
+								<div style="clear: both;"></div>
+							</f:facet>
+
+							<p:column style="width:70px;text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Номер №" />
+								</f:facet>
+								<h:outputText value="#{item.id}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Филиал" />
+								</f:facet>
+								<h:outputText value="#{branchF4Bean.getName(item.branchId)}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="ДемоСекретарь" />
+								</f:facet>
+								<h:outputText value="#{item.caller.getLF()}"
+									rendered="#{!empty item.caller}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Дата-время звонка" />
+								</f:facet>
+								<h:outputText value="#{item.dateTime}">
+									<f:convertDateTime pattern="dd.MM.yyyy kk:mm"
+										timeZone="Asia/Almaty"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Результат" />
+								</f:facet>
+								<h:outputText value="#{item.getResultName()}" />
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

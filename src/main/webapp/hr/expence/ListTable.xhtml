@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<!-- EXPENCE -->
+<ui:composition>
+	<f:event listener="#{hrExpenceBean.initBean(selectedStaff)}" type="preRenderView"></f:event>
+	<p:dataTable emptyMessage="#{msg.no_records}" id="expenceList" var="se"
+		rowKey="#{se.se_id}" value="#{hrExpenceBean.items}" rendered="#{hrExpenceBean.canRead}">
+
+		<f:facet name="header" id="expenceTableHeader">
+			<p:commandButton id="expenceCreateButton" icon="ui-icon-plus"
+				title="Create" actionListener="#{hrExpenceBean.prepareCreate}"
+				update="#{parentElementId}:ExpenceCreateForm"
+				oncomplete="PF('ExpenceCreateDialog').show()"
+				style="float:right;margin-right:5px;" rendered="#{hrExpenceBean.canCreate()}" />
+
+			<div style="clear: both;"></div>
+		</f:facet>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="ID" />
+			</f:facet>
+			<h:outputText value="#{se.se_id}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.staff.expence_type']}" />
+			</f:facet>
+			<h:outputText value="#{se.typeName}"></h:outputText>
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg.summ}" />
+			</f:facet>
+			<h:outputText value="#{se.sum}"></h:outputText>
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg.currency}" />
+			</f:facet>
+			<h:outputText value="#{se.currency}"></h:outputText>
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg.comment}" />
+			</f:facet>
+			<h:outputText value="#{se.description}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Дата" />
+			</f:facet>
+			<h:outputText value="#{se.expence_date}">
+				<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+			</h:outputText>
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg.actions}" />
+			</f:facet>
+			<p:commandButton icon="ui-icon-trash" title="#{msg.delete}"
+				actionListener="#{hrExpenceBean.Delete(se)}" update="expenceList"
+				style="float:right;margin-right:5px;" rendered="#{hrExpenceBean.canCreate()}">
+				<p:confirm header="Confirmation"
+					message="Вы действительно хотите удалить элемент?"
+					icon="ui-icon-alert" />
+			</p:commandButton>
+		</p:column>
+	</p:dataTable>
+	
+	<p:panel header="Расходы сотрудника" rendered="#{!hrExpenceBean.canRead}">
+		<h3 style="margin:auto;text-align:center;">Нет доступа</h3>
+	</p:panel>
+
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+		<p:commandButton value="Yes" type="button"
+			styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		<p:commandButton value="No" type="button"
+			styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+	</p:confirmDialog>
+
+	<ui:include src="Create2.xhtml">
+		<ui:param name="expenceBean" value="#{hrExpenceBean}"></ui:param>
+	</ui:include>
+</ui:composition>
+</html>

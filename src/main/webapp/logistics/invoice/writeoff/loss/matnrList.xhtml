@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<fieldset class="contractFieldSet">
+		<legend>#{msg['logistics.matnr_list']}</legend>
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<p:commandButton rendered="#{crudBean.mode != 'view'}"
+					type="push" value="#{msg['add']}" align="right"
+					actionListener="#{crudBean.addMatnrsRow()}"
+					update=":messages,itemsListTable">
+				</p:commandButton>
+
+			</f:facet>
+		</p:toolbar>
+
+		<p:dataTable id="itemsListTable" value="#{crudBean.invoiceItems}"
+			var="item" emptyMessage="#{msg.no_records}"
+			rowClasses="employeeTableOddRow,employeeTableEvenRow">
+			<p:column>
+				<f:facet name="header">#{msg['logistics.matnr_code']}</f:facet>
+				<h:outputText value="#{item.matnrObject.code}"></h:outputText>
+			</p:column>
+			<p:column style="width: 25%;">
+				<f:facet name="header">#{msg['logistics.matnr_name']}</f:facet>
+				<h:outputText rendered="#{userinfo.u_language == 'ru'}" value="#{item.matnrObject.text45}"></h:outputText>
+				<h:outputText rendered="#{userinfo.u_language == 'en'}" value="#{item.matnrObject.name_en}"></h:outputText>
+				<h:outputText rendered="#{userinfo.u_language == 'tr'}" value="#{item.matnrObject.name_tr}"></h:outputText>
+				<p:commandButton rendered="#{crudBean.mode != 'view'}"
+					icon="ui-icon-newwin" type="push"
+					actionListener="#{crudBean.setCurrentItem(item)}"
+					update=":MatnrListDlg"
+					oncomplete="PF('MatnrListDialog').show();" styleClass="f4button">
+				</p:commandButton>
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">#{msg['logistics.quantity']}</f:facet>
+				<h:inputText value="#{item.quantity}" onfocus="this.select();"
+					maxlength="10" styleClass="input1"
+					rendered="#{crudBean.mode != 'view' and item.matnrObject.type != 1}">
+				</h:inputText>
+				<h:outputText value="#{item.quantity}"
+					rendered="#{crudBean.mode == 'view' or item.matnrObject.type == 1}">
+				</h:outputText>
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">#{msg['logistics.ser_num']}</f:facet>
+				<p:commandButton
+					rendered="#{item.matnrObject.type == 1 and crudBean.mode != 'view'}"
+					icon="ui-icon-plus"
+					actionListener="#{crudBean.loadMlList(item)}"
+					update=":form:werksMlWidget"
+					oncomplete="PF('werksMlWidget').show();"></p:commandButton>
+				<br />
+				<ui:repeat var="b"
+					value="#{crudBean.getItemBarcodes(item.matnr)}"
+					varStatus="status">
+						#{b} <p:commandButton rendered="#{crudBean.mode != 'view'}" icon="ui-icon-trash"
+						actionListener="#{crudBean.removeBarcode(item.matnr,b)}"
+						update=":form:itemsListTable"></p:commandButton>
+					<br />
+				</ui:repeat>
+			</p:column>
+
+			<p:column style="width:60px;"
+				rendered="#{crudBean.mode != 'view'}">
+				<p:commandButton icon="ui-icon-close">
+					<p:ajax listener="#{crudBean.deleteMatnrsRow(item)}"
+						update="itemsListTable"></p:ajax>
+				</p:commandButton>
+			</p:column>
+		</p:dataTable>
+	</fieldset>
+
+	<p:dialog header="#{crudBean.barcodeItem.matnrObject.text45}"
+		widgetVar="barcodeWidget" id="barcodeWidget" minHeight="40"
+		width="300">
+		<p:dataTable value="#{crudBean.barcodeItem.barcodesList}" var="b"
+			rowIndexVar="rowIndex">
+			<p:column style="width:30px;">
+				<f:facet name="header">№</f:facet>
+				<h:outputText value="#{rowIndex+1}"></h:outputText>
+			</p:column>
+			<p:column>
+				<f:facet name="header">#{msg['logistics.ser_num']}</f:facet>
+				<h:outputText value="#{b}"></h:outputText>
+			</p:column>
+		</p:dataTable>
+		<br />
+	</p:dialog>
+
+	<p:dialog header="Материалы на складе" widgetVar="werksMlWidget"
+		id="werksMlWidget" minHeight="40" width="300">
+		<p:dataTable value="#{crudBean.mlList}" var="ml"
+			selectionMode="single" paginator="true" rowKey="#{ml.matnr_list_id}"
+			rows="50">
+			<p:ajax update=":form:itemsListTable" event="rowDblselect"
+				listener="#{crudBean.onSelectMl}" />
+			<p:column filterBy="#{ml.barcode}">
+				<f:facet name="header">#{msg['logistics.ser_num']}</f:facet>
+				<h:outputText value="#{ml.barcode}"></h:outputText>
+			</p:column>
+		</p:dataTable>
+		<br />
+	</p:dialog>
+</ui:composition>
+</html>

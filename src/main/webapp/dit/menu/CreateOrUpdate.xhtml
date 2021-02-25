@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="MenuCreateDlg" widgetVar="MenuCreateDialog" modal="true"
+		resizable="false" appendTo="@(body)" header="Create Menu"
+		width="500px">
+		<h:form id="MenuCreateForm">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2" style="width:100%;"
+					rendered="#{ditMenuListBean.selected != null}">
+
+					<p:outputLabel value="Название (рус)" />
+					<p:inputText value="#{ditMenuListBean.selected.name_ru}" />
+
+					<p:outputLabel value="Название (En)" />
+					<p:inputText value="#{ditMenuListBean.selected.name_en}" />
+
+					<p:outputLabel value="Название (Tr)" />
+					<p:inputText value="#{ditMenuListBean.selected.name_tr}" />
+
+					<p:outputLabel value="Род. меню"></p:outputLabel>
+					<p:selectOneMenu value="#{ditMenuListBean.selected.parent_id}">
+						<f:selectItem itemLabel="Выберите" itemValue="0" />
+						<f:selectItems value="#{ditMenuListBean.parents}" var="item"
+							itemLabel="#{item.name_ru}" itemValue="#{item.id}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Транзакция"></p:outputLabel>
+					<p:selectOneMenu value="#{ditMenuListBean.selected.transaction_id}">
+						<f:selectItem itemLabel="Выберите" itemValue="0" />
+						<f:selectItems value="#{ditMenuListBean.transactionList}" var="tr"
+							itemLabel="#{tr.name_ru}" itemValue="#{tr.transaction_id}" />
+					</p:selectOneMenu>
+
+				</p:panelGrid>
+				<p:commandButton actionListener="#{ditMenuListBean.Save()}"
+					value="Create" update="display,:MenuListForm:treeList,:messages" />
+				<p:commandButton value="Cancel"
+					onclick="PF('MenuCreateDialog').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

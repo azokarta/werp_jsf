@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['dmsc.pslist']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.dmscplist']}" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="План ежемесячных взносов" />
+				</ui:include>
+			</ui:insert>
+
+			<div>
+				<div id="content" class="container">
+
+					<f:view>
+
+						<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<h:form id="form">
+							<p:growl id="messages" sticky="false" showDetail="true" />
+
+							<div class="ui-grid-row">
+
+								<div style="float: left;">
+									<fieldset style="height: 82px; border: 1px solid #ddd;">
+										<legend>#{msg['dmsc.branch']}</legend>
+
+										<table>
+											<tr>
+												<td><h:outputLabel value="#{msg['dmsc.bukrs']}: " /></td>
+												<td><p:selectOneMenu styleClass="bukrs" id="bukrs"
+														value="#{dmscplistBean.search_contract.bukrs}">
+														<p:ajax listener="#{dmscplistBean.loadBranch2}" />
+														<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}"
+															itemValue="0" />
+														<f:selectItems value="#{dmscplistBean.bukrs_list}"
+															var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+															itemValue="#{wa_bukrs.bukrs}" />
+													</p:selectOneMenu></td>
+											</tr>
+
+											<tr>
+												<td><h:outputLabel value="#{msg['dmsc.branch']}: " /></td>
+												<td><p:selectOneMenu styleClass="branch" id="branch"
+														value="#{dmscplistBean.search_contract.branch_id}">
+														<p:ajax listener="#{dmscplistBean.loadStaff}" />
+														<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+															itemValue="0" />
+														<f:selectItems value="#{dmscplistBean.branch_list}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+													</p:selectOneMenu></td>
+											</tr>
+										</table>
+									</fieldset>
+								</div>
+								<div style="float: left;">
+									<fieldset style="height: 82px; border: 1px solid #ddd;">
+										<legend>#{msg['dmsc.staff']}</legend>
+
+										<table>
+											<tr>
+												<td><h:outputLabel value="#{msg['dmsc.collector']}: " /></td>
+												<td><p:selectOneMenu id="collector"
+														value="#{dmscplistBean.search_contract.collector}">
+														<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+														<f:selectItems value="#{dmscplistBean.l_collector}"
+															var="wa_collector" itemLabel="#{wa_collector.firstname}"
+															itemValue="#{wa_collector.staff_id}" />
+													</p:selectOneMenu></td>
+											</tr>
+											<tr>
+												<td><h:outputLabel value="#{msg['dmsc.month']}: " /></td>
+												<td><p:calendar id="start_date" styleClass="dateField"
+														value="#{dmscplistBean.search_contract.contract_date}"
+														navigator="true" pattern="MM.yyyy" mask="true"
+														converterMessage="Date is invalid." /></td>
+											</tr>
+										</table>
+									</fieldset>
+								</div>
+
+								<div style="float: left;">
+									<fieldset style="height: 82px; border: 1px solid #ddd;">
+										<legend>#{msg['dmsc.status']}</legend>
+
+										<table>
+											<tr>
+												<td><h:outputLabel value="#{msg['dmsc.status']}" /></td>
+												<td><p:selectOneMenu id="contract_status_id"
+														value="#{dmscplistBean.search_contract.contract_status_id}"
+														disabled="false">
+														<f:selectItems
+															value="#{contractStatusF4Bean.contractStatus_list}"
+															var="wa_contractStatus"
+															itemLabel="#{wa_contractStatus.name}"
+															itemValue="#{wa_contractStatus.contract_status_id}" />
+													</p:selectOneMenu></td>
+											</tr>
+										</table>
+									</fieldset>
+								</div>
+
+								<div style="float: left;">
+									<fieldset style="height: 82px; border: 1px solid #ddd;">
+										<legend> План </legend>
+										<table>
+											<tr>
+												<td><h:outputLabel value=" План " /></td>
+												<td><p:inputText id="summPlan" disabled="true"
+														value="#{dmscplistBean.summPlan}">
+														<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+													</p:inputText> <h:outputLabel id="planWaers"
+														value=" #{dmscplistBean.p_waers}" /></td>
+											</tr>
+											<tr>
+												<td><h:outputLabel value=" Количество " /></td>
+												<td><p:inputText id="qPlan" disabled="true"
+														value="#{dmscplistBean.outputTable.size()}" /></td>
+											</tr>
+										</table>
+									</fieldset>
+								</div>
+							</div>
+
+							<p:toolbar styleclass="mp_toolbar" style="margin-top: 5px;">
+								<f:facet name="left">
+									<p:commandButton type="push" value="#{msg['dmsc.search']}"
+										icon="ui-icon ui-icon-search"
+										actionListener="#{dmscplistBean.search}" update="messages">
+									</p:commandButton>
+								</f:facet>
+
+								<f:facet name="right">
+									<p:commandButton rendered="false" type="push"
+										value="#{msg['dmsc.print']} (PDF)"
+										icon="ui-icon ui-icon-print" update="messages"
+										actionListener="#{dmscplistBean.printPDF}" />
+
+									<p:commandButton rendered="false" value="Print" type="button"
+										icon="ui-icon-print" style="display:block;margin-bottom: 20px">
+										<p:printer target="outputTable" />
+									</p:commandButton>
+
+									<p:commandLink ajax="false" action="#{dmscplistBean.downloadExcelResult()}">
+													<p:graphicImage name="xlsx_export_icon.png" library="img"
+														width="32" />
+									</p:commandLink>
+												
+									<h:commandLink rendered="false">
+										<p:graphicImage name="/img/excel.png" width="24" />
+										<p:dataExporter type="xls" target="outputTable"
+											postProcessor="#{dmscplistBean.postProcessXLSDetail}" fileName="vznos" />
+									</h:commandLink>
+
+									<h:commandLink rendered="false">
+										<p:graphicImage name="/img/pdf.png" width="24" />
+										<p:dataExporter type="pdf" target="outputTable"
+											fileName="PaymentGraphic"
+											preProcessor="#{dmscplistBean.preProcessPDF}"
+											pageOnly="false" />
+									</h:commandLink>
+								</f:facet>
+							</p:toolbar>
+
+							<div id="tableContainer" class="ui-grid-row"
+								style="margin-top: 5px;">
+								<p:dataTable value="#{dmscplistBean.outputTable}" var="o"
+									lazy="false" rowKey="#{o.contract_id}"
+									emptyMessage="#{msg['dmsc.emptyRec']}" paginator="true"
+									rows="30" widgetVar="contracts" id="outputTable"
+									styleClass="outputTable-table"
+									headerClass="outputTable-table-header"
+									rowClasses="outputTable-table-odd-row, outputTable-table-even-row"
+									resizableColumns="true" liveResize="true">
+
+									<f:facet name="header">
+										<p:outputPanel>
+											<p:commandButton id="toggler" type="button"
+												value="#{msg['dmsc.columns']}" style="float:right"
+												icon="ui-icon-calculator" />
+											<p:columnToggler datasource="outputTable" trigger="toggler" />
+										</p:outputPanel>
+									</f:facet>
+									
+									<p:column style="text-align:center;width:80px;" rendered="true">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.contractNo']}" />
+										</f:facet>
+										<h:outputText value="#{o.branch.text45}" />
+										<br />
+										<h:outputText value="#{o.contract.contract_number}" />
+									</p:column>
+
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.customer']}" />
+										</f:facet>
+										<h:outputText
+											value="#{empty o.customer.firstname?o.customer.name:o.customer.firstname}" />
+										<br />
+										<h:outputText value="#{o.customer.middlename}" />
+										<br />
+										<h:outputText value="#{o.customer.lastname}" />
+									</p:column>
+									
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="День рожд." />
+										</f:facet>
+										<h:outputText value="#{o.bday}" />										
+									</p:column>									
+
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.dealer']}" />
+										</f:facet>
+										<h:outputText value="#{o.dealer.firstname}" />
+										<br />
+										<h:outputText value="#{o.dealer.middlename}" />
+										<br />
+										<h:outputText value="#{o.dealer.lastname}" />
+									</p:column>
+
+									<p:column style="text-align:center;width:60px;">
+										<f:facet name="header">
+											Дата
+										</f:facet>
+										<h:outputText value="#{o.data_vyd}" />
+									</p:column>
+
+									<p:column style="text-align:center;" width="50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.price']}" />
+										</f:facet>
+										<h:outputText value="#{o.contract.price}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+										<br />
+										<h:outputText value="#{o.currency}" />
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											Перв. <br />взнос
+										</f:facet>
+										<h:outputText value="#{o.psL[0].sum}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}1" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[1]}" />
+										<br />
+										<h:outputText value="#{o.psL[1].sum - o.psL[1].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}2" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[2]}" />
+										<br />
+										<h:outputText value="#{o.psL[2].sum - o.psL[2].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}3" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[3]}" />
+										<br />
+										<h:outputText value="#{o.psL[3].sum - o.psL[3].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}4" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[4]}" />
+										<br />
+										<h:outputText value="#{o.psL[4].sum - o.psL[4].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}5" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[5]}" />
+										<br />
+										<h:outputText value="#{o.psL[5].sum - o.psL[5].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}6" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[6]}" />
+										<br />
+										<h:outputText value="#{o.psL[6].sum - o.psL[6].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}7" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[7]}" />
+										<br />
+										<h:outputText value="#{o.psL[7].sum - o.psL[7].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}8" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[8]}" />
+										<br />
+										<h:outputText value="#{o.psL[8].sum - o.psL[8].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}9" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[9]}" />
+										<br />
+										<h:outputText value="#{o.psL[9].sum - o.psL[9].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}10" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[10]}" />
+										<br />
+										<h:outputText value="#{o.psL[10].sum - o.psL[10].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}11" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[11]}" />
+										<br />
+										<h:outputText value="#{o.psL[11].sum - o.psL[11].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}12" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[12]}" />
+										<br />
+										<h:outputText value="#{o.psL[12].sum - o.psL[12].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}13" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[13]}" />
+										<br />
+										<h:outputText value="#{o.psL[13].sum - o.psL[13].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}14" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[14]}" />
+										<br />
+										<h:outputText value="#{o.psL[14].sum - o.psL[14].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column
+										rendered="#{dmscplistBean.search_contract.bukrs eq '2000'}"
+										style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}15" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[15]}" />
+										<br />
+										<h:outputText value="#{o.psL[15].sum - o.psL[15].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+
+									<p:column
+										rendered="#{dmscplistBean.search_contract.bukrs eq '2000'}"
+										style="text-align:center;width:50px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}16" />
+										</f:facet>
+										<h:outputText value="#{o.pdate[16]}" />
+										<br />
+										<h:outputText value="#{o.psL[16].sum - o.psL[16].paid}">
+											<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+									
+									<p:column style="text-align:center;width:200px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.contact_info']}" />
+										</f:facet>
+										<h:outputText value="#{o.address}" />
+										<br />
+										<h:outputText value="#{o.tel}" />
+										<br />
+										<h:outputText value="#{o.rab}" />
+									</p:column>
+
+									<f:facet name="footer">
+									 #{msg['dmsc.foundTotal']}: #{dmscplistBean.outputTable.size()}
+								</f:facet>
+								</p:dataTable>
+							</div>
+
+						</h:form>
+
+					</f:view>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

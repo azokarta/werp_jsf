@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<div class="ui-grid-row" style="margin-bottom: 7px; margin-top: 10px;">
+		<div class="ui-grid-col-6" style="display: block; float: left;">
+			<p:dataTable value="#{hrDocViewBean.document.logs}" var="item"
+				id="amountListTable">
+				<f:facet name="header">
+					<p:outputLabel style="float:left;" value="#{msg['hr.actions_log']}"></p:outputLabel>
+					<div style="clear: both;"></div>
+				</f:facet>
+
+				<p:column>
+					<f:facet name="header">#{msg['fio']}</f:facet>
+					<p:outputLabel value="#{item.creator.getLF()}"
+						rendered="#{!empty item.creator}"></p:outputLabel>
+				</p:column>
+				
+				<p:column>
+					<f:facet name="header">#{msg['created_at']}</f:facet>
+					<p:outputLabel value="#{item.createdAt}">
+						<f:convertDateTime pattern="dd.MM.yyyy HH:mm"></f:convertDateTime>
+					</p:outputLabel>
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">#{msg['actions']}</f:facet>
+					<p:outputLabel value="#{item.getActionName()}"></p:outputLabel>
+				</p:column>
+
+				<p:column headerText="#{msg['hr.note']}">
+					<p:outputLabel value="#{item.note}"></p:outputLabel>
+				</p:column>
+			</p:dataTable>
+		</div>
+	</div>
+</ui:composition>
+</html>

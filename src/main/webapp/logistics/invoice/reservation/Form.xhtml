@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<style>
+table td.tdKey {
+	border: 0px red solid;
+	width: 150px;
+	padding: 3px;
+	font-style: italic;
+	font-size: 14px;
+}
+
+table td.tdVal {
+	padding: 3px;
+	font-style: normal;
+	font-size: 14px;
+}
+
+table td.tdKey span {
+	float: right;
+	font-weight: 500;
+	margin-right: 3px;
+}
+</style>
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+
+				<ui:repeat var="button" value="#{miniContractCrudBean.actionBean.buttonList}">
+					<p:commandButton type="push" value="#{button.label}"
+						actionListener="#{button.doAction()}" update=":messages,:form">
+					</p:commandButton>
+				</ui:repeat>
+
+				<p:commandButton rendered="#{miniContractCrudBean.mode != 'view'}" type="push"
+					value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check" actionListener="#{miniContractCrudBean.Save()}"
+					update=":messages">
+				</p:commandButton>
+			</f:facet>
+		</p:toolbar>
+		<br />
+
+		<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+			<div class="ui-grid-col-5"
+				style="display: block; float: left; border: 1px solid #ddd; background-color: #fff;">
+				<table class="accFormTable">
+					<tr>
+						<td class="tdKey"><span>Номер</span></td>
+						<td class="tdVal"><h:outputText
+								value="№#{miniContractCrudBean.invoice.getFormattedRegNumber()}"></h:outputText></td>
+					</tr>
+					<tr>
+						<td class="tdKey"><span>ТИП</span></td>
+						<td class="tdVal"><h:outputText
+								value="#{miniContractCrudBean.invoice.getTypeName()}"></h:outputText></td>
+					</tr>
+					<tr>
+						<td class="tdKey"><span>Компания</span></td>
+						<td class="tdVal"><p:selectOneMenu
+								value="#{miniContractCrudBean.invoice.bukrs}"
+								rendered="#{miniContractCrudBean.mode != 'view'}"
+								disabled="#{!userinfo.sys_admin and !userinfo.main}">
+								<p:ajax listener="#{miniContractCrudBean.onBukrsChanged}" update="branchId"></p:ajax>
+								<f:selectItem itemLabel="Не выбрано" itemValue=""></f:selectItem>
+								<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+									itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+							</p:selectOneMenu> <p:outputLabel rendered="#{miniContractCrudBean.mode == 'view'}"
+								value="#{bukrsF4Bean.getNameByBukrs(miniContractCrudBean.invoice.bukrs)}"></p:outputLabel>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Филиал</span></td>
+						<td class="tdVal"><p:selectOneMenu
+								rendered="#{miniContractCrudBean.mode != 'view'}"
+								value="#{miniContractCrudBean.invoice.branch_id}" id="branchId">
+								<p:ajax listener="#{miniContractCrudBean.onBranchChanged}" update=":SalaryListDlgForm"></p:ajax>
+								<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+								<f:selectItems
+									value="#{branchBean.getUserBranches(miniContractCrudBean.invoice.bukrs)}"
+									var="br" itemLabel="#{br.text45}" itemValue="#{br.branch_id}"></f:selectItems>
+							</p:selectOneMenu> <p:outputLabel rendered="#{miniContractCrudBean.mode == 'view'}"
+								value="#{branchF4Bean.getName(miniContractCrudBean.invoice.branch_id)}"></p:outputLabel>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Склад отправитель</span></td>
+						<td class="tdVal"><h:outputText
+								rendered="#{miniContractCrudBean.mode == 'view'}"
+								value="#{werksF4Bean.getName(miniContractCrudBean.invoice.from_werks)}"></h:outputText>
+
+							<p:selectOneMenu rendered="#{miniContractCrudBean.mode != 'view'}"
+								id="from_werks" value="#{miniContractCrudBean.invoice.from_werks}">
+								<p:ajax listener="#{miniContractCrudBean.onFromWerksChanged}"
+									update="itemsListTable"></p:ajax>
+								<f:selectItem itemValue="0" itemLabel="#{msg.select}"></f:selectItem>
+								<f:selectItems value="#{miniContractCrudBean.userWerks}" var="w"
+									itemLabel="#{w.text45}" itemValue="#{w.werks}"></f:selectItems>
+							</p:selectOneMenu></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Подотчетник</span></td>
+						<td class="tdVal"><p:panel id="responsibleStaffPanel">
+								<h:outputText rendered="#{!empty miniContractCrudBean.invoice.responsible}"
+									value="#{miniContractCrudBean.invoice.responsible.getLF()}"></h:outputText>
+
+								<p:commandButton rendered="#{miniContractCrudBean.mode != 'view'}"
+									icon="ui-icon-newwin" type="push" update=":messages"
+									oncomplete="PF('SalaryListDialog').show();"
+									styleClass="f4button" />
+							</p:panel></td>
+					</tr>
+					<tr>
+						<td class="tdKey"><span>Дата договора</span></td>
+						<td class="tdVal"><h:outputText
+								rendered="#{miniContractCrudBean.mode == 'view'}"
+								value="#{miniContractCrudBean.invoice.invoice_date}">
+								<f:convertDateTime pattern="dd.MM.YYYY"></f:convertDateTime>
+							</h:outputText> <p:calendar rendered="#{miniContractCrudBean.mode != 'view'}"
+								pattern="dd.MM.yyyy" autocomplete="off"
+								value="#{miniContractCrudBean.invoice.invoice_date}"
+								converterMessage="Wrong Date" navigator="true">
+							</p:calendar></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Сумма договора</span></td>
+						<td class="tdVal"><h:outputText
+								rendered="#{miniContractCrudBean.mode == 'view'}"
+								value="#{miniContractCrudBean.invoice.amount}">
+								<f:convertNumber minFractionDigits="2" />
+							</h:outputText> <p:inputText value="#{miniContractCrudBean.invoice.amount}"
+								rendered="#{miniContractCrudBean.mode != 'view'}"></p:inputText></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Департамент</span></td>
+						<td class="tdVal"><h:outputText
+								rendered="#{miniContractCrudBean.mode == 'view'}"
+								value="#{departmentF4Bean.getName(miniContractCrudBean.invoice.department_id,userinfo.u_language)}"></h:outputText>
+							<p:selectOneMenu rendered="#{miniContractCrudBean.mode != 'view'}"
+								value="#{miniContractCrudBean.invoice.department_id}">
+								<f:selectItem itemValue="0" itemLabel="#{msg.select}"></f:selectItem>
+								<f:selectItems value="#{departmentF4Bean.l_dep}" var="dep"
+									itemValue="#{dep.dep_id}"
+									itemLabel="#{dep.getName(userinfo.u_language)}"></f:selectItems>
+							</p:selectOneMenu></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Примечание</span></td>
+						<td class="tdVal"><p:inputTextarea
+								value="#{miniContractCrudBean.invoice.note}"
+								rendered="#{miniContractCrudBean.mode != 'view'}"></p:inputTextarea> <p:panel
+								rendered="#{miniContractCrudBean.mode == 'view'}">
+									#{miniContractCrudBean.invoice.note}
+								</p:panel></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Автор</span></td>
+						<td class="tdVal"><h:outputText
+								rendered="#{miniContractCrudBean.mode == 'create' and !empty miniContractCrudBean.userData.staff.staff_id}"
+								value="#{miniContractCrudBean.userData.staff.getLF()}"></h:outputText> <h:outputText
+								rendered="#{miniContractCrudBean.mode != 'create'}"
+								value="#{miniContractCrudBean.invoice.creator.getLF()}"></h:outputText></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><psan>Дата/Время</psan></td>
+						<td class="tdVal"><h:outputText
+								value="#{miniContractCrudBean.invoice.created_at}">
+								<f:convertDateTime pattern="dd.MM.YYYY kk:mm"></f:convertDateTime>
+							</h:outputText></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>СТАТУС</span></td>
+						<td class="tdVal"><h:outputText
+								value="#{miniContractCrudBean.invoice.getStatusName()}">
+							</h:outputText></td>
+					</tr>
+
+					<tr>
+						<td></td>
+						<td></td>
+					</tr>
+
+				</table>
+			</div>
+
+
+			<div class="ui-grid-col-7" style="display: block; float: left;">
+				<ui:include src="matnrList.xhtml">
+					<ui:param name="invoiceBean" value="#{miniContractCrudBean}" />
+				</ui:include>
+			</div>
+
+		</div>
+	</h:form>
+
+</ui:composition>
+</html>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<style>
+.field-row {
+	margin-top: 10px;
+}
+
+.field-label {
+	border: solid 0px red;
+	font-size: 14px;
+	font-weight: 600;
+	font-style: italic;
+}
+
+.field-label label {
+	float: right;
+	margin-right: 5px;
+}
+
+.field-value {
+	border: solid 0px red;
+}
+
+.field-value input, textarea, .ui-selectonemenu {
+	width: 80%;
+}
+
+.field-value .ui-selectonemenu {
+	
+}
+</style>
+	<p:dialog header="#{crmRecoCrudBean.dialogHeader}"
+		widgetVar="CreateUpdateDialog" id="CreateUpdateDialog" minHeight="100"
+		width="700" style="padding:10px;" appendTo="@(body)" modal="true"
+		resizable="false">
+		<h:form id="CreateUpdateDialogForm"
+			rendered="#{!empty crmRecoCrudBean.selected}">
+			<p:toolbar styleclass="mp_toolbar">
+				<f:facet name="left">
+					<p:commandButton type="push" value="#{msg['dmsc.save']}"
+						icon="ui-icon ui-icon-check"
+						actionListener="#{crmRecoCrudBean.save()}" update=":messages">
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+			<br />
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Компания" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmRecoCrudBean.selected.bukrs}"
+							disabled="#{crmRecoCrudBean.disabledBukrs}">
+							<p:ajax update="form_branch_id" />
+							<f:selectItem itemLabel="Не выбрано" itemValue="" />
+							<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+								itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Филиал" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmRecoCrudBean.selected.branchId}"
+							disabled="#{crmRecoCrudBean.disabledBranch}" id="form_branch_id">
+							<p:ajax event="change"
+								listener="#{crmRecoCrudBean.onBranchChange}"
+								update="form_manager_id" />
+							<f:selectItem itemLabel="Не выбрано" itemValue="" />
+							<f:selectItems
+								value="#{branchBean.getUserBranches(crmRecoCrudBean.selected.bukrs)}"
+								var="b" itemLabel="#{b.text45}" itemValue="#{b.branch_id}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Менеджер" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmRecoCrudBean.selectedManagerId}"
+							disabled="#{crmRecoCrudBean.disabledManager}"
+							id="form_manager_id">
+							<p:ajax event="change"
+								listener="#{crmRecoCrudBean.onManagerChange}"
+								update="form_responsible_id" />
+							<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+							<f:selectItems value="#{crmRecoCrudBean.managers}" var="m"
+								itemLabel="#{m.p_staff.getLF()}" itemValue="#{m.staff_id}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Отв. сотрудник" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmRecoCrudBean.selected.responsibleId}"
+							id="form_responsible_id">
+							<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+							<f:selectItems value="#{crmRecoCrudBean.dealers}" var="d"
+								itemLabel="#{d.p_staff.getLF()}" itemValue="#{d.staff_id}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Рекомендатель" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmRecoCrudBean.selected.parentRecoName}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="ФИО мужа" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmRecoCrudBean.selected.husbandName}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="ФИО жены" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmRecoCrudBean.selected.wifeName}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Моб. тел" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmRecoCrudBean.selected.mobPhone}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Дом. тел" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmRecoCrudBean.selected.homePhone}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Раб. тел" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmRecoCrudBean.selected.workPhone}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Профессия" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmRecoCrudBean.selected.profession}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Родственное отношение" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmRecoCrudBean.selected.relativeId}">
+							<f:selectItem itemLabel="Не выбрано" />
+							<f:selectItems value="#{crmRecoCrudBean.relatives}" var="r"
+								itemLabel="#{r.name}" itemValue="#{r.id}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Ребенок" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneRadio value="#{crmRecoCrudBean.selected.hasChild}">
+							<f:selectItem itemLabel="Есть" itemValue="1" />
+							<f:selectItem itemLabel="Нет" itemValue="0" />
+						</p:selectOneRadio>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Адрес" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputTextarea value="#{crmRecoCrudBean.selected.address}" />
+					</div>
+				</div>
+
+
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Дата время звонка" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:calendar value="#{crmRecoCrudBean.selected.callDate}"
+							pattern="dd.MM.yyyy HH:mm" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Звонит будет" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu
+							value="#{crmRecoCrudBean.selected.callerIsDealer}">
+							<f:selectItem itemLabel="Демо секретарь" itemValue="0" />
+							<f:selectItem itemLabel="Дилер" itemValue="1" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Примечание" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputTextarea value="#{crmRecoCrudBean.selected.note}" />
+					</div>
+				</div>
+
+			</div>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

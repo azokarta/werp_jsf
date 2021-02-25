@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("form:sc_fiz_yur_input").value == 1) {
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+
+				document.getElementById("form:sc_name").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+			} else if (document.getElementById("form:sc_fiz_yur_input").value == 2) {
+				document.getElementById("form:sc_birthday_input").disabled = false;
+				document.getElementById("form:sc_passport_id").disabled = false;
+				document.getElementById("form:sc_firstname").disabled = false;
+				document.getElementById("form:sc_lastname").disabled = false;
+				document.getElementById("form:sc_middlename").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			} else {
+				document.getElementById("form:sc_iin_bin").value = null;
+				document.getElementById("form:sc_iin_bin").disabled = true;
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			}
+
+		}
+	</script>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<ui:include src="/template/sessionTimeOut.xhtml" />
+	<h:outputStylesheet library="css" name="reports/finance/kreditor/rfklist.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.frep7']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,frep7Bean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+							
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:tabView id = "tabView" cache="false" activeIndex="#{frep7Bean.tabindex}" >
+									<p:ajax event="tabChange"  update="bsegScrollPanel bsegScrollPanel2"/>
+							        <p:tab title="#{msg.search_options}">
+							        	<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" id="searchPanelGridId">
+							        		 <p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column colspan="3">
+							        		<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{frep7Bean.p_searchTable.bukrs}">
+							        			<p:ajax listener="#{frep7Bean.updateBranch}"/>
+							        			<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu>
+											</p:column>
+							        		</p:row>
+										    <p:row>
+        										<p:column><h:outputLabel value = "#{msg.branch}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectCheckboxMenu id="p_branch_id" value="#{frep7Bean.p_searchTable.selectedBranches}" label="#{msg.select}"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">            
+												            <f:selectItems value="#{frep7Bean.p_searchTable.l_branch}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+												        </p:selectCheckboxMenu>
+														
+														
+														
+												</p:column>
+											</p:row>
+											<!-- <p:row>
+        										<p:column><h:outputLabel value = "Дата договра с "/></p:column>
+												<p:column>
+														
+														<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{frep7Bean.p_searchTable.con_date_from}" />	
+														
+												</p:column>
+												<p:column><h:outputLabel value = " по "/></p:column>
+												<p:column>
+														
+														<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{frep7Bean.p_searchTable.con_date_to}" />	
+														
+												</p:column>			
+											</p:row> -->
+ 
+											<p:row>
+        										<p:column colspan="4" style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{frep7Bean.to_search}"/></p:column>
+        									</p:row>
+    									</p:panelGrid>
+							        
+							            
+							        </p:tab>
+							        <p:tab title="#{msg.result}" >
+							        
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel">
+										<p:toolbar styleclass="mp_toolbar">
+											<f:facet name="left">
+												<p:commandLink ajax="false" action="#{frep7Bean.downloadExcelResult()}">
+													<p:graphicImage name="xlsx_export_icon.png" library="img"
+														width="32" />
+												</p:commandLink>
+											</f:facet>
+										</p:toolbar>
+										
+										<p:dataTable value="#{frep7Bean.l_outputTable}" var="o" widgetVar="505"  id="l_outputTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											 
+											<p:columnGroup type="header">									
+										            <p:row>
+										                <p:column headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column headerText="#{msg.balance}" />
+										                <p:column headerText="#{msg.salary_deposited}" />
+										                <p:column headerText="#{msg.salary_loan}" />
+										                <p:column headerText="#{msg.salary_blocked}" />
+										                <p:column headerText="#{msg.salary_advance_request}" />
+										                <p:column headerText="#{msg.balance} USD" />
+										                <p:column headerText="#{msg.salary_deposited} USD" />
+										                <p:column headerText="#{msg.salary_loan} USD" />
+										                <p:column headerText="#{msg.salary_blocked} USD" />
+										                <p:column headerText="#{msg.salary_advance_request} USD" />										                
+										            </p:row>
+										        </p:columnGroup>
+
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.branchName}" style="#{o.branchName==null ? 'font-weight:bold;color:#07E' : ''}"/>
+												
+												<p:commandButton type="push" value = " #{msg.detail}" actionListener="#{frep7Bean.getDetail(o.branchName,o.waers)}" 
+												rendered = "#{o.branchName==null ? 'false' : 'true'}"
+												style="float:right"/>
+											</p:column>
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.waers}" style="#{o.branchName==null ? 'font-weight:bold;color:#07E' : ''}"/>
+											</p:column>
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.balance}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.deposit}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.dolg}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.zablok}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.avans_zapros}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.balance_usd}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.deposit_usd}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.dolg_usd}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.zablok_usd}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.avans_zapros_usd}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>
+											
+											
+										</p:dataTable>
+										
+									</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							        <p:tab title="#{msg.detail}">
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel2"
+										>
+							        	<p:toolbar styleclass="mp_toolbar">
+											<f:facet name="left">
+												<p:commandLink ajax="false" action="#{frep7Bean.downloadExcelDetail()}">
+													<p:graphicImage name="xlsx_export_icon.png" library="img"
+														width="32" />
+												</p:commandLink>
+											</f:facet>
+										</p:toolbar>
+							        <p:dataTable value="#{frep7Bean.l_detailTable}" var="o" widgetVar="506"  id="l_detailTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"  rows="100"  
+                         					paginator="true"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											 
+											<p:columnGroup type="header">									
+										            <p:row>
+										                <p:column headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column headerText="#{msg.balance}" />
+										                <p:column headerText="#{msg.salary_deposited}" />
+										                <p:column headerText="#{msg.salary_loan}" />
+										                <p:column headerText="#{msg.salary_blocked}" />
+										                <p:column headerText="#{msg.salary_advance_request}" />
+										                <p:column headerText="#{msg.balance} USD" />
+										                <p:column headerText="#{msg.salary_deposited} USD" />
+										                <p:column headerText="#{msg.salary_loan} USD" />
+										                <p:column headerText="#{msg.salary_blocked} USD" />
+										                <p:column headerText="#{msg.salary_advance_request} USD" />
+										                									                
+										            </p:row>
+										        </p:columnGroup>
+
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.fio}" style="#{o.branchName==null ? 'font-weight:bold;color:#07E' : ''}"/>
+												<p:button target="_blank" outcome="/hr/staff/View.xhtml?staffId=#{o.staff_id}"
+												icon="ui-icon-zoomin" rendered = "#{o.staff_id==null ? 'false' : 'true'}"
+												title="View" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+																								
+											</p:column>
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.waers}" style="#{o.branchName==null ? 'font-weight:bold;color:#07E' : ''}"/>
+											</p:column>
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.balance}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.deposit}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.dolg}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.zablok}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.avans_zapros}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.balance_usd}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.deposit_usd}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.dolg_usd}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.zablok_usd}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.avans_zapros_usd}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>
+											
+										</p:dataTable>
+										
+										
+										</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							    </p:tabView>
+
+
+
+
+
+
+
+
+ 
+							
+
+
+
+								
+								
+							</h:form>
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

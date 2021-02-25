@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+	<f:viewParam name="belnr" value="#{rfdoclogBean.p_searchTable.belnr}" />
+	<f:viewParam name="gjahr" value="#{rfdoclogBean.p_searchTable.gjahr}" />
+	<f:viewParam name="bukrs" value="#{rfdoclogBean.p_searchTable.bukrs}" />
+	<f:event type="preRenderView" listener="#{rfdoclogBean.init}" />
+</f:metadata>	
+<h:head>
+	<title>ERP Systems</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("form:sc_fiz_yur_input").value == 1) {
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+
+				document.getElementById("form:sc_name").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+			} else if (document.getElementById("form:sc_fiz_yur_input").value == 2) {
+				document.getElementById("form:sc_birthday_input").disabled = false;
+				document.getElementById("form:sc_passport_id").disabled = false;
+				document.getElementById("form:sc_firstname").disabled = false;
+				document.getElementById("form:sc_lastname").disabled = false;
+				document.getElementById("form:sc_middlename").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			} else {
+				document.getElementById("form:sc_iin_bin").value = null;
+				document.getElementById("form:sc_iin_bin").disabled = true;
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			}
+
+		}
+	</script>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	
+	<h:outputStylesheet library="css" name="reports/finance/kreditor/rfklist.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.rfdlist']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+							
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:tabView id = "tabView" dynamic="true" cache="true" activeIndex="#{rfdoclogBean.tabindex}" >
+							        <p:tab title="#{msg.search_options}">
+							        	<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" >
+							        		<p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column colspan="3">
+							        			<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{rfdoclogBean.p_searchTable.bukrs}">
+							        			<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu>
+											</p:column>
+							        		</p:row>
+							        		
+							        		<p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg['bkpf.belnr.long']}"/>: </p:column>
+							        		 <p:column>
+							        			<h:inputText id="belnr" value="#{rfdoclogBean.p_searchTable.belnr}" styleClass="input1" />
+											</p:column>
+							        		</p:row>
+							        		
+							        		<p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg['bkpf.gjahr.long']}"/>: </p:column>
+							        		 <p:column>
+							        			<h:inputText id="gjahr" value="#{rfdoclogBean.p_searchTable.gjahr}" styleClass="input1" />
+											</p:column>
+							        		</p:row>
+							        		
+							        		
+ 
+											<p:row>
+        										<p:column colspan="4" style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{rfdoclogBean.to_search}"/></p:column>
+        									</p:row>
+    									</p:panelGrid>
+							        
+							            
+							        </p:tab>
+							        <p:tab title="#{msg.result}">
+							            <div class="wrapRTClass">
+							            <p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" >
+							            
+							            	<p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column>
+							        			<p:selectOneMenu styleClass="bukrs"	value="#{rfdoclogBean.p_searchTable.bukrs}" disabled="true">
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu>
+											</p:column>
+											<p:column ><h:outputLabel  value="Договор №"/>: </p:column>
+							        		 <p:column>
+							        			<h:inputText value="#{rfdoclogBean.p_searchTable.contract.contract_number}" styleClass="input1" disabled="true"/>
+							        			<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{rfdoclogBean.p_searchTable.contract.contract_number}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton1" 
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+											</p:column>
+							        		</p:row>
+							        		<p:row>							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg['bkpf.belnr.long']}"/>: </p:column>
+							        		 <p:column>
+							        			<h:inputText value="#{rfdoclogBean.p_searchTable.belnr}" styleClass="input1" disabled="true"/>
+							        				
+							        			
+							        			<h:link outcome="/accounting/reports/fa03" target="_blank"
+												styleClass="urlLinks">
+												<f:param name="belnr" value="#{rfdoclogBean.p_searchTable.belnr}" />
+												<f:param name="gjahr" value="#{rfdoclogBean.p_searchTable.gjahr}" />
+												<f:param name="bukrs" value="#{rfdoclogBean.p_searchTable.bukrs}" />
+												<h:graphicImage value="/img/link.png"
+													style="float:right; width:15px; height:15px;" />
+												</h:link>
+											</p:column>
+											<p:column ><h:outputLabel  value="Dealer"/>: </p:column>
+							        		 <p:column>
+							        			<h:inputText value="#{rfdoclogBean.p_searchTable.dealerName}" styleClass="input1" disabled="true"/>
+											</p:column>
+							        		</p:row>
+							        		
+							        		<p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg['bkpf.gjahr.long']}"/>: </p:column>
+							        		 <p:column>
+							        			<h:inputText  value="#{rfdoclogBean.p_searchTable.gjahr}" styleClass="input1" disabled="true"/>
+											</p:column>
+											<p:column ><h:outputLabel  value="Barcode"/>: </p:column>
+							        		 <p:column>
+							        			<h:inputText value="#{rfdoclogBean.p_searchTable.contract.tovar_serial}" styleClass="input1" disabled="true"/>
+											</p:column>
+							        		</p:row>
+							        		
+							        		<p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.customer}"/>: </p:column>
+							        		 <p:column>
+							        			<h:inputText  value="#{rfdoclogBean.p_searchTable.clientName}" styleClass="input1" disabled="true"/>
+							        			<p:button target="_blank" outcome="/hr/customer/hrc03.xhtml?customerId=#{rfdoclogBean.p_searchTable.customer.id}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton2" 
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+												
+											</p:column>
+							        		</p:row>
+							        		<p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="Списание"/> </p:column>
+							        		 <p:column >
+							        		 <p:graphicImage name="/img/red_circle.png" rendered="#{rfdoclogBean.p_searchTable.can_write_off==0}"/>
+							        		 <p:graphicImage name="/img/green_circle.png" rendered="#{rfdoclogBean.p_searchTable.can_write_off==1}"/>
+							        		  </p:column>
+							        		 <p:column>
+							        			
+											</p:column>
+							        		</p:row>
+							        		
+							        		
+    									</p:panelGrid>
+							            
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel"
+										>
+										<p:dataTable value="#{rfdoclogBean.l_outputTable}" var="o" paginator="true" rows="30" widgetVar="50"  id="bsegTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											
+											<p:column sortBy="#{o.matnr.text45}">
+												<f:facet name="header"><h:outputLabel  value="#{msg['bseg.matnr.long']}"/></f:facet>
+												<h:outputText value="#{o.matnr.text45}" >
+												</h:outputText>
+											</p:column>
+											<p:column sortBy="#{o.menge_sale}">
+												<f:facet name="header"><h:outputLabel  value="Продано"/></f:facet>
+												<h:outputText value="#{o.menge_sale}" ><f:convertNumber pattern="#,###,##0" />
+												</h:outputText>
+											</p:column>
+											
+											<p:column sortBy="#{o.menge_wof}">
+												<f:facet name="header"><h:outputLabel  value="Списано"/></f:facet>
+												<h:outputText value="#{o.menge_wof}" ><f:convertNumber pattern="#,###,##0" />
+												</h:outputText>
+											</p:column>
+											
+											<p:column sortBy="#{o.menge_rg}">
+												<f:facet name="header"><h:outputLabel  value="Возвращено"/></f:facet>
+												<h:outputText value="#{o.menge_rg}" ><f:convertNumber pattern="#,###,##0" />
+												</h:outputText>
+											</p:column>
+
+											
+											
+
+
+											
+											
+										</p:dataTable>
+
+									</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							    </p:tabView>
+
+
+
+
+
+
+
+
+ 
+								
+
+
+
+							</h:form>
+
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

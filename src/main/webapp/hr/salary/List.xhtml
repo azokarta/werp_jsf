@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:metadata>
+	<f:event type="preRenderView"
+		listener="#{hrSalaryBean.setMode('list')}" />
+</f:metadata>
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['hr.company_salaries']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['hr.company_salaries']}" />
+				</ui:include>
+			</ui:insert>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel id="horizontal" header="#{msg.advanced_search}"
+							toggleable="true" toggleOrientation="vertical" collapsed="false">
+							<h:panelGrid columns="4" cellpadding="10">
+								<p:selectOneMenu
+									rendered="#{userinfo.sys_admin or userinfo.main}"
+									value="#{hrSalaryBean.searchModel.bukrs}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="#{msg.company}" itemValue="" />
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+								
+								<h:outputText
+									rendered="#{!userinfo.sys_admin and !userinfo.main}"
+									value="#{bukrsF4Bean.getNameByBukrs(userinfo.bukrs)}">
+									
+								</h:outputText>
+
+								
+								<p:selectOneMenu id="branch_id"
+									rendered="#{userinfo.sys_admin or userinfo.main}"
+									value="#{hrSalaryBean.searchModel.branch_id}">
+									<f:selectItem itemLabel="#{msg.branch}" itemValue="" />
+									<f:selectItems
+										value="#{branchF4Bean.getAllBranchByBukrs(hrSalaryBean.searchModel.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectOneMenu>
+								
+								<p:selectOneMenu
+									rendered="#{!userinfo.sys_admin and !userinfo.main}"
+									value="#{hrSalaryBean.searchModel.branch_id}">
+									<f:selectItem itemLabel="#{msg.branch}" itemValue="" />
+									<f:selectItems
+										value="#{hrSalaryBean.userBranches}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectOneMenu>
+
+								<p:inputText id="search-lastname" value="#{hrSalaryBean.searchModel.lastname}">
+									<p:watermark for="search-lastname" value="#{msg['hr.staff.lastname']}" />
+								</p:inputText>
+
+								<p:inputText id="search-firstname" value="#{hrSalaryBean.searchModel.firstname}">
+									<p:watermark for="search-firstname" value="#{msg['hr.staff.firstname']}" />
+								</p:inputText>
+
+
+								<p:selectOneMenu value="#{hrSalaryBean.searchModel.position_id}">
+									<f:selectItem itemLabel="#{msg['dmsc.duty']}" itemValue="" />
+									<f:selectItems value="#{positionF4Bean.position_list}"
+										var="pos" itemLabel="#{positionF4Bean.getName(pos.position_id,userinfo.u_language)}"
+										itemValue="#{pos.position_id}" />
+								</p:selectOneMenu>
+								
+								<p:selectOneMenu value="#{hrSalaryBean.searchModel.department_id}">
+									<f:selectItem itemLabel="#{msg['department']}" itemValue="" />
+									<f:selectItems value="#{departmentF4Bean.l_dep}"
+										var="d" itemLabel="#{departmentF4Bean.getName(d.dep_id,userinfo.u_language)}"
+										itemValue="#{d.dep_id}" />
+								</p:selectOneMenu>
+								
+								<p:calendar size="10"
+											navigator="true"
+											id="search-from-date" 
+											pattern="dd.MM.yyyy" 
+											autocomplete="off"
+											value="#{hrSalaryBean.searchModel.begDateFrom}"
+											converterMessage="Date is invalid.">
+											<p:watermark for="search-from-date" value="#{msg['date_from']}"></p:watermark>
+								</p:calendar>
+								
+								<p:calendar size="10"
+											navigator="true"
+											id="search-to-date" 
+											pattern="dd.MM.yyyy" 
+											autocomplete="off"
+											value="#{hrSalaryBean.searchModel.begDateTo}"
+											converterMessage="Date is invalid.">
+											<p:watermark for="search-to-date" value="#{msg['date_to']}"></p:watermark>
+								</p:calendar>
+
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" update=":SalaryListForm:datalist"
+									actionListener="#{hrSalaryBean.loadItems()}"></p:commandButton>
+									
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<h:form id="SalaryListForm">
+					<p:dataTable id="datalist" value="#{hrSalaryBean.items}" var="item"
+						selectionMode="single" selection="#{hrSalaryBean.selected}"
+						paginator="true" paginatorPosition="bottom"
+						rowKey="#{item.salary_id}" rows="50" lazy="false">
+
+						<p:ajax event="rowSelect" update="viewButton" />
+						<p:ajax event="rowUnselect" update="viewButton" />
+
+						<f:facet name="header" id="tableHeader">
+							<h:commandLink id="xlsxExport" rendered="#{hrSalaryBean.canView()}"
+								style="float:right;margin-right:5px;">
+								<p:graphicImage name="xlsx_export_icon.png" library="img"
+									width="32" />
+								<p:dataExporter type="xls" target="datalist"
+									fileName="staffList" postProcessor="#{hrsListBean.exportXLS}" />
+							</h:commandLink>
+
+							<span class="ui-separator" style="float: right;"> 
+							   <span style="float: right;" class="ui-icon ui-icon-grip-dotted-vertical" />
+							</span>
+
+							<p:button target="_blank" outcome="/hr/staff/View.xhtml"
+								icon="ui-icon-zoomin" rendered="#{hrSalaryBean.canAll()}"
+								disabled="#{empty hrSalaryBean.selected.staff_id}" title="View"
+								id="viewButton" style="float:right;margin-right:5px;">
+								<f:param name="staffId"
+									value="#{hrSalaryBean.selected.staff_id}" />
+							</p:button>
+
+							<span class="ui-separator" style="float: right;"> <span
+								style="float: right;"
+								class="ui-icon ui-icon-grip-dotted-vertical" />
+							</span>
+							<span
+								style="display: block; float: left; color: blue; font-weight: bold;">ВСЕГО:
+								#{fn:length(hrSalaryBean.items)}</span>
+							<div style="clear: both;"></div>
+						</f:facet>
+
+						<p:column style="width:70px;text-align:center;"
+							sortBy="#{item.staff_id}">
+							<f:facet name="header">
+								<h:outputText value="STAFF ID" />
+							</f:facet>
+							<h:outputText value="#{item.staff_id}" />
+						</p:column>
+
+						<p:column sortBy="#{item.p_staff.lastname}">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.staff.lastname']}" />
+							</f:facet>
+							<h:outputText value="#{item.p_staff.lastname}" />
+						</p:column>
+
+						<p:column sortBy="#{item.p_staff.firstname}">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.staff.firstname']}" />
+							</f:facet>
+							<h:outputText value="#{item.p_staff.firstname}" />
+						</p:column>
+
+						<p:column sortBy="#{item.p_staff.middlename}">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.staff.middlename']}" />
+							</f:facet>
+							<h:outputText value="#{item.p_staff.middlename}" />
+						</p:column>
+
+						<p:column sortBy="#{item.position_id}">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.staff.position_id']}" />
+							</f:facet>
+							<h:outputText value="#{positionF4Bean.getName(item.position_id,userinfo.u_language)}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['branch']}" />
+							</f:facet>
+							<h:outputText value="#{branchF4Bean.getBranchNameByID(item.branch_id)}" />
+						</p:column>
+					</p:dataTable>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<style>
+		table{border-collapse:collapse;}
+		.accountability-row td{
+			background-color: #D7462C;
+			color:#fff;
+		}
+	</style>
+	<f:event listener="#{hrsWerksBean.initBean(selectedStaff)}"
+		type="preRenderView"></f:event>
+	<p:dataTable emptyMessage="#{msg.no_records}" id="werksMatnrList"
+		var="item" rowKey="#{item.matnr_list_id}"
+		value="#{hrsWerksBean.items}" rendered="#{hrsWerksBean.canRead}"
+		rowStyleClass="#{item.status == 'ACCOUNTABILITY' ?'accountability-row':''}">
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Склад" />
+			</f:facet>
+			<h:outputText value="#{werksF4Bean.getName(item.werks)}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Материал" />
+			</f:facet>
+			<h:outputText value="#{item.matnrObject.text45}" />
+		</p:column>
+		
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Код" />
+			</f:facet>
+			<h:outputText value="#{item.matnrObject.code}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Зав. номер" />
+			</f:facet>
+			<h:outputText value="#{item.barcode}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Количество" />
+			</f:facet>
+			<h:outputText value="#{item.menge}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Статус" />
+			</f:facet>
+			<h:outputText value="#{item.getStatusName()}" />
+		</p:column>
+
+	</p:dataTable>
+</ui:composition>
+</html>

@@ -1,0 +1,707 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta name="viewport" content="user-scalable=0"/>
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("form:sc_fiz_yur_input").value == 1) {
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+
+				document.getElementById("form:sc_name").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+			} else if (document.getElementById("form:sc_fiz_yur_input").value == 2) {
+				document.getElementById("form:sc_birthday_input").disabled = false;
+				document.getElementById("form:sc_passport_id").disabled = false;
+				document.getElementById("form:sc_firstname").disabled = false;
+				document.getElementById("form:sc_lastname").disabled = false;
+				document.getElementById("form:sc_middlename").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			} else {
+				document.getElementById("form:sc_iin_bin").value = null;
+				document.getElementById("form:sc_iin_bin").disabled = true;
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			}
+
+		}
+	</script>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<ui:include src="/template/sessionTimeOut.xhtml" />
+	<h:outputStylesheet library="css" name="reports/finance/kreditor/rfklist.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.frcol']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,frcolBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+							
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:tabView id = "tabView" cache="false" activeIndex="#{frcolBean.tabindex}" >
+									<p:ajax event="tabChange"  update="bsegScrollPanel bsegScrollPanel2"/>
+							        <p:tab title="#{msg.search_options}">
+							        	<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" id="searchPanelGridId">
+							        		 <p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column colspan="3">
+							        		<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{frcolBean.p_searchTable.bukrs}">
+							        			<p:ajax listener="#{frcolBean.updateBranch}"/>
+							        			<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu>
+											</p:column>
+							        		</p:row>
+										    <p:row>
+        										<p:column><h:outputLabel value = "#{msg.branch}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectCheckboxMenu id="p_branch_id" value="#{frcolBean.p_searchTable.selectedBranches}" label="Выберите"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												            <f:selectItems value="#{frcolBean.p_searchTable.l_branch}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+												        </p:selectCheckboxMenu>
+														
+														
+														
+												</p:column>
+											</p:row>
+											<p:row>
+        										<p:column><h:outputLabel value = "Год:"/></p:column>
+												<p:column colspan="3">
+													<p:selectOneMenu id="p_year"
+														value="#{frcolBean.p_searchTable.p_year}">
+														<f:selectItem itemLabel="2016" itemValue="2016" />
+														<f:selectItem itemLabel="2017" itemValue="2017" />
+														<f:selectItem itemLabel="2018" itemValue="2018" />
+														<f:selectItem itemLabel="2019" itemValue="2019" />
+													</p:selectOneMenu>
+														
+														
+														
+												</p:column>
+															
+											</p:row>
+											<p:row>
+        										<p:column><h:outputLabel value = "Месяц:"/></p:column>
+												<p:column colspan="3">
+													<p:selectOneMenu id="p_month"
+														value="#{frcolBean.p_searchTable.p_month}">
+														<f:selectItem itemLabel="1" itemValue="1" />
+														<f:selectItem itemLabel="2" itemValue="2" />
+														<f:selectItem itemLabel="3" itemValue="3" />
+														<f:selectItem itemLabel="4" itemValue="4" />
+														<f:selectItem itemLabel="5" itemValue="5" />
+														<f:selectItem itemLabel="6" itemValue="6" />
+														<f:selectItem itemLabel="7" itemValue="7" />
+														<f:selectItem itemLabel="8" itemValue="8" />
+														<f:selectItem itemLabel="9" itemValue="9" />
+														<f:selectItem itemLabel="10" itemValue="10" />
+														<f:selectItem itemLabel="11" itemValue="11" />
+														<f:selectItem itemLabel="12" itemValue="12" />
+													</p:selectOneMenu>
+														
+														
+														
+												</p:column>
+															
+											</p:row>
+											<p:row>
+        										<p:column><h:outputLabel value = "Статус:"/></p:column>
+												<p:column colspan="3">
+													<p:selectOneMenu id="p_status"
+														value="#{frcolBean.p_searchTable.p_status}">
+														<f:selectItem itemLabel="Стандарт" itemValue="0" />
+														<f:selectItem itemLabel="Проблемный" itemValue="1" />
+													</p:selectOneMenu>
+														
+														
+														
+												</p:column>
+															
+											</p:row>
+ 
+											<p:row>
+        										<p:column colspan="4" style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{frcolBean.to_search}"/></p:column>
+        									</p:row>
+    									</p:panelGrid>
+							        
+							            
+							        </p:tab>
+							        <p:tab title="#{msg.result}" >
+							        
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel">
+										
+										<p:toolbar styleclass="mp_toolbar">
+											<f:facet name="left">
+												<p:commandButton type="push" value = "#{msg.save}" actionListener="#{frcolBean.to_save}"/>
+											</f:facet>
+											<f:facet name="right">
+												
+												<p:commandButton value="Excel" type="push"
+													icon="ui-icon-arrowthickstop-1-s" ajax="false">
+													<p:dataExporter type="xls" target="l_outputTable"
+														postProcessor="#{frcolBean.postProcessXLS}" fileName="report" />
+												</p:commandButton>
+											</f:facet>
+										</p:toolbar>
+										<p:dataTable value="#{frcolBean.l_outputTable}" var="o" paginator="true" rows="20" widgetVar="505"  id="l_outputTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											
+											<p:columnGroup type="header">													
+										            <p:row>
+										                <p:column sortBy="#{o.bukrs}" rowspan="2" headerText="#{msg['bkpf.bukrs.long']}" />
+										                <p:column sortBy="#{o.branch_name}" rowspan="2" headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column sortBy="#{o.contract_amount}" rowspan="2" headerText="Кол. Дог." />
+										                <p:column sortBy="#{o.waers}" rowspan="2" headerText="#{msg['bkpf.waers.long']}" />
+										                
+										                <p:column colspan="2" headerText="В рассрочку" />
+										                <p:column colspan="2" headerText="В течении 1 месяца" />
+										                <p:column colspan="2" headerText="В рассрочку USD" />
+										                <p:column colspan="2" headerText="В течении 1 месяца USD" />
+										                <p:column colspan="4" headerText="Всего" />
+										                
+										                
+										            </p:row>
+										            <p:row>
+										                <p:column sortBy="#{o.ras_plan}" headerText="План" />
+										                <p:column sortBy="#{o.ras_poluchen}" headerText="Получен" />
+										                <p:column sortBy="#{o.one_month_plan}" headerText="План" />
+										                <p:column sortBy="#{o.one_month_poluchen}" headerText="Получен" />
+										                <p:column sortBy="#{o.ras_usd_plan}" headerText="План" />
+										                <p:column sortBy="#{o.ras_usd_poluchen}" headerText="Получен" />
+										                <p:column sortBy="#{o.one_month_usd_plan}" headerText="План" />
+										                <p:column sortBy="#{o.one_month_usd_poluchen}" headerText="Получен" />
+										                
+										                <p:column sortBy="#{o.total_usd_plan}" headerText="План" />
+										                <p:column sortBy="#{o.total_usd_poluchen}" headerText="Получен" />
+										                <p:column headerText="Процент" />
+										                <p:column headerText="Город" />
+										            </p:row>
+										        </p:columnGroup>
+											
+											<p:column>
+												<h:outputText value="#{o.bukrs}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.branch_name}" />
+												<p:commandButton type="push" value = "Показать" actionListener="#{frcolBean.showByCollectors(o.branch_id,o.waers)}" style="float:right"/>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.contract_amount}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.ras_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.ras_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>							
+											<p:column>
+												<h:outputText value="#{o.one_month_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.one_month_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.ras_usd_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.ras_usd_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>							
+											<p:column>
+												<h:outputText value="#{o.one_month_usd_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.one_month_usd_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.total_usd_plan}" rendered = "#{o.total_usd_plan>0}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+												<f:facet name="footer">
+													<h:outputText value="#{frcolBean.city_total_plan}"  >
+														<f:convertNumber pattern="#,###,##0.00" />
+													</h:outputText>
+												</f:facet>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.total_usd_poluchen}" rendered = "#{o.total_usd_poluchen>0}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+												<f:facet name="footer">
+													<h:outputText value="#{frcolBean.city_total_poluchen}"  >
+														<f:convertNumber pattern="#,###,##0.00" />
+													</h:outputText>
+												</f:facet>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.total_usd_percentage}%" rendered = "#{o.total_usd_percentage>0}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+												<f:facet name="footer">
+													<h:outputText value="#{frcolBean.city_total_percentage}%"  >
+														<f:convertNumber pattern="#,###,##0.00" />
+													</h:outputText>
+												</f:facet>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.city_name}" rendered = "#{o.total_usd_percentage>0}"/>
+											</p:column> 
+											
+
+											
+											
+											
+											
+										</p:dataTable>
+										<br />
+										<br />
+										<p:dataTable value="#{frcolBean.branchTotals}" var="o" rows="20" widgetVar="l_tot1"  id="l_tot1">
+											
+											<p:columnGroup type="header">
+													<p:row>
+										                <p:column colspan="10"  headerText="Общее количсетво" />
+										            </p:row>
+										            <p:row>
+										                <p:column sortBy="#{o.waers}" rowspan="2" headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column sortBy="#{o.contract_amount}" rowspan="2" headerText="Кол. Дог." />
+										                <p:column colspan="2" headerText="В рассрочку" />
+										                <p:column colspan="2" headerText="В течении 1 месяца" />
+										                <p:column colspan="2" headerText="В рассрочку USD" />
+										                <p:column colspan="2" headerText="В течении 1 месяца USD" />
+										                
+										            </p:row>
+										            <p:row>
+										                <p:column sortBy="#{o.ras_plan}" headerText="План" />
+										                <p:column sortBy="#{o.ras_poluchen}" headerText="Получен" />
+										                <p:column sortBy="#{o.one_month_plan}" headerText="План" />
+										                <p:column sortBy="#{o.one_month_poluchen}" headerText="Получен" />
+										                <p:column sortBy="#{o.ras_usd_plan}" headerText="План" />
+										                <p:column sortBy="#{o.ras_usd_poluchen}" headerText="Получен" />
+										                <p:column sortBy="#{o.one_month_usd_plan}" headerText="План" />
+										                <p:column sortBy="#{o.one_month_usd_poluchen}" headerText="Получен" />
+										            </p:row>
+										        </p:columnGroup>
+											
+											<p:column>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.contract_amount}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.ras_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.ras_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>							
+											<p:column>
+												<h:outputText value="#{o.one_month_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.one_month_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.ras_usd_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.ras_usd_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>							
+											<p:column>
+												<h:outputText value="#{o.one_month_usd_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.one_month_usd_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>											
+										</p:dataTable>
+										<br />
+										<br />
+									</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							        <p:tab title="#{msg.collector}">
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel2"
+										> 
+							        <p:toolbar styleclass="mp_toolbar">
+											<f:facet name="right">
+												<p:commandButton value="Excel" type="push"
+													icon="ui-icon-arrowthickstop-1-s" ajax="false">
+													<p:dataExporter type="xls" target="l_outputTable2"
+														postProcessor="#{frcolBean.postProcessXLS2}" fileName="report" />
+												</p:commandButton>
+											</f:facet>
+										</p:toolbar>
+							        <p:dataTable value="#{frcolBean.l_outputTable2}" var="o" paginator="true" rows="20" widgetVar="50"  id="l_outputTable2">
+											
+											<p:columnGroup type="header">
+										            <p:row>
+										                <p:column sortBy="#{o.bukrs}" rowspan="2" headerText="#{msg['bkpf.bukrs.long']}" />
+										                <p:column sortBy="#{o.branch_name}" rowspan="2" headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column sortBy="#{o.collector_name}" rowspan="2" headerText="#{msg.fio}" />
+										                <p:column sortBy="#{o.contract_amount}" rowspan="2" headerText="Кол. Дог." />
+										                <p:column sortBy="#{o.waers}" rowspan="2" headerText="#{msg['bkpf.waers.long']}" />
+										                
+										                <p:column colspan="4" headerText="В рассрочку" />
+										                <p:column colspan="4" headerText="В течении 1 месяца" />
+										                <p:column colspan="2" headerText="В рассрочку USD" />
+										                <p:column colspan="2" headerText="В течении 1 месяца USD" />
+										                
+										            </p:row>
+										            <p:row>
+										            	<p:column headerText="Детали" />
+										                <p:column sortBy="#{o.ras_plan}" headerText="План" />
+										                <p:column sortBy="#{o.ras_poluchen}" headerText="Получен" />
+										                <p:column headerText="Процент" />
+										                <p:column headerText="Детали" />
+										                <p:column sortBy="#{o.one_month_plan}" headerText="План" />
+										                <p:column sortBy="#{o.one_month_poluchen}" headerText="Получен" />
+										                <p:column headerText="Процент" />
+										                <p:column sortBy="#{o.ras_usd_plan}" headerText="План" />
+										                <p:column sortBy="#{o.ras_usd_poluchen}" headerText="Получен" />
+										                <p:column sortBy="#{o.one_month_usd_plan}" headerText="План" />
+										                <p:column sortBy="#{o.one_month_usd_poluchen}" headerText="Получен" />
+										            </p:row>
+										        </p:columnGroup>
+											
+											<p:column>
+												<h:outputText value="#{o.bukrs}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.branch_name}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.collector_name}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.contract_amount}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											<p:column>
+												<p:commandButton type="push" oncomplete="PF('detInfo2MonthWidget').show();" 
+												value = "Показать" actionListener="#{frcolBean.getDetail(o.branch_id,o.waers,o.staff_id,2)}" style="float:right"/>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.ras_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>												
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.ras_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											
+											<p:column>
+												<h:outputText value="#{o.ras_percentage}%" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<p:commandButton type="push" oncomplete="PF('detInfo1MonthWidget').show();" 
+												value = "Показать" actionListener="#{frcolBean.getDetail(o.branch_id,o.waers,o.staff_id,1)}" style="float:right"/>
+											</p:column>	
+											<p:column>
+												<h:outputText value="#{o.one_month_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.one_month_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.one_month_percentage}%" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.ras_usd_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.ras_usd_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>							
+											<p:column>
+												<h:outputText value="#{o.one_month_usd_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.one_month_usd_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>											
+										</p:dataTable>
+										
+										<br />
+										<br />
+										<p:dataTable value="#{frcolBean.collectorTotals}" var="o" rows="20" widgetVar="l_tot2"  id="l_tot2">
+											
+											<p:columnGroup type="header">
+													<p:row>
+										                <p:column colspan="10"  headerText="Общее количсетво" />
+										            </p:row>
+										            <p:row>
+										                <p:column sortBy="#{o.waers}" rowspan="2" headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column sortBy="#{o.contract_amount}" rowspan="2" headerText="Кол. Дог." />
+										                <p:column colspan="2" headerText="В рассрочку" />
+										                <p:column colspan="2" headerText="В течении 1 месяца" />
+										                <p:column colspan="2" headerText="В рассрочку USD" />
+										                <p:column colspan="2" headerText="В течении 1 месяца USD" />
+										                
+										            </p:row>
+										            <p:row>
+										            	
+										                <p:column sortBy="#{o.ras_plan}" headerText="План" />
+										                <p:column sortBy="#{o.ras_poluchen}" headerText="Получен" />
+										                <p:column sortBy="#{o.one_month_plan}" headerText="План" />
+										                <p:column sortBy="#{o.one_month_poluchen}" headerText="Получен" />
+										                <p:column sortBy="#{o.ras_usd_plan}" headerText="План" />
+										                <p:column sortBy="#{o.ras_usd_poluchen}" headerText="Получен" />
+										                <p:column sortBy="#{o.one_month_usd_plan}" headerText="План" />
+										                <p:column sortBy="#{o.one_month_usd_poluchen}" headerText="Получен" />
+										            </p:row>
+										        </p:columnGroup>
+											
+											<p:column>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.contract_amount}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.ras_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.ras_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>							
+											<p:column>
+												<h:outputText value="#{o.one_month_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.one_month_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.ras_usd_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.ras_usd_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>							
+											<p:column>
+												<h:outputText value="#{o.one_month_usd_plan}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.one_month_usd_poluchen}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>											
+										</p:dataTable>
+										
+										<br />
+										<br />
+										
+										</p:scrollPanel>
+
+								</div>
+							        </p:tab>
+							    </p:tabView>
+
+
+
+
+
+
+
+
+ 
+								<p:dialog header="1 Месяц" widgetVar="detInfo1MonthWidget" 
+							 dynamic="true"  width="1100" height="500">			
+							
+							<p:dataTable id="detInfo1MonthTable" var="o" rowKey="#{o.payroll_id}" rows="15"  scrollable="true" scrollHeight="400"
+                         					paginator="true"  value="#{frcolBean.l_detailedInfo1Month}" emptyMessage="#{msg['dmsc.emptyRec']}">
+								<p:column headerText="#{msg['bkpf.contract_number.long']}">
+									<h:outputText value="#{o.contract_number}" />
+									<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{o.contract_number}"
+												icon="ui-icon-zoomin" rendered="#{o.contract_number>0}"
+												title="View" id="viewButton2" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+									<f:facet name="footer">
+										<p:column >
+											<h:outputText value="Количество: #{frcolBean.l_detailedInfo1Month_kol_total}" />
+										</p:column>		
+									</f:facet>
+								</p:column>
+								<p:column headerText="Дата договора">
+									<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{o.contract_date}" disabled="true" />	
+								</p:column>
+								<p:column headerText="ФИО">
+									<h:outputText  value="#{o.fio}" />									
+								</p:column>
+								<p:column headerText="Валюта">
+									<h:outputText value="#{o.waers}" />									
+								</p:column>	
+								<p:column headerText="План">
+									<h:outputText  value="#{o.plan}">	
+										<f:convertNumber pattern="#,###,##0.00" />
+									</h:outputText>							
+									<f:facet name="footer">
+										<p:column >
+											<h:outputText value="#{frcolBean.l_detailedInfo1Month_plan_total}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+										</p:column>		
+									</f:facet>
+								</p:column>	
+								<p:column headerText="Получен">
+									<h:outputText  value="#{o.poluchen}">	
+										<f:convertNumber pattern="#,###,##0.00" />
+									</h:outputText>									
+									<f:facet name="footer">
+										<p:column >
+											<h:outputText value="#{frcolBean.l_detailedInfo1Month_poluchen_total}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+										</p:column>		
+									</f:facet>				
+								</p:column>	
+							</p:dataTable>
+							
+							</p:dialog>
+
+						<p:dialog header="Рассрочка" widgetVar="detInfo2MonthWidget" 
+							 dynamic="true"  width="1100" height="500">			
+							
+							<p:dataTable id="detInfo2MonthTable" var="o" rowKey="#{o.payroll_id}" rows="15"  scrollable="true" scrollHeight="400"
+                         					paginator="true"  value="#{frcolBean.l_detailedInfo2Month}" emptyMessage="#{msg['dmsc.emptyRec']}">
+								<p:column headerText="#{msg['bkpf.contract_number.long']}">
+									<h:outputText value="#{o.contract_number}" />
+									<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{o.contract_number}"
+												icon="ui-icon-zoomin" rendered="#{o.contract_number>0}"
+												title="View" id="viewButton2" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+									<f:facet name="footer">
+										<p:column >
+											<h:outputText value="Количество: #{frcolBean.l_detailedInfo2Month_kol_total}" />
+										</p:column>		
+									</f:facet>
+								</p:column>
+								<p:column headerText="Дата договора">
+									<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{o.contract_date}" disabled="true" />	
+								</p:column>
+								<p:column headerText="ФИО">
+									<h:outputText  value="#{o.fio}" />									
+								</p:column>
+								<p:column headerText="Валюта">
+									<h:outputText value="#{o.waers}" />									
+								</p:column>	
+								<p:column headerText="План">
+									<h:outputText  value="#{o.plan}">	
+										<f:convertNumber pattern="#,###,##0.00" />
+									</h:outputText>							
+									<f:facet name="footer">
+										<p:column >
+											<h:outputText value="#{frcolBean.l_detailedInfo2Month_plan_total}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+										</p:column>		
+									</f:facet>
+								</p:column>	
+								<p:column headerText="Получен">
+									<h:outputText  value="#{o.poluchen}">	
+										<f:convertNumber pattern="#,###,##0.00" />
+									</h:outputText>							
+									<f:facet name="footer">
+										<p:column >
+											<h:outputText value="#{frcolBean.l_detailedInfo2Month_poluchen_total}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+										</p:column>		
+									</f:facet>				
+								</p:column>	
+							</p:dataTable>
+							
+							</p:dialog>
+								
+
+
+
+								
+								
+							</h:form>
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

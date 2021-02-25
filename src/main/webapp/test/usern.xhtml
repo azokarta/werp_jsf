@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:metadata>
+	<f:event type="preRenderView"
+		listener="#{hrStaffBean.initMode('list')}" />
+</f:metadata>
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>Список сотрудников</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="HR > Сотрудники" />
+				</ui:include>
+			</ui:insert>
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="Список сотрудников" />
+			</ui:include>
+
+			
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+							<h:form id="form">
+					 
+								<p:growl id="messages" sticky="false" showDetail="true" /> 
+								<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="right">
+										
+									</f:facet>
+								</p:toolbar>
+							<div style = "display: inline-block;">
+								<div style = "float:left;margin-right:45px;">
+									<table>
+										 
+										<p>  
+										 <h:outputLabel id = "idpole" value="#{testwebBean.pole}" />
+										<p:commandButton type="push" value="ОБЗОР"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{testwebBean.testCall}" /> </p> 
+										<p> 
+										 <h:outputLabel id = "idpole1" value="#{testwebBean.pole1}" />
+										<p:commandButton type="push" value="ОБЗОР"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{testwebBean.testCall1}" /></p> 
+										<p> 
+											 <h:outputLabel id = "idpole3" value="#{testwebBean.pole3}" />
+										<p:commandButton type="push" value="ОБЗОР"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{testwebBean.testCall3}" /></p> 
+										<p> 
+										<h:outputLabel id = "idpole2" value="#{testwebBean.pole2}" />
+										<p:commandButton type="push" value="ОБЗОР"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{testwebBean.testCall2}" /></p> 
+											
+									
+									</table>
+								</div>
+								<div  style = "float:right">
+									<p:scrollPanel style="width:500px;height:100%"
+												easing="easeOutElastic" id="bracnhCashScrollPanel">
+											<p:dataTable value="#{testwebBean.l_outputTable}" var="o"
+											widgetVar="505" id="l_outputTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											 
+												<p:columnGroup type="header">	
+												   		 <p:row>
+										               		 <p:column headerText="firstname" />
+										              		 <p:column headerText="secondname" />
+										           		 </p:row>
+										    	 </p:columnGroup>
+										    
+												<p:column style="width: 165px;">
+												<h:inputText id="b_hkont" value="#{o.firstname}" disabled="true"/>							
+												</p:column>	 									
+											
+												<p:column style="width: 165px;">
+											 	<h:inputText   value="#{o.secondname}" disabled="true"/>										 
+												</p:column>	 
+										
+										</p:dataTable>	
+														
+									</p:scrollPanel>
+								</div>		
+								</div>
+							 
+								 
+									   
+							</h:form>
+						</f:view>
+
+				</div>
+
+		</div>
+	
+</h:body>
+
+</html>

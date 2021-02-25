@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog id="NewCallDlg" widgetVar="NewCallWidget" modal="true"
+		dynamic="true" resizable="true" appendTo="@(body)"
+		header="Новый звонок" width="425px" height="450px">
+
+		<h:form id="NewCallForm">
+			<div class="ui-grid-row">
+				<div style="float: left;">
+					<fieldset
+						style="border: #ccc solid 1px; width: 370px; height: 340px; margin-top: 5px;">
+						<legend>Новый звонок </legend>
+
+						<div style="float: left;">
+							<table>
+								<tr>
+									<td><h:outputLabel value="Дата: " /></td>
+									<td><p:calendar id="callDate" disabled="true"
+											value="#{formBean.newServCRMHistoryBean.newSCH.actionDate}"
+											navigator="true" pattern="dd.MM.yyyy HH:mm" mask="true"
+											converterMessage="Date is invalid." /></td>
+								</tr>
+								<tr>
+									<td><h:outputLabel value="Статус звонка" /></td>
+									<td><p:selectOneMenu id="callState"
+											value="#{formBean.newServCRMHistoryBean.callState}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItem itemLabel="Ответил(а)" itemValue="Responded" />
+											<f:selectItem itemLabel="ТНБ (Не отвечает, Занят, сбросил(а))" itemValue="Does not respond" />
+											<f:selectItem itemLabel="Не доступен" itemValue="Not available" />
+										</p:selectOneMenu></td>
+								</tr>
+								<tr>
+									<td><h:outputLabel value="Ответил(а)" /></td>
+									<td><p:inputText id="reply"
+											value="#{formBean.newServCRMHistoryBean.callRespond}" /></td>
+								</tr>
+								<tr>
+									<td colspan="2"></td>
+								</tr>
+								<tr>
+									<td colspan="2"></td>
+								</tr>
+								<tr>
+									<td colspan="2"><h:outputLabel style="font-weight:bold;"
+											value="Содержание беседы (заметки):" /></td>
+								</tr>
+								<tr>
+									<td colspan="2"></td>
+								</tr>
+								<tr>
+									<td colspan="2"><p:inputTextarea rows="7" cols="48"
+											counter="display" maxlength="255"
+											counterTemplate="#{msg['dmsc.hint_left']} {0} #{msg['dmsc.hint_char']}"
+											autoResize="false"
+											value="#{formBean.newServCRMHistoryBean.newSCH.info}" /><br /> <h:outputText
+											style="color:#aaa;" styleClass="notetext" id="display" /></td>
+								</tr>
+								<tr>
+									<td colspan="2"></td>
+								</tr>
+								<tr>
+									<td colspan="2"><p:inputSwitch id="remFromSC"
+											style="font-weight:bold;margin-left: 10px;"
+											value="#{formBean.newServCRMHistoryBean.recallNextMonth}" />
+										<div style="float: left; margin-top: 5px;">
+											<p:outputLabel value="Перезвонить в следующем месяце." />
+										</div></td>
+								</tr>
+								<tr>
+									<td colspan="2"><p:inputSwitch id="addApplication"
+											style="font-weight:bold;margin-left: 10px;"
+											value="#{formBean.newServCRMHistoryBean.addApplication}" />
+										<div style="float: left; margin-top: 5px;">
+											<p:outputLabel value="Создать заявку." />
+										</div></td>
+								</tr>
+
+							</table>
+						</div>
+
+					</fieldset>
+				</div>
+			</div>
+
+			<p:toolbar styleclass="mp_toolbar" style="margin-top: 10px;">
+				<f:facet name="left">
+					<p:commandButton type="push" value="#{msg['dmsc.save']}"
+						icon="ui-icon ui-icon-check" update=":messages"
+						actionListener="#{formBean.saveNewCall}"
+						oncomplete="PF('NewCallWidget').hide()" />
+				</f:facet>
+
+				<f:facet name="right">
+					<p:commandButton type="push" value="#{msg['dmsc.cancel']}"
+						icon="ui-icon ui-icon-cancel" update=":messages"
+						oncomplete="PF('NewCallWidget').hide()"
+						actionListener="#{formBean.newServCRMHistoryBean.cancelNewSCH}">
+						<p:confirm header="Confirmation"
+							message="Все введенные данные будут утеряны! Вы уверены что хотите отменит?"
+							icon="ui-icon-alert" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+
+			<div style="margin-top: 10px;">
+				<p:inputSwitch id="conSN" style="font-weight:bold;margin-left:10px;"
+					disabled="#{formBean.newServCRMHistoryBean.disCancelCall}"
+					value="#{formBean.newServCRMHistoryBean.cancellCall}" />
+				<div style="float: left; margin-top: 5px;">
+					<p:outputLabel style="margin-bottom:5px;"
+						value="Обработан (Снять со списка назначенных звонков)" />
+				</div>
+			</div>
+
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

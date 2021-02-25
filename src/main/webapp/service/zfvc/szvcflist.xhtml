@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>Список замены фильтров</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Сервис > Сервис Отчеты > Список для профилактики Уборочных систем" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Список для профилактики Уборочных систем" />
+				</ui:include>
+			</ui:insert>
+
+			<div>
+				<div id="content" class="container">
+
+					<f:view>
+
+						<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<h:form id="form">
+							<p:growl id="messages" sticky="false" showDetail="true" />
+
+							<div class="ui-grid-row">
+									<p:panel>
+										<p:panelGrid columns="2" cellpadding="0">
+											<h:panelGrid columns="2" cellpadding="0">
+												<h:outputLabel value="#{msg['dmsc.bukrs']}: " />
+												<p:selectOneMenu styleClass="bukrs" id="bukrs"
+													value="#{szvcflistBean.p_bukrs}">
+													<p:ajax listener="#{szvcflistBean.loadBranch}" />
+													<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}"
+														itemValue="0" />
+													<f:selectItems value="#{szvcflistBean.bukrs_list}"
+														var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+														itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu> 												
+											</h:panelGrid>
+												
+											<h:panelGrid columns="2" cellpadding="0">
+										
+												<h:outputLabel value="#{msg['dmsc.branch']}: " />
+												<p:selectOneMenu styleClass="branch" id="branch"
+													value="#{szvcflistBean.p_branch_id}">
+													<p:ajax listener="#{szvcflistBean.assignWaers}" />
+													<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+														itemValue="0" />
+													<f:selectItems value="#{szvcflistBean.branch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu>
+											</h:panelGrid>
+										</p:panelGrid>
+									</p:panel>
+							</div>
+							
+							<p:tabView id="tabView">
+								<p:tab title="Список">
+									<div class="ui-grid-row">
+										
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<h:outputLabel value="Список: " />
+												<p:selectOneMenu id="overdue"
+													value="#{szvcflistBean.p_list_type}">
+													<f:selectItem itemLabel="Все" itemValue="1" />
+													<f:selectItem itemLabel="Текущий" itemValue="2" />
+													<f:selectItem itemLabel="Просроченный" itemValue="3" />
+												</p:selectOneMenu>
+												
+												<h:outputLabel value="Гарантия " />
+												<p:selectOneMenu id="warranty"
+													value="#{szvcflistBean.p_list_warranty}">
+													<f:selectItem itemLabel="Все" itemValue="1" />
+													<f:selectItem itemLabel="По гарантии" itemValue="2" />
+													<f:selectItem itemLabel="Вне гарантии" itemValue="3" />
+												</p:selectOneMenu>												
+											</h:panelGrid>
+										</div>
+										
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<h:outputLabel value="#{msg['dmsc.month']}: " />
+												<p:calendar id="start_date" styleClass="dateField"
+													value="#{szvcflistBean.p_month}" navigator="true"
+													pattern="MM.yyyy" mask="true"
+													converterMessage="Date is invalid."
+													rendered="#{!szvcflistBean.p_catBool}" />
+												
+												<h:outputLabel value="Категория: " />
+												<p:selectOneMenu id="category" style="width:150px;"
+													value="#{szvcflistBean.p_list_cat}">
+													<f:selectItem itemLabel="Все" itemValue="0" />
+													<f:selectItem itemLabel="ЗЕЛЕНЫЙ" itemValue="1" />
+													<f:selectItem itemLabel="ЖЕЛТЫЙ" itemValue="2" />
+													<f:selectItem itemLabel="КРАСНЫЙ" itemValue="3" />
+													<f:selectItem itemLabel="ЧЕРНЫЙ" itemValue="4" />
+												</p:selectOneMenu>
+											</h:panelGrid>
+										</div>
+
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<h:outputLabel value="Товар SN: " />
+												<p:inputText id="tovSerial" maxlength="30"
+													autocomplete="off" value="#{szvcflistBean.p_tovSN}" />
+											</h:panelGrid>
+										</div>
+
+										<div style="float: left;">
+											<p:commandButton type="push" value="Показать список"
+												icon="ui-icon ui-icon-search"
+												style="margin-top:5px;margin-left:15px;height:60px;"
+												actionListener="#{szvcflistBean.to_search}" update=":messages">
+											</p:commandButton>
+										</div>
+									</div>
+								</p:tab>
+								<p:tab title="Поиск по списку">
+									<div class="ui-grid-row">
+
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<h:outputLabel value="#{msg['dmsc.contractNo']} " />
+												<p:inputText id="contr_number" maxlength="20"
+													style="width: 95px;" autocomplete="off"
+													value="#{szvcflistBean.searchCon.contract_number}" />
+												<h:outputLabel value="Старый SN " />
+												<p:inputText id="oldConNumber" maxlength="20"
+													style="width: 95px;" autocomplete="off"
+													value="#{szvcflistBean.searchCon.old_sn}" />
+											</h:panelGrid>
+										</div>
+
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<h:outputLabel value="Товар SN " />
+												<p:inputText id="tovSN" maxlength="20" autocomplete="off"
+													value="#{szvcflistBean.searchCon.tovar_serial}" />
+												<h:outputLabel value="Клиент " />
+												<p:inputText id="customerName" maxlength="50"
+													autocomplete="off" value="#{szvcflistBean.searchCus}" />
+											</h:panelGrid>
+										</div>
+
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<h:outputLabel value="Адрес " />
+												<p:inputText id="addrSearch" maxlength="20"
+													autocomplete="off" value="#{szvcflistBean.searchAddr}" />
+												<h:outputLabel value="Телефон " />
+												<p:inputText id="searchTel" maxlength="50"
+													autocomplete="off" value="#{szvcflistBean.searchTel}" />
+											</h:panelGrid>
+										</div>
+
+										<div style="float: left;">
+											<p:commandButton type="push" value="#{msg['dmsc.search']}"
+												icon="ui-icon ui-icon-search"
+												style="margin-top:5px;margin-left:15px;height:60px;"
+												actionListener="#{szvcflistBean.to_find}" update=":messages">
+											</p:commandButton>
+										</div>
+									</div>
+								</p:tab>
+
+								<p:tab title="Итоги" disabled="#{szvcflistBean.disVaultTab}" rendered="false">
+									<div class="ui-grid-row" style="margin-top: 5px;">
+										<div style="float: left;">
+											<h:panelGrid columns="3" cellpadding="3">
+												<h:outputLabel value="Общая сумма " />
+												<p:inputText id="summTotal" disabled="true" size="20"
+													value="#{szvcflistBean.summTotal}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+												</p:inputText>
+												<p:outputLabel value=" #{szvcflistBean.fwaers}" />
+
+												<h:outputLabel value="План " />
+												<p:inputText id="summPlan" disabled="true" size="20"
+													value="#{szvcflistBean.summPlan}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+												</p:inputText>
+												<p:outputLabel value=" #{szvcflistBean.fwaers}" />
+
+												<h:outputLabel value="Выполнено " />
+												<p:inputText id="paidTotal" size="20" disabled="true"
+													value="#{szvcflistBean.summDone}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+												</p:inputText>
+												<p:outputLabel value=" #{szvcflistBean.fwaers}" />
+
+												<h:outputLabel value="Остаток " />
+												<p:inputText id="remainTotal" size="20" disabled="true"
+													value="#{szvcflistBean.summRemain}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+												</p:inputText>
+												<p:outputLabel value=" #{szvcflistBean.fwaers}" />
+											</h:panelGrid>
+										</div>
+
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<p:inputText id="qTotal" disabled="true" size="10"
+													value="#{szvcflistBean.qTotal}" />
+												<h:outputLabel value=" шт. " />
+
+												<p:inputText id="qPlan" disabled="true" size="10"
+													value="#{szvcflistBean.qPlan}" />
+												<h:outputLabel value=" шт. " />
+
+												<p:inputText id="qDone" disabled="true" size="10"
+													value="#{szvcflistBean.qDone}" />
+												<h:outputLabel value=" шт. " />
+
+												<p:inputText id="qRemain" disabled="true" size="10"
+													value="#{szvcflistBean.qRemain}" />
+												<h:outputLabel value=" шт. " />
+											</h:panelGrid>
+										</div>
+
+										<div style="float: left; margin-left: 25px;">
+											<h:panelGrid columns="3" cellpadding="3" rendered="true">
+<!-- 												<h:outputLabel value="Премии мастеров " /> -->
+<!-- 												<p:inputText id="premMaster" disabled="true" -->
+<!-- 													value="#{szvcflistBean.summMaster}"> -->
+<!-- 													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" /> -->
+<!-- 												</p:inputText> -->
+<!-- 												<p:outputLabel value=" #{szvcflistBean.fwaers}" /> -->
+
+<!-- 												<h:outputLabel value="Премии операторов " /> -->
+<!-- 												<p:inputText id="premOper" disabled="true" -->
+<!-- 													value="#{szvcflistBean.summOper}"> -->
+<!-- 													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" /> -->
+<!-- 												</p:inputText> -->
+<!-- 												<p:outputLabel value=" #{szvcflistBean.fwaers}" /> -->
+
+												<h:outputLabel value="% выполнен " />
+												<p:inputText id="perDone" disabled="true"
+													value="#{szvcflistBean.perDone}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="%" />
+												</p:inputText>
+												<p:outputLabel value="" />
+
+												<h:outputLabel value="% остаток " />
+												<p:inputText id="perRem" disabled="true"
+													value="#{szvcflistBean.perRem}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="%" />
+												</p:inputText>
+												<p:outputLabel value="" />
+											</h:panelGrid>
+										</div>
+
+										<div style="float: right;">
+											<h:panelGrid columns="1" cellpadding="3">
+												<p:commandButton type="push" value="Сохранить план"
+													icon="ui-icon ui-icon-disk"
+													style="width:275px;height:35px;"
+													actionListener="#{szvcflistBean.savePlan}" update=":messages">
+												</p:commandButton>
+
+												<p:commandButton type="push" value="Вычислить выполненные"
+													icon="ui-icon ui-icon-refresh"
+													style="width:275px;height:35px;"
+													actionListener="#{szvcflistBean.calcDone}" update=":messages">
+												</p:commandButton>
+
+												<p:commandButton type="push"
+													value="Сохранить выполненную сумму"
+													icon="ui-icon ui-icon-disk"
+													style="width:275px;height:35px;"
+													actionListener="#{szvcflistBean.saveDoneAmountToPlan}"
+													update=":messages">
+												</p:commandButton>
+											</h:panelGrid>
+										</div>
+									</div>
+								</p:tab>
+							</p:tabView>
+
+							<p:toolbar styleclass="mp_toolbar" style="margin-top: 5px;">
+								<f:facet name="right">
+									<p:commandButton icon="ui-icon-newwin" type="push"
+										value="Назначенные звонки"
+										actionListener="#{szvcflistBean.prepareCRMScheduleDlg}"
+										oncomplete="PF('ScheduleCallsWidget').show();">
+									</p:commandButton>
+
+									<p:commandButton rendered="false" type="push"
+										value="#{msg['dmsc.print']} (PDF)"
+										icon="ui-icon ui-icon-print" update="messages"
+										actionListener="#{szvcflistBean.printPDF}" />
+
+									<h:commandLink rendered="false">
+										<p:graphicImage name="/img/pdf.png" />
+										<p:dataExporter type="pdf" target="outputTable"
+											fileName="PaymentGraphic"
+											preProcessor="#{szvcflistBean.preProcessPDF}" pageOnly="false" />
+									</h:commandLink>
+
+									<h:commandLink rendered="#{!szvcflistBean.disVaultTab}">
+										<p:button icon="ui-icon ui-icon-print" value="Сохранить в Excel" />
+										<p:dataExporter type="xls" target="outputTable"
+											postProcessor="#{szvcflistBean.postProcessXLSDetail}"
+											fileName="szflist" />
+									</h:commandLink>
+								</f:facet>
+							</p:toolbar>
+
+							<div id="tableContainer" class="ui-grid-row"
+								style="margin-top: 5px;">
+								<p:dataTable value="#{szvcflistBean.sfOutputList}" var="o"
+									lazy="false" rowKey="#{o.id}"
+									emptyMessage="#{msg['dmsc.emptyRec']}" paginator="true"
+									rows="100" rowsPerPageTemplate="15, 30, 50, 100"
+									widgetVar="szflistTable" id="outputTable"
+									styleClass="outputTable-table" selectionMode="single"
+									selection="#{szvcflistBean.selectedSf}"
+									headerClass="outputTable-table-header"
+									rowClasses="outputTable-table-odd-row, outputTable-table-even-row"
+									resizableColumns="true" liveResize="true">
+									<p:ajax event="rowDblselect" listener="#{szvcflistBean.prepareCRMHistoryDlg(o.index)}"
+											oncomplete="PF('CrmHistoryWidget').show();" />
+											
+											
+									<f:facet name="header">
+										<p:outputPanel>
+											<p:commandButton id="toggler" type="button"
+												value="#{msg['dmsc.columns']}" style="float:right"
+												icon="ui-icon-calculator" />
+											<p:columnToggler datasource="outputTable" trigger="toggler" />
+										</p:outputPanel>
+									</f:facet>
+
+									<p:column style="text-align:center;width:20px;" rendered="true">
+										<f:facet name="header">
+											<h:outputText value="#" />
+										</f:facet>
+										<h:outputText value="#{o.index}" />
+									</p:column>
+
+									<p:column style="text-align:center;width:80px;" rendered="true">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.contractNo']}" />
+										</f:facet>
+										<h:outputText value="#{o.branch}" />
+										<br />
+										<h:outputText value="#{o.conNumber}" />
+									</p:column>
+
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.matnr_serial']}" />
+										</f:facet>
+										<h:outputText value="#{o.tovSerial}" />
+									</p:column>
+
+									<p:column style="text-align:center;width:60px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.date']}" />
+										</f:facet>
+										<h:outputText value="#{o.conDate}">
+											<f:convertDateTime pattern="dd.MM.yyyy" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;width:160px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.customer']}" />
+										</f:facet>
+										<h:outputText value="#{o.customerFIO}" />
+									</p:column>
+
+									<!-- 									<p:column style="text-align:center;" width="80px;"> -->
+									<!-- 										<f:facet name="header"> -->
+									<!-- 											<h:outputText value="#{msg['dmsc.reg']}" /> -->
+									<!-- 										</f:facet> -->
+									<!-- 										<h:outputText value="#{o.rayon}" /> -->
+									<!-- 									</p:column> -->
+
+									<p:column style="text-align:center;width:200px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.contact_info']}" />
+										</f:facet>
+										<h:outputText value="#{o.addrService}" />
+										<br />
+										<h:outputText value="#{o.tel}" />
+										<br />
+										<h:outputText value="#{o.telRab}" />
+									</p:column>
+
+									<p:column style="text-align:center;width:30px;">
+										<f:facet name="header">
+											<h:outputText value="F1" />
+										</f:facet>
+										<h:outputText value="#{o.f1}"
+											style="color:#{o.f1 gt 0?'#f00':'#000'};font-weight: #{o.f1 ge 0?'bold':'normal'}" />
+									</p:column>
+
+									<p:column style="text-align:center;width:180px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.dealer']}" />
+										</f:facet>
+										<h:outputText value="#{o.dealerFIO}" />
+									</p:column>
+
+									<p:column
+										style="text-align:center;width:100px;background-color:#{o.crmColor};">
+										<f:facet name="header">
+											<h:outputText value="Категория" />
+										</f:facet>
+										<p:selectOneMenu disabled="true" value="#{o.crm_category}">
+											<f:selectItem itemLabel="Все" itemValue="0" />
+											<f:selectItem itemLabel="ЗЕЛЕНЫЙ" itemValue="1" />
+											<f:selectItem itemLabel="ЖЕЛТЫЙ" itemValue="2" />
+											<f:selectItem itemLabel="КРАСНЫЙ" itemValue="3" />
+											<f:selectItem itemLabel="ЧЕРНЫЙ" itemValue="4" />
+										</p:selectOneMenu>
+									</p:column>
+
+									<p:column style="text-align:center;width:180px;">
+										<f:facet name="header">
+											<h:outputText value="История" />
+										</f:facet>
+										<p:commandButton icon="ui-icon-newwin" type="push"
+											value="История"
+											actionListener="#{szvcflistBean.prepareCRMHistoryDlg(o.index)}"
+											oncomplete="PF('CrmHistoryWidget').show();">
+										</p:commandButton>
+									</p:column>
+
+									<f:facet name="footer">
+									 #{msg['dmsc.foundTotal']}: #{szvcflistBean.outputLength}
+								</f:facet>
+								</p:dataTable>
+							</div>
+
+						</h:form>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+							align="center">
+							<p:commandButton value="#{msg['dmsc.yes']}" type="button"
+								align="center" styleClass="ui-confirmdialog-yes"
+								icon="ui-icon-check" />
+							<p:commandButton value="#{msg['dmsc.no']}" type="button"
+								align="center" styleClass="ui-confirmdialog-no"
+								icon="ui-icon-close" />
+						</p:confirmDialog>
+						
+						<ui:include src="..\zf\crmhistory.xhtml">
+							<ui:param name="formBean" value="#{szvcflistBean}" />
+						</ui:include>
+						<ui:include src="..\zf\newcall.xhtml">
+							<ui:param name="formBean" value="#{szvcflistBean.crmhBean}" />
+						</ui:include>
+						<ui:include src="..\zf\newschedule.xhtml">
+							<ui:param name="formBean" value="#{szvcflistBean.crmhBean}" />
+						</ui:include>
+						<ui:include src="..\zf\scheduledcalls.xhtml">
+							<ui:param name="formBean" value="#{szvcflistBean}" />
+						</ui:include>
+					</f:view>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

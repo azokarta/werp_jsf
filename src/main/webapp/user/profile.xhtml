@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['user.profile']}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css" />
+	<h:outputStylesheet name="main-form.css" library="css" />
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['user.profile']}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/template/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{msg['user.profile']}" />
+			</ui:include>
+
+
+			<div id="content" class="container">
+				<f:view>
+
+					<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg.save}"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{userProfileBean.Save}"
+									update="form, :messages" />
+							</f:facet>
+						</p:toolbar>
+						<br />
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-col-4" id="primaryInfo">
+								<fieldset class="primaryInfoFieldSet">
+									<legend>#{msg['user.user_info']}</legend>
+									<table class="form-table1">
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['username']}" /></td>
+											<td class="value"><p:outputLabel
+													value="#{userProfileBean.user.username}"></p:outputLabel></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="Email" /></td>
+											<td class="value"><p:outputLabel
+													value="#{userProfileBean.user.email}"></p:outputLabel></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['user.current_password']}" /></td>
+											<td class="value"><p:password
+													value="#{userProfileBean.currentPassword}"></p:password></td>
+										</tr>
+
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['user.new_password']}" /></td>
+											<td class="value"><p:password
+													value="#{userProfileBean.newPassword}"></p:password></td>
+										</tr>
+
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['user.confirm_new_password']}" /></td>
+											<td class="value"><p:password
+													value="#{userProfileBean.confirmNewPassword}"></p:password></td>
+										</tr>
+
+										<tr>
+											<td class="key"><br /> <p:commandButton type="push"
+													value="#{msg.save}" icon="ui-icon ui-icon-check"
+													actionListener="#{userProfileBean.Save}"
+													update="form, :messages" /></td>
+											<td class="value"></td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+						</div>
+					</h:form>
+				</f:view>
+			</div>
+		</div>
+	</div>
+
+
+</h:body>
+</html>

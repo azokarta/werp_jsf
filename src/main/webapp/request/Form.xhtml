@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<ui:repeat var="button"
+					value="#{requestCrudBean.rActionBean.buttonList}">
+					<p:commandButton type="push" value="#{button.label}"
+						actionListener="#{button.doAction()}" update=":messages">
+					</p:commandButton>
+				</ui:repeat>
+
+				<p:commandButton rendered="#{requestCrudBean.mode != 'view'}"
+					type="push" value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check"
+					actionListener="#{requestCrudBean.Save()}" update=":messages">
+				</p:commandButton>
+
+				<p:commandButton value="#{msg['print_out']}" type="button"
+					icon="ui-icon-print" rendered="#{requestCrudBean.mode == 'view'}" onclick="PF('printDlg').show();">
+				</p:commandButton>
+
+			</f:facet>
+		</p:toolbar>
+		<br />
+
+		<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+			<div class="ui-grid-col-4" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>#{msg['logistics.doc_info']}</legend>
+					<table>
+						<tr>
+							<td>№</td>
+							<td>#{requestCrudBean.request.id}</td>
+						</tr>
+						<tr>
+							<td>#{msg['company']}</td>
+							<td><p:selectOneMenu
+									rendered="#{requestCrudBean.mode != 'view' and (userinfo.sys_admin or userinfo.main)}"
+									value="#{requestCrudBean.request.bukrs}">
+									<p:ajax update="branch_id, res_branch_id"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+								</p:selectOneMenu> <h:outputText
+									rendered="#{requestCrudBean.mode == 'view' or (!userinfo.sys_admin and !userinfo.main)}"
+									value="#{bukrsF4Bean.getNameByBukrs(requestCrudBean.request.bukrs)}"></h:outputText>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.request_branch']}</td>
+							<td><p:selectOneMenu id="branch_id"
+									rendered="#{requestCrudBean.mode != 'view' and (userinfo.sys_admin or userinfo.main)}"
+									value="#{requestCrudBean.request.branch_id}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0"></f:selectItem>
+									<f:selectItems
+										value="#{branchF4Bean.getAllBranchByBukrs(requestCrudBean.request.bukrs)}"
+										var="br" itemLabel="#{br.text45}" itemValue="#{br.branch_id}"></f:selectItems>
+								</p:selectOneMenu> <h:outputText
+									rendered="#{requestCrudBean.mode == 'view' or (!userinfo.sys_admin and !userinfo.main)}"
+									value="#{branchF4Bean.getBranchNameByID(requestCrudBean.request.branch_id)}"></h:outputText>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.resp_branch']}</td>
+							<td><p:selectOneMenu id="res_branch_id"
+									rendered="#{requestCrudBean.mode != 'view'}"
+									value="#{requestCrudBean.request.res_branch_id}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0"></f:selectItem>
+									<f:selectItems
+										value="#{branchF4Bean.getAllBranchByBukrs(requestCrudBean.request.bukrs)}"
+										var="br" itemLabel="#{br.text45}" itemValue="#{br.branch_id}"></f:selectItems>
+								</p:selectOneMenu> <h:outputText rendered="#{requestCrudBean.mode == 'view'}"
+									value="#{branchF4Bean.getBranchNameByID(requestCrudBean.request.res_branch_id)}"></h:outputText>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['department']}</td>
+							<td><p:selectOneMenu
+									rendered="#{requestCrudBean.mode != 'view'}"
+									value="#{requestCrudBean.request.department_id}">
+									<f:selectItem itemValue="0" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems value="#{departmentF4Bean.l_dep}" var="dep"
+										itemValue="#{dep.dep_id}"
+										itemLabel="#{dep.getName(userinfo.u_language)}"></f:selectItems>
+								</p:selectOneMenu> <h:outputText rendered="#{requestCrudBean.mode == 'view'}"
+									value="#{departmentF4Bean.getName(requestCrudBean.request.department_id,userinfo.u_language)}"></h:outputText></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.creator']}</td>
+							<td><h:outputText
+									rendered="#{ requestCrudBean.mode != 'view' and !empty requestCrudBean.userData.staff.staff_id}"
+									value="#{requestCrudBean.userData.staff.getLF()}"></h:outputText>
+
+								<h:outputText
+									rendered="#{requestCrudBean.mode == 'view' and !empty requestCrudBean.request.creator.staff_id}"
+									value="#{requestCrudBean.request.creator.getLF()}"></h:outputText>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.created_at']}</td>
+							<td><h:outputText
+									value="#{requestCrudBean.request.created_at}">
+									<f:convertDateTime pattern="dd.MM.YYYY"></f:convertDateTime>
+								</h:outputText></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['updated_at']}</td>
+							<td><h:outputText
+									value="#{requestCrudBean.request.created_at}">
+									<f:convertDateTime pattern="dd.MM.YYYY"></f:convertDateTime>
+								</h:outputText></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['status']}</td>
+							<td><h:outputText
+									value="#{requestCrudBean.request.getStatusName()}"></h:outputText>
+							</td>
+						</tr>
+					</table>
+
+					<div class="ui-grid-col-12" style="margin-top: 20px;">
+						<p:panel id="horizontal" header="#{msg['hr.actions_log']}"
+							toggleable="true" toggleOrientation="vertical" collapsed="true"
+							rendered="false">
+							<h:panelGrid columns="1" cellpadding="0">
+								<table cellspacing="3" cellpadding="3">
+									<ui:repeat var="elog" value="#{requestCrudBean.reqEvents}">
+										<tr>
+											<td style=""><strong>#{elog.getActionName()}</strong></td>
+											<td>#{elog.staff.getLF()}</td>
+											<td><h:outputText value="#{elog.datetime}">
+													<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+												</h:outputText></td>
+										</tr>
+									</ui:repeat>
+								</table>
+							</h:panelGrid>
+						</p:panel>
+					</div>
+				</fieldset>
+			</div>
+
+
+			<div class="ui-grid-col-7" style="display: block; float: left;">
+				<ui:include src="matnrList.xhtml">
+					<ui:param name="rBean" value="#{requestCrudBean}" />
+				</ui:include>
+			</div>
+
+		</div>
+	</h:form>
+
+	<ui:include src="/reference/matnr/ListDialog2.xhtml">
+		<ui:param name="formId" value=":form" />
+		<ui:param name="mainFormBean" value="#{requestCrudBean}" />
+		<ui:param name="matnrModel" value="#{requestCrudBean.matnrModel}" />
+	</ui:include>
+
+</ui:composition>
+</html>

@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jstl/core">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{crmStandartRep1Bean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.logItemsTable .numberColumn {
+	width: 80px;
+	text-align: center;
+}
+
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+
+.demo-report-table .ui-widget-content:hover {
+	/*
+	background: #ffdddd;
+	color: white;
+	*/
+	
+}
+
+.demo-report-table {
+	font-size: 14px;
+	margin-left: 10px;
+}
+
+.demo-report-table .ref-column {
+	background: #DCE6F1;
+}
+
+.demo-report-table .sale-column {
+	margin-bottom: 15px;
+	background: #EBF1DE;
+}
+
+.demo-report-table .sale-green {
+	font-weight: bold;
+	color: green;
+}
+
+.demo-report-table .rep-column {
+	padding: 5px;
+	text-align: center;
+}
+
+.demo-report-table .sum-column {
+	padding: 5px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.demo-report-table .bottom-bordered-td {
+	border-bottom: 2px solid #DCE6F1;
+}
+
+.demo-report-table td.ui-panelgrid-cell {
+	border: 1px solid #ddd;
+}
+
+.expand-button .ui-button-text {
+	padding: 1px 6px;
+}
+
+.demo-report-table td.divider-bordered {
+	border-bottom: 7px solid #3a87ad;
+}
+
+.ui-panelgrid .ui-panelgrid-cell label.header {
+	font-weight: bold;
+}
+
+.ui-panelgrid .ui-panelgrid-cell label.bad-result {
+	color: red;
+}
+
+.ui-panelgrid .ui-panelgrid-cell label.normal-result {
+	color: #F7B783;
+}
+
+.ui-panelgrid .ui-panelgrid-cell label.good-result {
+	color: green;
+	font-weight: bold;
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="#{crmStandartRep1Bean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader"
+					value="#{crmStandartRep1Bean.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid" style="border: 0px solid red; margin: 10px;">
+				<div class="ui-grid-row"
+					style="border: 0px green solid; margin: 10px;">
+					<h:form id="searchForm">
+						<p:panelGrid style="width:99%;margin-top:1px;" columns="8"
+							cellpadding="0">
+							<h:panelGrid columns="2" cellpadding="0">
+								<h:outputLabel>Компания</h:outputLabel>
+								<p:selectOneMenu value="#{crmStandartRep1Bean.bukrs}"
+									disabled="#{crmStandartRep1Bean.disabledBukrs}">
+									<p:ajax update="branch_id" />
+									<f:selectItem itemLabel="Не выбрано" itemValue="" />
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+							</h:panelGrid>
+
+							<h:panelGrid columns="2" cellpadding="0">
+								<p:outputLabel value="Филиал"></p:outputLabel>
+								<p:selectOneMenu value="#{crmStandartRep1Bean.branchId}"
+									disabled="#{crmStandartRep1Bean.disabledBranch}" id="branch_id">
+									<p:ajax event="change"
+										listener="#{crmStandartRep1Bean.onBranchChange}"
+										update="manager_id" />
+									<f:selectItem itemLabel="Не выбрано" itemValue="" />
+									<f:selectItems
+										value="#{branchBean.getUserBranches(crmStandartRep1Bean.bukrs)}"
+										var="b" itemLabel="#{b.text45}" itemValue="#{b.branch_id}" />
+								</p:selectOneMenu>
+							</h:panelGrid>
+
+							<h:panelGrid columns="2" cellpadding="0">
+								<p:outputLabel value="Менеджер"></p:outputLabel>
+								<p:selectOneMenu id="manager_id"
+									value="#{crmStandartRep1Bean.managerId}">
+									<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+									<f:selectItems value="#{crmStandartRep1Bean.managers}" var="m"
+										itemLabel="#{m.p_staff.getLF()}" itemValue="#{m.staff_id}" />
+								</p:selectOneMenu>
+							</h:panelGrid>
+
+							<p:outputLabel></p:outputLabel>
+							<p:commandButton value="Сформировать"
+								actionListener="#{crmStandartRep1Bean.loadItems()}"
+								update=":dataForm, :messages"></p:commandButton>
+
+						</p:panelGrid>
+					</h:form>
+				</div>
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<h:form id="dataForm">
+							<p:dashboard id="dashboard"
+								model="#{crmStandartRep1Bean.dashboardModel}">
+
+								<c:forEach items="#{crmStandartRep1Bean.items}" var="item">
+									<p:panel id="id-#{item.id}" header="#{item.name}"
+										style="margin:10px;">
+										<p:panelGrid columns="4">
+
+											<p:outputLabel styleClass="header" value="Стандарт" />
+											<p:outputLabel styleClass="header" value="Выполнено" />
+											<p:outputLabel styleClass="header" value="Мин." />
+											<p:outputLabel styleClass="header" value="Сред." />
+
+											<p:outputLabel value="Рекомендации с демо" />
+											<p:outputLabel
+												styleClass="#{crmStandartRep1Bean.getResultCss(item.recoCount,item.minRecoCount,item.avRecoCount)}"
+												value="#{item.recoCount}" />
+											<p:outputLabel value="#{item.minRecoCount}" />
+											<p:outputLabel value="#{item.avRecoCount}" />
+
+											<p:outputLabel value="Выведенные демо" />
+											<p:outputLabel
+												styleClass="#{crmStandartRep1Bean.getResultCss(item.demoCount,item.minDemoCount,item.avDemoCount)}"
+												value="#{item.demoCount}" />
+											<p:outputLabel value="#{item.minDemoCount}" />
+											<p:outputLabel value="#{item.avDemoCount}" />
+
+											<p:outputLabel value="Кол-во показанных демо" />
+											<p:outputLabel
+												styleClass="#{crmStandartRep1Bean.getResultCss(item.shownDemoCount,item.minShownDemoCount,item.avShownDemoCount)}"
+												value="#{item.shownDemoCount}" />
+											<p:outputLabel value="#{item.minShownDemoCount}" />
+											<p:outputLabel value="#{item.avShownDemoCount}" />
+
+											<p:outputLabel value="С демо на демо" />
+											<p:outputLabel
+												styleClass="#{crmStandartRep1Bean.getResultCss(item.demoFromDemoCount,item.minDemoFromDemoCount,item.avDemoFromDemoCount)}"
+												value="#{item.demoFromDemoCount}" />
+											<p:outputLabel value="#{item.minDemoFromDemoCount}" />
+											<p:outputLabel value="#{item.avDemoFromDemoCount}" />
+
+											<p:outputLabel value="Кол-во продаж к демо" />
+											<p:outputLabel
+												styleClass="#{crmStandartRep1Bean.getResultCss(item.saleFromDemoCount,item.minSaleFromDemoCount,item.avSaleFromDemoCount)}"
+												value="#{item.saleFromDemoCount}" />
+											<p:outputLabel value="#{item.minSaleFromDemoCount}" />
+											<p:outputLabel value="#{item.avSaleFromDemoCount}" />
+
+											<p:outputLabel value="Визит клиенту" />
+											<p:outputLabel
+												styleClass="#{crmStandartRep1Bean.getResultCss(item.visitCount,item.minVisitCount,item.avVisitCount)}"
+												value="#{item.visitCount}" />
+											<p:outputLabel value="#{item.minVisitCount}" />
+											<p:outputLabel value="#{item.avVisitCount}" />
+
+											<p:outputLabel value="Реком. получ. с визита" />
+											<p:outputLabel
+												styleClass="#{crmStandartRep1Bean.getResultCss(item.recoFromVisitCount,item.minRecoFromVisitCount,item.avRecoFromVisitCount)}"
+												value="#{item.recoFromVisitCount}" />
+											<p:outputLabel value="#{item.minRecoFromVisitCount}" />
+											<p:outputLabel value="#{item.avRecoFromVisitCount}" />
+
+											<p:outputLabel value="Кол-во дилеров в группе" />
+											<p:outputLabel
+												styleClass="#{crmStandartRep1Bean.getResultCss(item.dealerCountInGroup,item.minDealerCountInGroup,item.avDealerCountInGroup)}"
+												value="#{item.dealerCountInGroup}" />
+											<p:outputLabel value="#{item.minDealerCountInGroup}" />
+											<p:outputLabel value="#{item.avDealerCountInGroup}" />
+
+											<p:outputLabel value="Новичок" />
+											<p:outputLabel value="0" />
+											<p:outputLabel value="0" />
+											<p:outputLabel value="0" />
+
+											<p:outputLabel value="Демо секретарь" />
+											<p:outputLabel value="0" />
+											<p:outputLabel value="0" />
+											<p:outputLabel value="0" />
+
+											<p:outputLabel value="Количество менеджеров" />
+											<p:outputLabel value="0" />
+											<p:outputLabel value="0" />
+											<p:outputLabel value="0" />
+
+											<p:outputLabel value="Процент демо к звонку" />
+											<p:outputLabel
+												styleClass="#{crmStandartRep1Bean.getResultCss(item.demoCallPercent,item.minDemoCallPercent,item.avDemoCallPercent)}"
+												value="#{item.demoCallPercent}" />
+											<p:outputLabel value="#{item.minDemoCallPercent}" />
+											<p:outputLabel value="#{item.avDemoCallPercent}" />
+
+											<p:outputLabel value="Процент показанных демо" />
+											<p:outputLabel
+												styleClass="#{crmStandartRep1Bean.getResultCss(item.shownDemoCallPercent,item.minShownDemoCallPercent,item.avShownDemoCallPercent)}"
+												value="#{item.shownDemoCallPercent}" />
+											<p:outputLabel value="#{item.minShownDemoCallPercent}" />
+											<p:outputLabel value="#{item.avShownDemoCallPercent}" />
+										</p:panelGrid>
+									</p:panel>
+								</c:forEach>
+							</p:dashboard>
+
+
+							<p:dataTable value="#{crmStandartRep1Bean.items}" var="item"
+								rendered="false">
+								<p:column headerText="ФИО">
+									<p:outputLabel />
+								</p:column>
+
+								<p:column headerText="Новые рек. с демо">
+									<p:outputLabel />
+								</p:column>
+
+								<p:column headerText="Выведенное демо">
+									<p:outputLabel />
+								</p:column>
+
+								<p:column headerText="Показанные демо">
+									<p:outputLabel />
+								</p:column>
+
+								<p:column headerText="С демо на демо">
+									<p:outputLabel />
+								</p:column>
+
+								<p:column headerText="Кол-во продаж к демо">
+									<p:outputLabel />
+								</p:column>
+
+								<p:column headerText="Визит клиенту">
+									<p:outputLabel />
+								</p:column>
+
+								<p:column headerText="Реком. с визита">
+									<p:outputLabel />
+								</p:column>
+
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

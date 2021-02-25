@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<p:panel id="horizontal" header="Внешние заявки" toggleable="true"
+		toggleOrientation="vertical" collapsed="false" rendered="#{oBean.mode != 'view'}">
+		<h:panelGrid columns="1" cellpadding="0">
+			<p:toolbar styleclass="mp_toolbar">
+				<f:facet name="left">
+					<p:commandButton rendered="#{oBean.mode != 'view'}" type="push"
+						value="Добавить" align="right" icon="ui-icon ui-icon-check"
+						actionListener="#{oBean.loadAllDocsForParent()}"
+						oncomplete="PF('MdDocsDialog').show()"
+						update=":messages,selectedMdTable,:MdDocsDlgForm" id="add_rel_doc_btn" disabled="#{empty oBean.order.bukrs}">
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+			<p:dataTable id="selectedMdTable" value="#{oBean.parentDocs}"
+				var="pd">
+				<p:column style="width: 20px;">
+					<f:facet name="header">№</f:facet>
+					<h:outputText value="#{pd.id}"></h:outputText>
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">Автор</f:facet>
+					<h:outputText value="#{pd.creator.getLF()}"></h:outputText>
+				</p:column>
+
+				<p:column style="width: 20px;">
+					<p:commandButton rendered="#{oBean.mode != 'view'}" icon="ui-icon-close">
+						<p:ajax listener="#{oBean.deleteParentDocRow(pd)}"
+							update="selectedMdTable"></p:ajax>
+					</p:commandButton>
+
+					<p:button rendered="#{oBean.mode == 'view'}" target="_blank" outcome="/logistics/request/out/View.xhtml"
+						title="Просмотр" icon="ui-icon-search">
+						<f:param name="id" value="#{pd.id}" />
+					</p:button>
+
+				</p:column>
+
+
+			</p:dataTable>
+		</h:panelGrid>
+	</p:panel>
+
+
+
+</ui:composition>
+</html>

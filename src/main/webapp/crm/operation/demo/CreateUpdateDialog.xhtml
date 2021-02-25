@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<style>
+.field-row {
+	margin-top: 10px;
+}
+
+.field-label {
+	border: solid 0px red;
+	font-size: 14px;
+	font-weight: 600;
+	font-style: italic;
+}
+
+.field-label label {
+	float: right;
+	margin-right: 5px;
+}
+
+.field-value {
+	border: solid 0px red;
+}
+
+.field-value input, textarea, .ui-selectonemenu {
+	width: 80%;
+}
+
+.field-value .ui-selectonemenu {
+	
+}
+</style>
+	<p:dialog header="#{crmDemoCrudBean.dialogHeader}"
+		widgetVar="DemoCreateUpdateDialog" id="DemoCreateUpdateDialog"
+		minHeight="100" width="700" style="padding:10px;" appendTo="@(body)"
+		modal="true" resizable="false">
+		<h:form id="DemoCreateUpdateDialogForm"
+			rendered="#{!empty crmDemoCrudBean.selected}">
+			<p:toolbar styleclass="mp_toolbar">
+				<f:facet name="left">
+					<p:commandButton rendered="#{showSaveBtn}" type="push"
+						value="#{msg['dmsc.save']}" icon="ui-icon ui-icon-check"
+						actionListener="#{crmDemoCrudBean.save()}" update=":messages">
+					</p:commandButton>
+
+					<p:commandButton rendered="#{showCustomSaveBtn}" type="push"
+						value="#{msg['dmsc.save']}" icon="ui-icon ui-icon-check"
+						actionListener="#{saveActionBean[saveAction]}" update=":messages">
+					</p:commandButton>
+
+				</f:facet>
+			</p:toolbar>
+			<br />
+			<div class="ui-grid ui-grid-responsive">
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Компания" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmDemoCrudBean.selected.bukrs}"
+							disabled="#{crmDemoCrudBean.disabledBukrs}">
+							<p:ajax update="form_branch_id" />
+							<f:selectItem itemLabel="Не выбрано" itemValue="" />
+							<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+								itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Филиал" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmDemoCrudBean.selected.branchId}"
+							disabled="#{crmDemoCrudBean.disabledBranch}" id="form_branch_id">
+							<p:ajax event="change"
+								listener="#{crmDemoCrudBean.onBranchChange}"
+								update="form_manager_id" />
+							<f:selectItem itemLabel="Не выбрано" itemValue="" />
+							<f:selectItems
+								value="#{branchBean.getUserBranches(crmDemoCrudBean.selected.bukrs)}"
+								var="b" itemLabel="#{b.text45}" itemValue="#{b.branch_id}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Менеджер" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmDemoCrudBean.selectedManagerId}"
+							disabled="#{crmDemoCrudBean.disabledManager}"
+							id="form_manager_id">
+							<p:ajax event="change"
+								listener="#{crmDemoCrudBean.onManagerChange}"
+								update="form_responsible_id" />
+							<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+							<f:selectItems value="#{crmDemoCrudBean.managers}" var="m"
+								itemLabel="#{m.p_staff.getLF()}" itemValue="#{m.staff_id}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Отв. сотрудник" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmDemoCrudBean.selected.dealerId}"
+							id="form_responsible_id">
+							<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+							<f:selectItems value="#{crmDemoCrudBean.dealers}" var="d"
+								itemLabel="#{d.p_staff.getLF()}" itemValue="#{d.staff_id}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="ФИО клиента" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmDemoCrudBean.selected.clientName}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Дата время демо" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:calendar value="#{crmDemoCrudBean.selected.dateTime}"
+							pattern="dd.MM.yyyy HH:mm" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Адрес" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputTextarea value="#{crmDemoCrudBean.selected.address}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Местоположение" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmDemoCrudBean.selected.locationId}">
+							<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+							<f:selectItems value="#{crmDemoCrudBean.locations.entrySet()}"
+								var="e" itemLabel="#{e.value}" itemValue="#{e.key}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Примечание" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputTextarea value="#{crmDemoCrudBean.selected.note}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Результат" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmDemoCrudBean.selected.resultId}"
+							disabled="#{crmDemoCrudBean.selected.isNew()}">
+							<p:ajax listener="#{crmDemoCrudBean.onResultChange}"
+								update="reasonId recallDate" />
+							<f:selectItems value="#{crmDemoCrudBean.results.entrySet()}"
+								var="e" itemLabel="#{e.value}" itemValue="#{e.key}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<p:panel id="reasonId" style="border:0px;">
+					<div class="ui-grid-row field-row">
+						<div class="ui-grid-col-3 field-label">
+							<p:outputLabel value="Причина" />
+						</div>
+						<div class="ui-grid-col-9 field-value">
+							<p:selectOneMenu value="#{crmDemoCrudBean.selected.reasonId}"
+								disabled="#{crmDemoCrudBean.selected.isNew()}">
+								<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+								<f:selectItems value="#{crmDemoCrudBean.reasons}" var="r"
+									itemLabel="#{r.name}" itemValue="#{r.id}" />
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</p:panel>
+
+				<p:panel id="recallDate" style="border:0px;">
+					<div class="ui-grid-row field-row">
+						<div class="ui-grid-col-3 field-label">
+							<p:outputLabel value="Дата перезвона" />
+						</div>
+						<div class="ui-grid-col-9 field-value">
+							<p:calendar value="#{crmDemoCrudBean.recallDate}"
+								pattern="dd.MM.yyyy HH:mm"
+								disabled="#{crmDemoCrudBean.selected.resultId != 2}" />
+						</div>
+					</div>
+				</p:panel>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Дата продажи" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:calendar value="#{crmDemoCrudBean.selected.saleDate}"
+							pattern="dd.MM.yyyy"
+							disabled="#{crmDemoCrudBean.selected.isNew()}" />
+					</div>
+				</div>
+
+			</div>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog id="ScheduledCallDlg" widgetVar="ScheduleCallsWidget"
+		modal="true" dynamic="true" resizable="false" appendTo="@(body)"
+		header="Назначенные звонки" width="1030px" height="535px">
+
+		<h:form id="ScheduledCallsForm">
+			<div class="ui-grid-row">
+				<div style="float: left;">
+					<fieldset style="border: 1px solid #ccc;">
+						<legend>Данные клиента</legend>
+
+						<div style="float: left;">
+							<table>
+								<tr>
+									<td><h:outputLabel value="#{msg['dmsc.bukrs']}: " /></td>
+									<td><p:selectOneMenu styleClass="bukrs" id="bukrs"
+											value="#{formBean.schedcallsBean.searchscs.bukrs}">
+											<p:ajax listener="#{formBean.schedcallsBean.loadBranch}" />
+											<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}"
+												itemValue="0" />
+											<f:selectItems value="#{formBean.bukrs_list}"
+												var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu></td>
+								</tr>
+
+								<tr>
+									<td><h:outputLabel value="#{msg['dmsc.branch']}: " /></td>
+									<td><p:selectOneMenu styleClass="branch" id="branch"
+											value="#{formBean.schedcallsBean.searchscs.branchId}">
+											<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+												itemValue="0" />
+											<f:selectItems value="#{formBean.schedcallsBean.branch_list}"
+												var="wa_branch" itemLabel="#{wa_branch.text45}"
+												itemValue="#{wa_branch.branch_id}" />
+										</p:selectOneMenu></td>
+								</tr>
+							</table>
+						</div>
+
+						<div style="float: left; margin-left: 25px;">
+							<table>
+								<tr>
+									<td><h:outputLabel value="Дата " /></td>
+									<td><p:calendar id="schedDate" styleClass="dateField"
+											value="#{formBean.schedcallsBean.searchscs.scheduledDate}"
+											navigator="true" pattern="dd.MM.yyyy" mask="true"
+											converterMessage="Date is invalid." /></td>
+								</tr>
+								<tr>
+									<td colspan="2"></td>
+								</tr>
+								<tr>
+									<td><h:outputLabel value="Показать на месяц " /></td>
+									<td><p:inputSwitch id="byMonth"
+											value="#{formBean.schedcallsBean.bymonth}" /></td>
+								</tr>
+							</table>
+						</div>
+						<div style="float: left; margin-left: 25px;">
+							<table>
+								<tr>
+									<td><h:outputLabel value="Только мои " /></td>
+									<td><p:inputSwitch id="myOnly"
+											value="#{formBean.schedcallsBean.myOnly}" /></td>
+								</tr>
+							</table>
+						</div>						
+					</fieldset>
+				</div>
+			</div>
+
+			<p:toolbar styleclass="mp_toolbar" style="margin-top: 10px;">
+				<f:facet name="left">
+					<p:commandButton type="push" value="Показать"
+						icon="ui-icon ui-icon-search" update=":messages"
+						actionListener="#{formBean.schedcallsBean.Search}" />
+				</f:facet>
+			</p:toolbar>
+
+			<div class="ui-grid-row">
+				<p:dataTable value="#{formBean.schedcallsBean.scsoL}" 
+					var="o" rowKey="#{o.index}"
+					selectionMode="single" selection="#{formBean.schedcallsBean.selScso}"
+					emptyMessage="#{msg[dmsc.emptyRec]}" 
+					paginator="true" rows="8"
+					lazy="false" widgetVar="50" id="outputTable"
+					styleClass="outputTable-table" scrollable="true" scrollHeight="285"
+					headerClass="outputTable-table-header"
+					rowClasses="outputTable-table-odd-row,outputTable-table-even-row">
+
+					<p:column style="text-align:center;" width="3%">
+						<f:facet name="header">
+							<h:outputText value="#" />
+						</f:facet>
+							<h:outputText id="oIndex" value="#{o.index}" />
+					</p:column>
+					
+					<p:column style="text-align:center;" >
+						<f:facet name="header">
+							<h:outputText value="Назначенная дата" />
+						</f:facet>
+						<p:calendar id="scheduledDate" 
+							pattern="dd.MM.yyyy HH:mm" autocomplete="off"
+							value="#{o.scs.scheduledDate}" 
+							converterMessage="Date is invalid."
+							disabled="true">
+						</p:calendar>
+					</p:column>
+					
+					<p:column style="text-align:center;" width="10%">
+						<f:facet name="header">
+							<h:outputText value="SN" />
+						</f:facet>
+							<h:outputText id="conSN" value="#{o.contract.contract_number}" />
+					</p:column>
+					
+					<p:column style="text-align:center;" width="10%">
+						<f:facet name="header">
+							<h:outputText value="Товар SN" />
+						</f:facet>
+							<h:outputText id="tovSN" value="#{o.contract.tovar_serial}" />
+					</p:column>
+					
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="ФИО клиента" />
+						</f:facet>
+						<h:outputText value="#{o.customer.fullFIO}" />
+					</p:column>
+					
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Описание действия" />
+						</f:facet>
+						<h:outputText value="#{o.scs.info}" />
+					</p:column>
+					
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="ФИО сотрудника" />
+						</f:facet>
+						<h:outputText value="#{o.staff.LF}" />
+					</p:column>
+					
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Дата создания" />
+						</f:facet>
+						<p:calendar id="createdDate" 
+							pattern="dd.MM.yyyy HH:mm:ss" autocomplete="off"
+							value="#{o.scs.createdDate}" 
+							converterMessage="Date is invalid."
+							disabled="true">
+						</p:calendar>
+					</p:column>
+					
+					<p:column width="11%">
+						<f:facet name="header">
+							<h:outputText value="История" />
+						</f:facet>
+						<p:commandButton icon="ui-icon-newwin" type="push" value="История"
+							actionListener="#{formBean.prepareCRMHistoryDlgFromSchedDlg(o.index)}"
+							oncomplete="PF('CrmHistoryWidget').show();">
+						</p:commandButton>
+					</p:column>
+
+				</p:dataTable>
+			</div>
+
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

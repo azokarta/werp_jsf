@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="ExpenceCreateDlg" widgetVar="ExpenceCreateDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="#{msg['hr.expence.new_expence']}">
+		<h:form id="ExpenceCreateForm">
+			<h:panelGroup id="display" rendered="#{expenceBean.selected != null}">
+				<p:panelGrid columns="2">
+
+					<p:outputLabel value="#{msg.company}" />
+					<p:selectOneMenu value="#{expenceBean.selected.bukrs}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+						<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+							itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg.summ}" />
+					<p:inputText value="#{expenceBean.selected.sum}"></p:inputText>
+
+					<p:outputLabel value="Дата"></p:outputLabel>
+					<p:calendar styleClass="bldat" yearRange="2016:2020"
+						pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+						locale="#{systemLocale.currentLocale.getLanguage()}"
+						value="#{expenceBean.selected.expence_date}"
+						converterMessage="Date is invalid.">
+
+					</p:calendar>
+
+					<p:outputLabel value="#{msg['hr.staff.expence_type']}" />
+					<p:selectOneMenu value="#{expenceBean.selected.et_id}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+						<f:selectItems value="#{expenceBean.expenceTypeList}" var="et"
+							itemLabel="#{et.name}" itemValue="#{et.et_id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg.currency}" />
+					<p:selectOneMenu value="#{expenceBean.selected.currency}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+						<f:selectItems value="#{currencyF4Bean.currency_list}" var="cur"
+							itemLabel="#{cur.text20}" itemValue="#{cur.currency}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg.comment}" />
+					<p:inputTextarea value="#{expenceBean.selected.description}"></p:inputTextarea>
+
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{expenceBean.Save}"
+					value="#{msg.save}" update="#{updateElement},:messages" />
+				<p:commandButton actionListener="#{expenceBean.Reset}"
+					value="#{msg.cancel}" oncomplete="PF('ExpenceCreateDialog').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

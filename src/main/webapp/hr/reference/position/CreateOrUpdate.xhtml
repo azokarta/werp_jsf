@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="PositionCreateDlg" widgetVar="PositionCreateDlg"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Создание/Редактирование позиции" height="200" width="400">
+		<h:form id="PositionCreateForm">
+			<h:panelGroup id="display"
+				rendered="#{hrReferencePositionBean.selected != null}">
+				<p:panelGrid columns="2" style="margin-bottom:10px;width:100%;">
+					<p:outputLabel value="Название" />
+					<p:inputText value="#{hrReferencePositionBean.selected.text}" style="width:100%;"></p:inputText>
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{hrReferencePositionBean.Save()}"
+					value="#{msg.save}" update=":PositionListForm:datalist,:messages" />
+				<p:commandButton actionListener="#{hrReferencePositionBean.Reset()}"
+					value="#{msg.cancel}" oncomplete="PF('PositionCreateDlg').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

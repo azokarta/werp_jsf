@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<p:panel id="horizontal" header="#{msg['logistics.related_docs']}" toggleable="true"
+		toggleOrientation="vertical" collapsed="false"
+		rendered="#{invoiceBean.mode == 'view'}">
+		<p:tree value="#{invoiceBean.relatedDocsTree}" var="node" >
+			<p:treeNode>
+				<h:outputText value="№#{node.contextId} " />
+				<h:outputText rendered="#{!node.isActive}" value="#{node.getDocumentName()}" />
+				<h:outputText style="font-weight:bold;" rendered="#{node.isActive}" value="#{node.getDocumentName()}" />
+			</p:treeNode>
+		</p:tree>
+	</p:panel>
+
+
+
+</ui:composition>
+</html>

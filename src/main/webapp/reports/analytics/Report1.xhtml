@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{repAnalytics1.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.logItemsTable .numberColumn {
+	width: 80px;
+	text-align: center;
+}
+
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{repAnalytics1.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{repAnalytics1.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm">
+							<p:panelGrid columns="2" style="width:99%;margin-top:1px;">
+								<f:facet name="header">Панель для поиска</f:facet>
+
+								<p:outputLabel value="Компания"></p:outputLabel>
+								<werp:companySelect elementId="companyId" mode="update"
+									value="#{repAnalytics1.bukrs}"
+									onChangeUpdate=":searchForm:branchSelect:branchId">
+								</werp:companySelect>
+
+								<p:outputLabel value="Филиал"></p:outputLabel>
+								<werp:branchSelect id="branchSelect" elementId="branchId"
+									companyValue="#{repAnalytics1.bukrs}"
+									value="#{repAnalytics1.branchId}" mode="update">
+								</werp:branchSelect>
+
+								<p:outputLabel value="День"></p:outputLabel>
+								<p:selectOneMenu value="#{repAnalytics1.day}" id="day">
+									<f:selectItems value="#{repAnalytics1.dayList}" var="d"
+										itemLabel="#{d.value}" itemValue="#{d.id}"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Месяц"></p:outputLabel>
+								<p:selectOneMenu value="#{repAnalytics1.month}">
+									<f:selectItems value="#{repAnalytics1.monthList}" var="m"
+										itemLabel="#{m.name}" itemValue="#{m.id}"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="Сформировать"
+									actionListener="#{repAnalytics1.generateData()}"
+									update=":dataForm:repDataTable, :messages"></p:commandButton>
+
+							</p:panelGrid>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="dataForm">
+							<p:dataTable value="#{repAnalytics1.items}" var="item"
+								tableStyleClass="logItemsTable" id="repDataTable" paginator="true" rows="50">
+								
+								<f:facet name="header" id="tableHeader">
+								<span
+									style="display: block; float: left; color: blue; font-weight: bold;">ВСЕГО:
+									#{fn:length(repAnalytics1.items)}</span>
+								<div style="clear: both;"></div>
+							</f:facet>
+
+								<p:column headerText="Имя"
+									style="width:150px;">
+									<p:outputLabel value="#{item.firstname}"></p:outputLabel>
+								</p:column>
+								
+								<p:column headerText="Фамилия"
+									style="width:150px;">
+									<p:outputLabel value="#{item.lastname}"></p:outputLabel>
+								</p:column>
+								
+								<p:column headerText="Отчество"
+									style="width:150px;">
+									<p:outputLabel value="#{item.middlename}"></p:outputLabel>
+								</p:column>
+								
+								<p:column headerText="Покупал(а) товар">
+									<p:outputLabel value="#{item.purchasedGoods}"></p:outputLabel>
+								</p:column>
+								
+								<p:column headerText="Дата покупки">
+									<p:outputLabel value="#{item.purchasedDate}">
+										<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+									</p:outputLabel>
+								</p:column>
+								
+								<p:column headerText="Дата рожд">
+									<p:outputLabel value="#{item.birthday}">
+										<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+									</p:outputLabel>
+								</p:column>
+								
+								<p:column headerText="Возраст"
+									style="width:70px;text-align:center;">
+									<p:outputLabel value="#{item.age}"></p:outputLabel>
+								</p:column>
+								
+								<p:column headerText="Контакт">
+									<p:outputLabel value="#{item.telephone}"></p:outputLabel>
+								</p:column>
+								<p:column headerText="Ссылка на контракт">
+									<p:button value="Просмотр" target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{item.contractId}"
+										icon="ui-icon-search" title="Просмотр документа">
+									</p:button>
+								</p:column>
+								
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

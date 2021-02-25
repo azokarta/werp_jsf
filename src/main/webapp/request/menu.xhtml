@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:event type="preRenderView" listener="#{goFast.init}" />
+</f:metadata>
+
+<h:head>
+	<title>HEADER</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+</h:head>
+
+<h:body>
+	<ui:composition>
+		<p:ajaxStatus id="ajaxStatusPanel">
+			<f:facet name="start">
+
+				<div id="ajax_loading_div">
+					<p><h:outputLabel value="#{msg.please_wait}..." /></p>
+				</div>
+			</f:facet>
+			<f:facet name="complete">
+				<h:outputText value="" />
+			</f:facet>
+		</p:ajaxStatus>
+		<style>
+		.ui-growl-item-container .ui-growl-message p{
+			 white-space: pre-line;
+		}
+		</style>
+		<script>
+			PrimeFaces.locales['ru'] = {
+				closeText : 'Закрыть',
+				prevText : 'Назад',
+				nextText : 'Вперёд',
+				monthNames : [ 'Январь', 'Февраль', 'Март', 'Апрель', 'Май',
+						'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь',
+						'Ноябрь', 'Декабрь' ],
+				monthNamesShort : [ 'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
+						'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек' ],
+				dayNames : [ 'Воскресенье', 'Понедельник', 'Вторник', 'Среда',
+						'Четверг', 'Пятница', 'Субота' ],
+				dayNamesShort : [ 'Воск', 'Пон', 'Вт', 'Ср', 'Четв', 'Пят',
+						'Суб' ],
+				dayNamesMin : [ 'В', 'П', 'Вт', 'С ', 'Ч', 'П ', 'Сб' ],
+				weekHeader : 'Неделя',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Только время',
+				timeText : 'Время',
+				hourText : 'Час',
+				minuteText : 'Минута',
+				secondText : 'Секунда',
+				currentText : 'Сегодня',
+				ampm : false,
+				month : 'Месяц',
+				week : 'неделя',
+				day : 'День',
+				allDayText : 'Весь день'
+			};
+		</script>
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<h:form
+					style="display:inline-block;margin-left: 70px;margin-top: 5px; height:27px;">
+					<h:inputText id="fast-go" value="#{goFast.transactionCode}" />
+					<p:watermark value="Быстрый вызов" for="fast-go" />
+
+					<h:commandButton value="Перейти" action="#{goFast.doRedirect}" />
+				</h:form>
+				<span class="ui-separator"> <span
+					class="ui-icon ui-icon-grip-dotted-vertical" />
+				</span>
+				<h:outputLabel value="#{userinfo.baza}: " style="color:red"/>
+				<h:outputLabel name="breadcrumb" value="#{pageTitle}" />
+				
+			</f:facet>
+			
+			<f:facet name="right">
+				
+				<h:outputLabel value="#{userinfo.getStaffDisplayName()}"/>
+				<p:commandButton type="push" value="#{msg.logout}"
+					icon="ui-icon ui-icon-check" action="#{userinfo.logout}" />
+			</f:facet>
+		</p:toolbar>
+		
+		<p:growl id="messages" sticky="false" showDetail="true" life="3000" />
+		
+	</ui:composition>
+</h:body>
+</html>

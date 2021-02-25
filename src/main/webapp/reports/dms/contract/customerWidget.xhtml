@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog id="CustomerDlg" widgetVar="CustomerWidget" modal="true"
+		width="800" header="#{msg['client']}" dynamic="true" resizable="true"
+		appendTo="@(body)">
+
+		<h:form id="CustomerSearchForm">
+
+			<div id="sc_div">
+				<fieldset class="sc_FieldSet">
+					<legend>#{msg['search']} #{msg['client']}</legend>
+
+					<div style="float: left; margin-right: 25px;">
+						<table>
+							<tr>
+								<td><h:outputLabel value="#{msg['fiz_yur']}" /></td>
+								<td><p:selectOneMenu id="sc_fiz_yur"
+										value="#{dmsclistBean.searchCustomer.fiz_yur}"
+										onchange="birthdayDisable()">
+										<f:selectItem itemLabel="#{msg['select']}" itemValue="0" />
+										<f:selectItem itemLabel="#{msg['fiz_lico']}" itemValue="2" />
+										<f:selectItem itemLabel="#{msg['yur_lico']}" itemValue="1" />
+									</p:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{msg['dmsc.IINBIN']}" /></td>
+								<td><p:inputText id="sc_iin_bin" maxlength="45"
+										autocomplete="off"
+										value="#{dmsclistBean.searchCustomer.iin_bin}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{msg['name']}" /></td>
+								<td><p:inputText id="sc_name" maxlength="45"
+										autocomplete="off" value="#{dmsclistBean.searchCustomer.name}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{msg['country']}" /></td>
+								<td><p:selectOneMenu id="sc_country"
+										value="#{dmsclistBean.searchCustomer.country_id}">
+										<f:selectItem itemLabel="" itemValue="0" />
+										<f:selectItems value="#{countryF4Bean.country_list}"
+											var="wa_country" itemLabel="#{wa_country.country}"
+											itemValue="#{wa_country.country_id}" />
+									</p:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><p:commandButton
+										actionListener="#{dmsclistBean.to_search_customer}"
+										value="#{msg['search']}" update=":messages" /></td>
+								<td></td>
+							</tr>
+
+						</table>
+
+					</div>
+
+					<div style="float: left;">
+						<table>
+							<tr>
+								<td><h:outputLabel value="#{msg['first_name']}" /></td>
+								<td><p:inputText id="sc_firstname" maxlength="45"
+										autocomplete="off"
+										value="#{dmsclistBean.searchCustomer.firstname}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{msg['last_name']}" /></td>
+								<td><p:inputText id="sc_lastname" maxlength="45"
+										autocomplete="off"
+										value="#{dmsclistBean.searchCustomer.lastname}" /></td>
+							</tr>
+
+							<tr>
+								<td><h:outputLabel value="#{msg['middle_name']}" /></td>
+								<td><p:inputText id="sc_middlename" maxlength="45"
+										autocomplete="off"
+										value="#{dmsclistBean.searchCustomer.middlename}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{msg['hr.customer.birthday']}" /></td>
+								<td><p:calendar id="sc_birthday" styleClass="bldat"
+										pattern="dd.MM.yyyy" autocomplete="off"
+										value="#{dmsclistBean.searchCustomer.birthday}"
+										converterMessage="Date is invalid.">
+									</p:calendar></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{msg['hr.customer.passport_id']}" /></td>
+								<td><p:inputText id="sc_passport_id" maxlength="45"
+										autocomplete="off"
+										value="#{dmsclistBean.searchCustomer.passport_id}" /></td>
+							</tr>
+
+						</table>
+					</div>
+
+				</fieldset>
+			</div>
+			<br />
+
+
+			<p:dataTable id="customerTable" var="cus" rowKey="#{cus.id}"
+				value="#{dmsclistBean.p_customer_list}" emptyMessage="#{msg['empty_rows']}"
+				selectionMode="single" selection="#{dmsclistBean.selectedCustomer}" rows="10"
+				paginator="true">
+				<f:facet name="header">
+
+					<p:commandButton process="customerTable"
+						actionListener="#{dmsclistBean.assignFoundCustomer}"
+						value="#{msg['select']}" />
+				</f:facet>
+
+				<p:column headerText="#{msg['fiz_yur']}">
+					<p:selectOneMenu id="fiz_yur" value="#{cus.fiz_yur}"
+						disabled="true">
+										<f:selectItem itemLabel="#{msg['fiz_lico']}" itemValue="2" />
+										<f:selectItem itemLabel="#{msg['yur_lico']}" itemValue="1" />
+					</p:selectOneMenu>
+				</p:column>
+				<p:column headerText="#{msg['dmsc.IINBIN']}">
+					<h:outputText value="#{cus.iin_bin}" />
+				</p:column>
+				<p:column headerText="#{msg['name']}">
+					<h:outputText value="#{cus.name}" />
+				</p:column>
+				<p:column headerText="#{msg['first_name']}">
+					<h:outputText value="#{cus.firstname}" />
+				</p:column>
+				<p:column headerText="#{msg['last_name']}">
+					<h:outputText value="#{cus.lastname}" />
+				</p:column>
+				<p:column headerText="#{msg['middle_name']}">
+					<h:outputText value="#{cus.middlename}" />
+				</p:column>
+				<p:column headerText="#{msg['hr.customer.birthday']}">
+					<p:calendar id="birthday" styleClass="bldat" pattern="dd.MM.yyyy"
+						mask="true" autocomplete="off" value="#{cus.birthday}"
+						converterMessage="Date is invalid." disabled="true">
+					</p:calendar>
+				</p:column>
+				<p:column headerText="#{msg['hr.customer.passport_id']}">
+					<h:outputText value="#{cus.passport_id}" />
+				</p:column>
+			</p:dataTable>
+
+
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

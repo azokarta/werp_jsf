@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<script type="text/javascript">
+	function showProgress(index) { 
+		
+	    
+		var messageForInputElement = document.getElementById("form:tabView:outputTable:"+index+":status");
+	    document.getElementById("form:tabView:outputTable:"+index+":status").innerHTML = "Changing...";
+	    
+	} 
+	</script>
+	
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="hr/payroll/hrpl.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b><h:outputLabel value="#{msg.menu}" /></b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.hrpl']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,hrplBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+	
+						<p:growl id="messages" sticky="false" showDetail="true" />
+						<p:tabView id="tabView" dynamic="true" cache="true"
+							activeIndex="#{hrplBean.tabindex}">
+							<p:ajax event="tabChange" listener="#{hrplBean.onTabChange}" />
+							<p:tab title="#{msg.calculation}">
+								<table>
+								<tr><td><p:commandButton id="save_button" value="#{msg.save}" action="#{hrplBean.to_save}" disabled = "#{hrplBean.saveDisabled}"/></td>
+									<td><p:commandButton id="charge_button" value="#{msg.calculation}" action="#{hrplBean.to_charge}" disabled = "#{hrplBean.chargeDisabled}"/></td>
+									<td><p:commandButton value = "#{msg.view_opv_ipn}" type="push"  oncomplete="PF('viewTaxChargeWidget').show();"/></td>
+									<td><p:button title="Create" id="createButton"
+								outcome="/hr/staff/Create.xhtml" icon="ui-icon-plus"
+								style="float:right;margin-right:5px;" /></td>
+								</tr>
+								</table>
+								<p:panelGrid style="margin-top:0px; border:0px;"
+									styleClass="searchPanelGrid">
+									<p:row>
+										<p:column><h:outputLabel value = "#{msg.company}: " /></p:column>
+										<p:column>
+											
+											<p:selectOneMenu styleClass="bonus_bukrs" id="p_bukrs"	value="#{hrplBean.p_searchTable.bukrs}" >
+											<p:ajax update="p_branch_id" />
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu>
+										</p:column>
+										
+										<p:column><h:outputLabel value = "#{msg.branch}: " /></p:column>
+										<p:column>
+											<p:selectOneMenu id="p_branch_id" value="#{hrplBean.p_searchTable.branch_id}" disabled="#{userinfo.main=='true'?'false':'true'}">
+												<f:selectItem itemLabel="" itemValue="0" />	 
+												<f:selectItems value="#{branchF4Bean.getByBukrsOrBusinessArea(hrplBean.p_searchTable.bukrs,userinfo.bukrs,0,0,0,userinfo.branch_id)}" var="wa_branch"
+													itemLabel="#{wa_branch.text45}" itemValue="#{wa_branch.branch_id}" >
+													
+													</f:selectItems>   
+											</p:selectOneMenu>
+											
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column><h:outputLabel value = "#{msg['bkpf.gjahr.long']}: " /></p:column>
+										<p:column>
+											<p:selectOneMenu id="p_gjahr"
+												value="#{hrplBean.p_searchTable.gjahr}">
+												<f:selectItem itemLabel="2021" itemValue="2021" />
+											</p:selectOneMenu>
+										</p:column>
+										<p:column><h:outputLabel value = "#{msg['bkpf.monat.long']}: " /></p:column>
+										<p:column>
+											<p:selectOneMenu id="p_monat"
+												value="#{hrplBean.p_searchTable.monat}">
+												<p:ajax listener="#{hrplBean.assignMonatName}" />
+												<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+												<f:selectItems value="#{hrplBean.p_month_list}" var="wa_month"
+													itemLabel="#{wa_month.name}" itemValue="#{wa_month.id}" />
+											</p:selectOneMenu>
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column><h:outputLabel value = "#{msg.employee}:" /></p:column>
+										<p:column>
+											<h:outputText id = "p_staff" value = "#{hrplBean.p_searchTable.staff_name}"></h:outputText>
+											<p:commandButton icon="ui-icon-newwin"
+													type="push" 
+													oncomplete="PF('employeeWidget').show();" actionListener="#{hrplBean.clearSearchStaffList}"
+													styleClass="f4button" />
+													<p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{hrplBean.removeStaff}"
+													styleClass="f4button" /> 		
+										</p:column>
+										<p:column></p:column>
+										<p:column>
+											
+											<p:commandButton type="push" value="#{msg.search}" actionListener="#{hrplBean.charge_view}" />
+										</p:column>
+									</p:row>
+									
+								</p:panelGrid>			
+								<div class="wrapRTClass">
+									
+									
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="l_outputTable">
+										<p:dataTable value="#{hrplBean.l_outputTable}" var="o" rows="50"
+                         					paginator="true"
+											widgetVar="dataTableWidgetVar" id="outputTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader" 
+											rowClasses="employeeTableOddRow,employeeTableEvenRow" rowKey="#{o.staff_id}" selectionMode="single" selection="#{hrplBean.selectedStaffOut}">
+											
+											<p:ajax event="rowSelect" oncomplete="PF('viewDetailed').show();"
+												listener="#{hrplBean.onSelectOutputTable}"/>
+											<p:column sortBy="#{o.staff_name}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.fio}" /></f:facet>
+												<h:outputText value="#{o.staff_name}" />
+											</p:column>
+											<p:column sortBy="#{o.branch_name}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.branch}" /></f:facet>
+												<h:outputText value="#{o.branch_name}" />
+											</p:column>
+											<p:column sortBy="#{o.amount}"> 
+												<f:facet name="header"><h:outputLabel value = "#{msg.amount}" /></f:facet>
+												<h:inputText value="#{o.amount}" size="15" id = "amount1" autocomplete="off"
+														maxlength="10" styleClass="input1" converterMessage="Please enter digits only." disabled="true"> 
+														 
+														<f:convertNumber pattern="#,###,##0.00" /> 
+														</h:inputText>
+													
+														
+											</p:column>
+											<p:column sortBy="#{o.waers}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.currency}" /></f:facet>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											<p:column headerText="#{msg.actions}">
+									<p:button target="_blank" outcome="/hr/staff/View.xhtml?staffId=#{o.staff_id}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton1" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+								</p:column>
+											
+											
+											
+											
+										</p:dataTable>
+
+									</p:scrollPanel>
+
+
+								</div>
+							</p:tab>
+							<p:tab title="#{msg.archive}">
+								<table>
+								<tr>
+									<td><p:commandButton value = "#{msg.view_opv_ipn}" type="push"  oncomplete="PF('viewTaxWidget').show();"/></td>
+								</tr>
+								</table>
+								<p:panelGrid style="margin-top:0px; border:0px;" styleClass="searchPanelGrid">
+									<p:row>
+										<p:column><h:outputLabel value = "#{msg.company}: " /></p:column>
+										<p:column>
+											<p:selectOneMenu styleClass="bonus_bukrs" id="p_bukrs2"	value="#{hrplBean.p_searchTable2.bukrs}" disabled="#{userinfo.main=='true'?'false':'true'}">
+											<p:ajax update="p_branch_id2" />
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu>
+										</p:column>
+										<p:column><h:outputLabel value = "#{msg.branch}: " /></p:column>
+										<p:column>
+											<p:selectOneMenu id="p_branch_id2"
+													value="#{hrplBean.p_searchTable2.branch_id}" disabled="#{userinfo.main=='true'?'false':'true'}">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{branchF4Bean.getByBukrsOrBusinessArea(hrplBean.p_searchTable2.bukrs,userinfo.bukrs,0,0,0,userinfo.branch_id)}"
+														var="branch" itemLabel="#{branch.text45}"
+														itemValue="#{branch.branch_id}" />
+												</p:selectOneMenu>
+												
+											
+											
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column><h:outputLabel value = "#{msg['bkpf.gjahr.long']}: " /></p:column>
+										<p:column>
+											<p:selectOneMenu id="p_gjahr2"
+												value="#{hrplBean.p_searchTable2.gjahr}">
+												<f:selectItem itemLabel="2015" itemValue="2015" />
+												<f:selectItem itemLabel="2016" itemValue="2016" />
+												<f:selectItem itemLabel="2017" itemValue="2017" />
+											</p:selectOneMenu>
+										</p:column>
+										<p:column><h:outputLabel value = "#{msg['bkpf.monat.long']}: " /></p:column>
+										<p:column>
+											<p:selectOneMenu id="p_monat2"
+												value="#{hrplBean.p_searchTable2.monat}">
+												<p:ajax listener="#{hrplBean.assignMonatName}" />
+												<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+												<f:selectItems value="#{hrplBean.p_month_list}" var="wa_month"
+													itemLabel="#{wa_month.name}" itemValue="#{wa_month.id}" />
+											</p:selectOneMenu>
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column><h:outputLabel value = "#{msg.employee}:" /></p:column>
+										<p:column>
+											<h:outputText id = "p_staff2" value = "#{hrplBean.p_searchTable2.staff_name}"></h:outputText>
+											<p:commandButton icon="ui-icon-newwin"
+													type="push" 
+													oncomplete="PF('employeeWidget').show();" actionListener="#{hrplBean.clearSearchStaffList}"
+													styleClass="f4button" />
+													
+													<p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{hrplBean.removeStaff2}"
+													styleClass="f4button" />
+										</p:column>
+										<p:column></p:column>
+										<p:column><p:commandButton type="push" value="#{msg.search}" actionListener="#{hrplBean.to_search}" />
+										</p:column>
+									</p:row>
+									
+								</p:panelGrid>	
+								
+								<div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="l_outputTableArchive">
+										<p:dataTable value="#{hrplBean.l_outputTableArchive}" var="o" rows="50"
+                         					paginator="true"
+											widgetVar="dataTableWidgetVar" id="outputTableArchive"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow" rowKey="#{o.staff_id}" selectionMode="single" selection="#{hrplBean.selectedStaffOut}">
+											
+											<p:ajax event="rowSelect" oncomplete="PF('viewDetailed').show();"
+												listener="#{hrplBean.onSelectOutputTable}"/>
+
+
+											<p:column sortBy="#{o.staff_name}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.fio}" /></f:facet>
+												<h:outputText value="#{o.staff_name}" />
+											</p:column>
+											<p:column sortBy="#{o.branch_name}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.branch}" /></f:facet>
+												<h:outputText value="#{o.branch_name}" />
+											</p:column>
+											<p:column sortBy="#{o.amount}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.amount}" /></f:facet>
+												<h:outputText value="#{o.amount}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											<p:column sortBy="#{o.waers}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.currency}" /></f:facet>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											
+										</p:dataTable>
+
+									</p:scrollPanel>
+								</div>
+
+
+							</p:tab>
+						</p:tabView>
+
+
+						<p:dialog header="#{msg.employees}" widgetVar="employeeWidget"
+							dynamic="true" width="900" height="500">
+							<div id="se_div">
+								<fieldset class="se_FieldSet">
+									<legend><h:outputLabel value="#{msg.search_options}" /></legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg['hr.staff.firstname']}" /></td>
+											<td><h:inputText id="se_firstname" maxlength="45"
+													autocomplete="off"
+													value="#{hrplBean.searchStaff.firstname}" /></td>
+											<td><h:outputLabel value="#{msg['hr.staff.iin_bin']}" /></td>
+											<td><h:inputText id="se_iinbin" maxlength="12"
+													autocomplete="off"
+													value="#{hrplBean.searchStaff.iin_bin}" /></td>		
+													
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['hr.staff.lastname']}" /></td>
+											<td><h:inputText id="se_lastname" maxlength="45"
+													autocomplete="off"
+													value="#{hrplBean.searchStaff.lastname}" /></td>
+											<td><p:commandButton
+													actionListener="#{hrplBean.to_search_staff}"
+													value="Искать" update="messages" /></td>
+											<td></td>		
+											
+											
+										</tr>
+									</table>
+
+								</fieldset>
+							</div>
+							<br />
+
+
+							<p:dataTable id="staffTable" var="emp" rowKey="#{emp.staff_id}"
+								value="#{hrplBean.p_staff_list}" emptyMessage="#{msg['empty_rows']}"
+								selectionMode="single" selection="#{hrplBean.selectedStaff}">
+								<f:facet name="header">
+
+									<p:commandButton process="staffTable"
+										actionListener="#{hrplBean.assignFoundEmployee()}"
+										onclick="PF('employeeWidget').hide();" value="#{msg['select']}" />
+								</f:facet>
+								<p:column headerText="#{msg['hr.staff.iin_bin']}">
+									<h:outputText value="#{emp.iin_bin}" />
+								</p:column>
+								<p:column headerText="#{msg['hr.staff.passport']}">
+									<h:outputText value="#{emp.passport_id}" />
+								</p:column>
+								<p:column headerText="#{msg['hr.staff.firstname']}">
+									<h:outputText value="#{emp.firstname}" />
+								</p:column>
+								<p:column headerText="#{msg['hr.staff.lastname']}">
+									<h:outputText value="#{emp.lastname}" />
+								</p:column>
+								<p:column headerText="#{msg['hr.staff.middlename']}">
+									<h:outputText value="#{emp.middlename}" />
+								</p:column>
+								<p:column headerText="#{msg['hr.staff.birthdate']}">
+									<p:calendar id="birthday" styleClass="bldat"
+										pattern="dd.MM.yyyy" mask="true" autocomplete="off"
+										value="#{emp.birthday}" converterMessage="Date is invalid."
+										disabled="true">
+									</p:calendar>
+								</p:column>
+
+							</p:dataTable>
+							</p:dialog>
+							<p:dialog header="#{msg.view_opv_ipn}" widgetVar="viewTaxChargeWidget"
+							dynamic="true" width="900" height="500">
+								<div id="viewTaxCharge" class="wrapRTClass">
+									<p:dataTable value="#{hrplBean.l_outputTable2}" var="o" rows="50"
+                         					paginator="true"
+											widgetVar="dataTableWidgetVar2" id="outputTable2"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow" >
+
+
+											<p:column>
+												<f:facet name="header"><h:outputLabel value = "#{msg.fio}" /></f:facet>
+												<h:outputText value="#{o.staff_name}" />
+											</p:column>
+											<p:column> 
+												<f:facet name="header"><h:outputLabel value = "#{msg.amount}" /></f:facet>
+												<h:outputText value="#{o.amount}"> 
+														<f:convertNumber pattern="#,###,##0.00" /> 
+														</h:outputText>
+													
+														
+											</p:column>
+											<p:column>
+												<f:facet name="header"><h:outputLabel value = "#{msg.currency}" /></f:facet>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											
+											<p:column>
+												<f:facet name="header"><h:outputLabel value = "#{msg.type}" /></f:facet>
+												
+												<p:selectOneMenu  value="#{o.type}" disabled="true">
+													<f:selectItem itemLabel="#{msg['hr.official_data.pension']}" itemValue="4" />
+													<f:selectItem itemLabel="#{msg['hr.official_data.ipn']}" itemValue="5" />
+													<f:selectItem itemLabel="#{msg['hr.official_data.social_contribution']}" itemValue="6" />
+												</p:selectOneMenu>
+												
+											</p:column>
+											
+
+
+											
+										</p:dataTable>
+								</div> 							
+							</p:dialog>
+							<p:dialog header="Начисленные ОПВ, ИПН и соц. налоги" widgetVar="viewTaxWidget"
+							dynamic="true" width="900" height="500">
+								<div id="viewTax" class="wrapRTClass">
+									<p:dataTable value="#{hrplBean.l_outputTableArchive2}" var="o" rows="50"
+                         					paginator="true"
+											
+											widgetVar="dataTableWidgetVarArch2" id="outputTableArchive2"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+
+
+											<p:column>
+												<f:facet name="header"><h:outputLabel value = "#{msg.fio}" /></f:facet>
+												<h:outputText value="#{o.staff_name}" />
+											</p:column>
+											<p:column> 
+												<f:facet name="header"><h:outputLabel value = "#{msg.amount}" /></f:facet>
+												<h:outputText value="#{o.amount}"> 
+														<f:convertNumber pattern="#,###,##0.00" /> 
+														</h:outputText>
+													
+														
+											</p:column>
+											<p:column>
+												<f:facet name="header"><h:outputLabel value = "#{msg.currency}" /></f:facet>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											
+											<p:column>
+												<f:facet name="header"><h:outputLabel value = "#{msg.type}" /></f:facet>
+												
+												<p:selectOneMenu  value="#{o.type}" disabled="true">
+													<f:selectItem itemLabel="#{msg['hr.official_data.pension']}" itemValue="4" />
+													<f:selectItem itemLabel="#{msg['hr.official_data.ipn']}" itemValue="5" />
+													<f:selectItem itemLabel="#{msg['hr.official_data.social_contribution']}" itemValue="6" />
+												</p:selectOneMenu>
+												
+											</p:column>
+											
+
+
+											
+										</p:dataTable>
+								</div> 							
+							</p:dialog>
+						
+							<p:dialog header="#{msg['detail']}" widgetVar="viewDetailed"
+							dynamic="true" width="900" height="500">
+								<div id="viewDet" class="wrapRTClass">
+									<p:dataTable value="#{hrplBean.l_outputTableDetailed}" var="o" rows="50"
+                         					paginator="true"
+											id="outputTableDetailed"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+
+
+											<p:column sortBy="#{o.staff_name}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.fio}" /></f:facet>
+												<h:outputText value="#{o.staff_name}" />
+											</p:column>
+											<p:column sortBy="#{o.branch_name}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.branch}" /></f:facet>
+												<h:outputText value="#{o.branch_name}" />
+											</p:column>
+											<p:column sortBy="#{positionF4Bean.getName(o.position_id)}">
+												<f:facet name="header"><h:outputLabel value = "Position" /></f:facet>
+												<h:outputText id = "position" value="#{positionF4Bean.getName(o.position_id)}" />
+											</p:column>
+											<p:column sortBy="#{o.amount}"> 
+												<f:facet name="header"><h:outputLabel value = "#{msg.amount}" /></f:facet>
+												<h:inputText value="#{o.amount}" size="15" id = "amount1" autocomplete="off"
+														maxlength="10" styleClass="input1" converterMessage="Please enter digits only." disabled="true"> 
+														<f:convertNumber pattern="#,###,##0.00" /> 
+														</h:inputText>
+													
+														
+											</p:column>
+											<p:column sortBy="#{o.waers}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.currency}" /></f:facet>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											
+											<p:column sortBy="#{bonusTypeF4Bean.getBonusTypeNameString(o.type)}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.type}" /></f:facet>
+												<h:outputText value="#{bonusTypeF4Bean.getBonusTypeNameString(o.type)}" />
+											</p:column>
+											
+											<p:column sortBy="#{matnrF4Bean.getName(o.matnr)}">
+												<f:facet name="header"><h:outputLabel value = "#{msg['bseg.matnr.long']}" /></f:facet>
+												<h:outputText id = "matnr" value="#{matnrF4Bean.getName(o.matnr)}" />
+											</p:column>
+											<p:column sortBy="#{o.matnr_count}">
+												<f:facet name="header"><h:outputLabel value = "#{msg['bseg.menge.long']}" /></f:facet>
+												<h:outputText id = "matnr_count" value="#{o.matnr_count}" />
+											</p:column>
+											<p:column sortBy="#{o.plan_amount}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.plan}" /></f:facet>
+												<h:outputText id = "plan_amount" value="#{o.plan_amount}">
+												<f:convertNumber pattern="#,###,##0.00" /> 
+												</h:outputText>
+											</p:column>
+											<p:column sortBy="#{o.fact_amount}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.fact}" /></f:facet>
+												<h:outputText id = "fact_amount" value="#{o.fact_amount}" >
+												<f:convertNumber pattern="#,###,##0.00" /> 
+												</h:outputText>
+											</p:column>
+											
+											
+										</p:dataTable>
+								</div> 							
+							</p:dialog>
+						
+
+
+					</h:form>
+				</f:view>
+			</div>
+		</div>
+	</div>
+
+</h:body>
+</html>

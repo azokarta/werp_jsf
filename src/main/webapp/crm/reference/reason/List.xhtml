@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>Список причин</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{crmReasonListBean.breadcrumb}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{crmReasonListBean.pageHeader}" />
+			</ui:include>
+
+			<h:form id="form">
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<ui:include src="ListSearchForm.xhtml">
+						</ui:include>
+						<!--  -->
+						<ui:include src="ListItemsTable.xhtml">
+						</ui:include>
+					</div>
+				</div>
+			</h:form>
+
+			<ui:include src="CreateUpdateDialog.xhtml" />
+		</div>
+	</div>
+
+</h:body>
+</html>

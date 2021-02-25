@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<style>
+table td.tdKey {
+	border: 0px red solid;
+	width: 150px;
+	padding: 3px;
+	font-style: italic;
+	font-size: 14px;
+}
+
+table td.tdVal {
+	padding: 3px;
+	font-style: normal;
+	font-size: 14px;
+}
+
+table td.tdKey span {
+	float: right;
+	font-weight: 500;
+	margin-right: 3px;
+}
+</style>
+	<h:form id="toolbarForm">
+
+	</h:form>
+	<br />
+
+	<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+		<h:form id="form">
+			<p:toolbar styleclass="mp_toolbar">
+				<f:facet name="left">
+
+					<p:commandButton type="push" value="Сохранить"
+						rendered="#{logRevCrudBean.mode != 'view'}"
+						actionListener="#{logRevCrudBean.Save}" update=":messages,:form">
+					</p:commandButton>
+
+					<ui:repeat var="button" value="#{logRevActionBean.buttonList}">
+						<p:commandButton type="push" value="#{button.label}"
+							actionListener="#{button.doAction()}" update=":messages,:form">
+						</p:commandButton>
+					</ui:repeat>
+				</f:facet>
+			</p:toolbar>
+			<div class="ui-grid-col-5"
+				style="display: block; float: left; border: 1px solid #ddd; background-color: #fff;">
+				<table class="accFormTable">
+					<tr>
+						<td class="tdKey"><span>Номер</span></td>
+						<td class="tdVal"><h:outputText
+								value="№#{logRevCrudBean.revision.id}"></h:outputText></td>
+					</tr>
+					<tr>
+						<td class="tdKey"><span>Компания</span></td>
+						<td class="tdVal"><werp:companySelect elementId="bukrs"
+								value="#{logRevCrudBean.revision.bukrs}"
+								mode="#{logRevCrudBean.mode == 'view'?'view':'update'}"
+								onChangeUpdate=":form:branchSelect:branchId, :form:werksSelect:werks">
+							</werp:companySelect></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Филиал</span></td>
+						<td class="tdVal"><werp:branchSelect
+								companyValue="#{logRevCrudBean.revision.bukrs}"
+								value="#{logRevCrudBean.revision.branchId}"
+								mode="#{logRevCrudBean.mode == 'view'?'view':'update'}"
+								id="branchSelect" elementId="branchId">
+							</werp:branchSelect></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Склад</span></td>
+						<td class="tdVal"><werp:werksSelect id="werksSelect"
+								elementId="werks" value="#{logRevCrudBean.revision.werks}"
+								companyValue="#{logRevCrudBean.revision.bukrs}"
+								mode="#{logRevCrudBean.mode == 'view'?'view':'update'}">
+							</werp:werksSelect></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Дата начало</span></td>
+						<td class="tdVal"><h:outputText
+								rendered="#{logRevCrudBean.mode == 'view'}"
+								value="#{logRevCrudBean.revision.beginDate}">
+								<f:convertDateTime pattern="dd.MM.YYYY"></f:convertDateTime>
+							</h:outputText> <p:calendar rendered="#{logRevCrudBean.mode != 'view'}"
+								pattern="dd.MM.yyyy" autocomplete="off"
+								value="#{logRevCrudBean.revision.beginDate}"
+								converterMessage="Wrong Date" navigator="true">
+							</p:calendar></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Дата окончание</span></td>
+						<td class="tdVal"><h:outputText
+								rendered="#{logRevCrudBean.mode == 'view'}"
+								value="#{logRevCrudBean.revision.finishDate}">
+								<f:convertDateTime pattern="dd.MM.YYYY"></f:convertDateTime>
+							</h:outputText> <p:calendar rendered="#{logRevCrudBean.mode != 'view'}"
+								pattern="dd.MM.yyyy" autocomplete="off"
+								value="#{logRevCrudBean.revision.finishDate}"
+								converterMessage="Wrong Date" navigator="true">
+							</p:calendar></td>
+					</tr>
+
+
+
+					<tr>
+						<td class="tdKey"><span>Статус</span></td>
+						<td class="tdVal"><p:outputLabel
+								value="#{logRevCrudBean.revision.getStatusName()}"></p:outputLabel>
+						</td>
+					</tr>
+
+
+				</table>
+
+
+				<br /> <br />
+				<ui:include src="ResponsiblesList.xhtml"></ui:include>
+			</div>
+		</h:form>
+
+		<div class="ui-grid-col-7" style="display: block; float: left;">
+			<p:panel header="Сформированные акты">
+				<p:dataTable value="#{logRevCrudBean.revTitles}" var="title">
+					<p:column headerText="Название">
+						<h:outputText value="#{title.title}" />
+					</p:column>
+					<p:column headerText="Дата создания">
+						<h:outputText value="#{title.createdAt}">
+							<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="">
+						<p:button outcome="./title/View.xhtml" value="Просмотр">
+							<f:param name="revId" value="#{logRevCrudBean.revision.id}" />
+							<f:param name="id" value="#{title.id}" />
+						</p:button>
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+		</div>
+
+		<h:panelGroup id="content" layout="block">
+			<div class="row">
+				<div class="ui-grid-col-7" style="display: block; float: left;">
+					<ui:include src="resultList.xhtml"></ui:include>
+				</div>
+			</div>
+		</h:panelGroup>
+
+	</div>
+
+
+</ui:composition>
+</html>

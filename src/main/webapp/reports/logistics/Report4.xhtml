@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>#{logInvoiceListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.activeMenu {
+	
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Подотчет / Отчет" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="Подотчет / Отчет" />
+			</ui:include>
+
+			<div class="ui-grid">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm">
+							<p:panel header="#{msg.advanced_search}">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Компания"></p:outputLabel>
+									<werp:companySelect elementId="companyId" mode="update"
+										value="#{repLog4Bean.bukrs}"
+										onChangeUpdate=":searchForm:werksSelect:werks">
+									</werp:companySelect>
+
+									<p:outputLabel
+										rendered="#{!userinfo.sys_admin and !userinfo.main}"
+										value="#{bukrsF4Bean.getNameByBukrs(userinfo.bukrs)}"></p:outputLabel>
+
+									<p:outputLabel value="Склад"></p:outputLabel>
+									<werp:werksSelect id="werksSelect" elementId="werks"
+										companyValue="#{repLog4Bean.bukrs}"
+										value="#{repLog4Bean.werks}" mode="update">
+									</werp:werksSelect>
+
+									<p:outputLabel value="Дата по"></p:outputLabel>
+									<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+										value="#{repLog4Bean.toDate}" converterMessage="Wrong Date"
+										navigator="true">
+									</p:calendar>
+
+									<p:outputLabel value=""></p:outputLabel>
+									<p:commandButton value="#{msg.search}"
+										actionListener="#{repLog4Bean.generateData()}"
+										update=":messages,:dataForm:dataTable"></p:commandButton>
+								</h:panelGrid>
+							</p:panel>
+						</h:form>
+					</div>
+
+
+
+					<div class="ui-grid-col-9">
+						<h:form id="dataForm">
+							<p:dataTable id="dataTable"
+								value="#{repLog4Bean.out.entrySet().toArray()}" var="e"
+								style="width:90%;" scrollable="false">
+
+								<f:facet name="header">Список подотчетников
+								<h:commandLink
+										style="float:right;margin-right:5px;">
+										<p:graphicImage name="xlsx_export_icon.png" library="img"
+											width="32" />
+										<p:dataExporter type="xls" target="dataTable"
+											fileName="accountability" />
+											<f:setPropertyActionListener value="false" target="#{exporterController.customExporter}" /> 
+									</h:commandLink>
+									
+								</f:facet>
+
+								<p:subTable var="item"
+									value="#{e.getValue().entrySet().toArray()}">
+									<f:facet name="header">
+										<h:outputText value="#{repLog4Bean.getStaffName(e.getKey())}" />
+									</f:facet>
+									<p:column style="width:100px;text-align:center;">
+										<h:outputText value="#{item.getValue().matnrCode}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{item.getValue().matnrName}" />
+										<br />
+										<ui:repeat var="bc" value="#{item.getValue().barcodes}">
+											<h:outputLabel value="#{bc}"></h:outputLabel>
+											<br />
+										</ui:repeat>
+									</p:column>
+									<p:column>
+										<h:outputText value="#{item.getValue().menge}" />
+									</p:column>
+								</p:subTable>
+
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<p:dialog id="MatnrListDlg" widgetVar="MatnrListDialog" modal="true"
+		resizable="false" appendTo="@(body)" header="Список материалов"
+		width="800" height="500">
+
+		<h:form id="MatnrListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="matnrListDlgTable" var="item"
+					rowKey="#{item.matnr}" value="#{repAccountabilityBean.matnrList}"
+					emptyMessage="#{msg.no_records}" selectionMode="single"
+					selection="#{repAccountabilityBean.selectedMatnr}" paginator="true"
+					rows="30">
+					<p:ajax event="rowDblselect"
+						listener="#{repAccountabilityBean.onSelectMatnr}"
+						update=":searchForm" />
+
+					<p:column headerText="Название" sortBy="#{item.text45}">
+						<h:outputText value="#{item.text45}" />
+					</p:column>
+					<p:column headerText="Code" filterBy="#{item.code}">
+						<h:outputText value="#{item.code}" />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+
+	<p:dialog widgetVar="StaffListDialog" modal="true" resizable="false"
+		appendTo="@(body)" header="Сотрудники" width="800" height="500">
+
+		<h:form id="staffSearchForm">
+			<p:panel header="#{msg.advanced_search}">
+				<h:panelGrid columns="4" cellpadding="10">
+					<p:outputLabel value="Фамилия"></p:outputLabel>
+					<p:inputText
+						value="#{repAccountabilityBean.staffSearchModel.lastname}"></p:inputText>
+
+					<p:outputLabel value="Имя"></p:outputLabel>
+					<p:inputText
+						value="#{repAccountabilityBean.staffSearchModel.firstname}"></p:inputText>
+
+
+					<p:outputLabel value=""></p:outputLabel>
+					<p:outputLabel value=""></p:outputLabel>
+					<p:outputLabel value=""></p:outputLabel>
+					<p:commandButton value="#{msg.search}"
+						actionListener="#{repAccountabilityBean.loadStaffList()}"
+						update=":messages,:StaffListDlgForm:staffListDlgTable"></p:commandButton>
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+
+		<h:form id="StaffListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="staffListDlgTable" var="item"
+					rowKey="#{item.staff_id}"
+					value="#{repAccountabilityBean.staffList}"
+					emptyMessage="#{msg.no_records}" selectionMode="single"
+					paginator="true" rows="500"
+					selection="#{repAccountabilityBean.selectedStaff}">
+					<p:ajax event="rowDblselect"
+						listener="#{repAccountabilityBean.onSelectStaff}"
+						update=":searchForm" />
+
+					<p:column headerText="Фамилия">
+						<h:outputText value="#{item.lastname}" />
+					</p:column>
+
+					<p:column headerText="Имя">
+						<h:outputText value="#{item.firstname}" />
+					</p:column>
+
+					<p:column headerText="Отчество">
+						<h:outputText value="#{item.middlename}" />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>

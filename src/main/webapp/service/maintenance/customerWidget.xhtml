@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog id="CustomerDlg" widgetVar="CustomerWidget" modal="true"
+		width="800" header="Клиент" dynamic="true" resizable="true"
+		appendTo="@(body)">
+
+		<h:form id="CustomerSearchForm">
+
+			<div id="sc_div">
+				<fieldset class="sc_FieldSet">
+					<legend>Поиск контр-агента</legend>
+
+					<div style="float: left; margin-right: 25px;">
+						<table>
+							<tr>
+								<td><h:outputLabel value="Физ/Юр" /></td>
+								<td><p:selectOneMenu id="sc_fiz_yur"
+										value="#{formBean.searchCustomer.fiz_yur}"
+										onchange="birthdayDisable()">
+										<f:selectItem itemLabel="Выберите" itemValue="0" />
+										<f:selectItem itemLabel="Физ. лицо" itemValue="2" />
+										<f:selectItem itemLabel="Юр. лицо" itemValue="1" />
+									</p:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="ИИН/БИН" /></td>
+								<td><p:inputText id="sc_iin_bin" maxlength="45"
+										autocomplete="off"
+										value="#{formBean.searchCustomer.iin_bin}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="Название" /></td>
+								<td><p:inputText id="sc_name" maxlength="45"
+										autocomplete="off" value="#{formBean.searchCustomer.name}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="Страна" /></td>
+								<td><p:selectOneMenu id="sc_country"
+										value="#{formBean.searchCustomer.country_id}">
+										<f:selectItem itemLabel="" itemValue="0" />
+										<f:selectItems value="#{countryF4Bean.country_list}"
+											var="wa_country" itemLabel="#{wa_country.country}"
+											itemValue="#{wa_country.country_id}" />
+									</p:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><p:commandButton
+										actionListener="#{formBean.to_search_customer}"
+										value="Искать" update=":messages" /></td>
+								<td></td>
+							</tr>
+
+						</table>
+
+					</div>
+
+					<div style="float: left;">
+						<table>
+							<tr>
+								<td><h:outputLabel value="Имя" /></td>
+								<td><p:inputText id="sc_firstname" maxlength="45"
+										autocomplete="off"
+										value="#{formBean.searchCustomer.firstname}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="Фамилия" /></td>
+								<td><p:inputText id="sc_lastname" maxlength="45"
+										autocomplete="off"
+										value="#{formBean.searchCustomer.lastname}" /></td>
+							</tr>
+
+							<tr>
+								<td><h:outputLabel value="Отчество" /></td>
+								<td><p:inputText id="sc_middlename" maxlength="45"
+										autocomplete="off"
+										value="#{formBean.searchCustomer.middlename}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="День рождения" /></td>
+								<td><p:calendar id="sc_birthday" styleClass="bldat"
+										pattern="dd.MM.yyyy" autocomplete="off"
+										value="#{formBean.searchCustomer.birthday}"
+										converterMessage="Date is invalid.">
+									</p:calendar></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="Номер паспорта" /></td>
+								<td><p:inputText id="sc_passport_id" maxlength="45"
+										autocomplete="off"
+										value="#{formBean.searchCustomer.passport_id}" /></td>
+							</tr>
+
+						</table>
+					</div>
+
+				</fieldset>
+			</div>
+			<br />
+
+
+			<p:dataTable id="customerTable" var="cus" rowKey="#{cus.id}"
+				value="#{formBean.p_customer_list}" emptyMessage="Нет записей"
+				selectionMode="single" selection="#{formBean.selectedCustomer}" rows="10"
+				paginator="true">
+				<f:facet name="header">
+
+					<p:commandButton process="customerTable"
+						actionListener="#{formBean.assignFoundCustomer}"
+						value="Выбрать" />
+				</f:facet>
+
+				<p:column headerText="Физ/Юр">
+					<p:selectOneMenu id="fiz_yur" value="#{cus.fiz_yur}"
+						disabled="true">
+						<f:selectItem itemLabel="Физ. лицо" itemValue="2" />
+						<f:selectItem itemLabel="Юр. лицо" itemValue="1" />
+					</p:selectOneMenu>
+				</p:column>
+				<p:column headerText="ИИН/БИН">
+					<h:outputText value="#{cus.iin_bin}" />
+				</p:column>
+				<p:column headerText="Название">
+					<h:outputText value="#{cus.name}" />
+				</p:column>
+				<p:column headerText="Имя">
+					<h:outputText value="#{cus.firstname}" />
+				</p:column>
+				<p:column headerText="Фамилия">
+					<h:outputText value="#{cus.lastname}" />
+				</p:column>
+				<p:column headerText="Отчество">
+					<h:outputText value="#{cus.middlename}" />
+				</p:column>
+				<p:column headerText="День рождения">
+					<p:calendar id="birthday" styleClass="bldat" pattern="dd.MM.yyyy"
+						mask="true" autocomplete="off" value="#{cus.birthday}"
+						converterMessage="Date is invalid." disabled="true">
+					</p:calendar>
+				</p:column>
+				<p:column headerText="Номер паспорта">
+					<h:outputText value="#{cus.passport_id}" />
+				</p:column>
+			</p:dataTable>
+
+
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

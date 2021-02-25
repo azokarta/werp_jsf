@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{kpiListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<style>
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+</style>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{kpiListBean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{kpiListBean.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid-row" style="margin-top: 10px;">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel header="#{msg.advanced_search}">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="Компания" />
+								<p:selectOneMenu value="#{kpiListBean.bukrs}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="Не выбрано" itemValue="" />
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" var="b"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Филиал"></p:outputLabel>
+								<p:selectOneMenu id="branch_id" value="#{kpiListBean.branchId}">
+									<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+									<f:selectItems
+										value="#{branchF4Bean.getAllBranchByBukrs(kpiListBean.bukrs)}"
+										itemLabel="#{b.text45}" itemValue="#{b.branch_id}" var="b"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Должность" />
+								<p:selectOneMenu value="#{kpiListBean.positionId}">
+									<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+									<f:selectItems value="#{positionF4Bean.position_list}"
+										itemLabel="#{p.text}" itemValue="#{p.position_id}" var="p"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" actionListener="#{kpiListBean.loadItems()}"
+									update=":ListForm:datalist,:messages"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="ui-grid-row" style="margin-top: 10px;">
+				<div class="ui-grid-col-12">
+					<h:form id="ListForm">
+						<p:dataTable id="datalist" value="#{kpiListBean.items}" var="item"
+							rowKey="#{item.id}" rows="200" tableStyleClass="logItemsTable">
+
+							<f:facet name="header">
+								<p:button title="Create" outcome="Create.xhtml" value="Добавить"
+									style="float:right;margin-right:5px;" />
+								<div style="clear: both;"></div>
+							</f:facet>
+							<p:column style="width:25px;" sortBy="#{item.id}">
+								<f:facet name="header">
+									<h:outputText value="№" />
+								</f:facet>
+								<h:outputText value="#{item.id}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Компания" />
+								</f:facet>
+								<h:outputText value="#{bukrsF4Bean.getNameByBukrs(item.bukrs)}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Филиал" />
+								</f:facet>
+								<h:outputText value="#{branchF4Bean.getName(item.branchId)}" />
+								<h:outputText value="Для всех филиалов" rendered="#{item.branchId == 0}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Должность" />
+								</f:facet>
+								<h:outputText value="#{positionF4Bean.getName(item.positionId)}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Дата с" />
+								</f:facet>
+								<h:outputText value="#{item.fromDate}">
+									<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Дата по" />
+								</f:facet>
+								<h:outputText value="#{item.toDate}">
+									<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Дата редактирования" />
+								</f:facet>
+								<h:outputText value="#{item.updatedAt}">
+									<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="" />
+								</f:facet>
+								<p:button outcome="View.xhtml" title="Просмотр"
+									icon="ui-icon-search">
+									<f:param name="id" value="#{item.id}" />
+								</p:button>
+
+								<p:button outcome="Update.xhtml" title="Редактировать"
+									icon="ui-icon-pencil">
+									<f:param name="id" value="#{item.id}" />
+								</p:button>
+
+							</p:column>
+
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

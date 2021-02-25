@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jstl/core">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{repMarketing2.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{repMarketing2.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{repMarketing2.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid" style="border: 0px solid red; margin: 10px;">
+				<div class="ui-grid-row"
+					style="border: 0px green solid; margin: 10px;">
+					<h:form id="searchForm">
+						<p:panelGrid style="width:99%;margin-top:1px;" columns="8"
+							cellpadding="0">
+							<h:panelGrid columns="2" cellpadding="0">
+								<h:outputLabel>Компания</h:outputLabel>
+								<werp:companySelect elementId="companyId" mode="update"
+									value="#{repMarketing2.bukrs}"
+									onChangeUpdate=":searchForm:branchSelect:branchId">
+								</werp:companySelect>
+							</h:panelGrid>
+
+							<h:panelGrid columns="2" cellpadding="0">
+								<p:outputLabel value="Филиал"></p:outputLabel>
+								<werp:branchSelect id="branchSelect" elementId="branchId"
+									companyValue="#{repMarketing2.bukrs}"
+									value="#{repMarketing2.branchId}" mode="update">
+								</werp:branchSelect>
+							</h:panelGrid>
+
+							<h:panelGrid columns="2" cellpadding="0">
+								<p:outputLabel value="Год"></p:outputLabel>
+								<p:selectOneMenu value="#{repMarketing2.year}">
+									<f:selectItem itemValue="2016" itemLabel="2016"></f:selectItem>
+									<f:selectItem itemValue="2017" itemLabel="2017"></f:selectItem>
+									<f:selectItem itemValue="2018" itemLabel="2018"></f:selectItem>
+									<f:selectItem itemValue="2019" itemLabel="2019"></f:selectItem>
+									<f:selectItem itemValue="2020" itemLabel="2020"></f:selectItem>
+								</p:selectOneMenu>
+							</h:panelGrid>
+
+							<p:outputLabel></p:outputLabel>
+							<p:commandButton value="Сформировать"
+								actionListener="#{repMarketing2.generateData()}"
+								update=":dataForm, :messages"></p:commandButton>
+
+						</p:panelGrid>
+					</h:form>
+				</div>
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<h:form id="dataForm">
+							<p:chart rendered="#{!empty repMarketing2.demoModel}" type="line"
+								model="#{repMarketing2.demoModel}" style="height:350px" />
+							<br />
+							<hr />
+							<p:chart rendered="#{!empty repMarketing2.saleModel}" type="line"
+								model="#{repMarketing2.saleModel}" style="height:350px" />
+							<br />
+							<hr />
+							<p:chart rendered="#{!empty repMarketing2.recoModel}" type="line"
+								model="#{repMarketing2.recoModel}" style="height:350px" />
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

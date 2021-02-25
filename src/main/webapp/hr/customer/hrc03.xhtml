@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<f:view locale="#{systemLocale.currentLocale}" />
+<f:metadata>
+	<f:viewParam name="customerId"
+		value="#{hrc03Bean.customerId}" />
+	<f:viewParam name="iinBinSearch"
+		value="#{hrc03Bean.iinBinSearch}" />
+	<f:event type="preRenderView" listener="#{hrc03Bean.init}" />
+</f:metadata>
+<h:head>
+	<title>#{msg['hr.customer.view_customer']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.hrc03']}" />
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-row" style="margin-top: 10px;">
+                                <div class="ui-grid-col-12">
+                                    <p:panel style="margin-bottom:10px">
+                                        <h:panelGrid columns="6" cellpadding="2">
+                                            <p:outputLabel value="#{msg['hr.customer.iin_bin']}"></p:outputLabel>
+                                            <p:inputText  value="#{hrc03Bean.iinBinSearch}" />
+                                            <p:commandButton value="#{msg.search}" icon="ui-icon-search"
+                                                             id="searchBtn" update="form, :messages"
+                                                             actionListener="#{hrc03Bean.search}"></p:commandButton>
+                                                             
+                                            <p:commandButton
+                                                        disabled="#{empty hrc03Bean.customer.id}"
+                                                        actionListener="#{hrc03Bean.loadBkpfList(1)}"
+                                                        update=":bkpf-list" oncomplete="PF('bkpfList').show();"
+                                                        value="#{msg['hr.customer.debitor']}"></p:commandButton>
+                                                        
+                                            <p:commandButton
+                                                        disabled="#{empty hrc03Bean.customer.id}"
+                                                        actionListener="#{hrc03Bean.loadBkpfList(2)}"
+                                                        update=":bkpf-list" oncomplete="PF('bkpfList').show();"
+                                                        value="#{msg['hr.customer.creditor']}"></p:commandButton>
+                                                        
+                                           <p:button 
+											outcome="/hr/customer/hrc02.xhtml?customerId=#{hrc03Bean.customerId}"
+											value="#{msg['edit']}" title="#{msg['edit']}">
+										</p:button>             
+                                                        
+                                        </h:panelGrid>
+                                    </p:panel>
+                                </div>
+                            </div>
+							<div class="ui-grid ui-grid-responsive">
+								<div class="ui-grid-col-4" id="primaryInfo">
+									<fieldset class="primaryInfoFieldSet">
+										<legend>#{msg['hr.customer.main_data']}</legend>
+										<table class="form-table1">
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.customer_type']}" /></td>
+												<td class="value"><p:selectOneMenu id="fiz_yur"
+														value="#{hrc03Bean.customer.fiz_yur}" disabled="true">
+														<f:selectItem itemLabel="#{msg['fiz_lico']}" itemValue="2" />
+														<f:selectItem itemLabel="#{msg['yur_lico']}" itemValue="1" />
+													</p:selectOneMenu></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.iin_bin']}" /></td>
+												<td class="value"><h:inputText id="iin_bin"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.iin_bin}" /></td>
+											</tr>
+
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.name']}" /></td>
+												<td class="value"><h:inputText id="name" maxlength="45"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.name}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.director']}" /></td>
+												<td class="value"><h:inputText id="director"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.director}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['accountant']}" /></td>
+												<td class="value"><h:inputText id="buh" maxlength="45"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.buh}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.firstname']}" /></td>
+												<td class="value"><h:inputText id="firstname"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.firstname}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.lastname']}" /></td>
+												<td class="value"><h:inputText id="lastname"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.lastname}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.middlename']}" /></td>
+												<td class="value"><h:inputText id="middlename"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.middlename}" /></td>
+											</tr>
+
+
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.birthday']}" /></td>
+												<td class="value"><p:calendar id="birthday"
+														disabled="true" styleClass="bldat" pattern="dd.MM.yyyy"
+														autocomplete="off" value="#{hrc03Bean.customer.birthday}"
+														converterMessage="Date is invalid." navigator="true"
+														locale="#{systemLocale.currentLanguage}"
+														yearRange="1930:2015">
+
+													</p:calendar></td>
+											</tr>
+
+
+
+										</table>
+									</fieldset>
+								</div>
+
+								<div class="ui-grid-col-4" id="contactInfo">
+									<fieldset class="contactInfoFieldSet">
+										<legend>#{msg['hr.customer.contact_data']}</legend>
+										<table class="form-table1">
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.telephone']}" /></td>
+												<td class="value"><h:inputText id="telephone"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.telephone}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.mobile']}" /></td>
+												<td class="value"><h:inputText id="mobile"
+														maxlength="45" disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.mobile}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.mobile2']}" /></td>
+												<td class="value"><h:inputText id="mobile2"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.mobile2}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.email']}" /></td>
+												<td class="value"><h:inputText id="email"
+														maxlength="45" disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.email}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.address']}" /></td>
+												<td class="value"><h:inputText id="address"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.address}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel
+														value="#{msg['hr.customer.address_reg']}" /></td>
+												<td class="value"><h:inputText id="address_reg"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.address_reg}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.address_work']}" /></td>
+												<td class="value"><h:inputText id="address_work"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.address_work}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.country']}" /></td>
+												<td class="value"><p:selectOneMenu id="country"
+														disabled="true" value="#{hrc03Bean.customer.country_id}">
+														<f:selectItem itemLabel="#{msg['hr.customer.select']}" itemValue="0" />
+														<f:selectItems value="#{countryF4Bean.country_list}"
+															var="wa_country" itemLabel="#{wa_country.country}"
+															itemValue="#{wa_country.country_id}" />
+													</p:selectOneMenu></td>
+											</tr>
+										</table>
+									</fieldset>
+								</div>
+
+								<div class="ui-grid-col-4" id="passportInfo">
+									<fieldset class="passportInfoFieldSet">
+										<legend>#{msg['hr.customer.passport_data']}</legend>
+										<table class="form-table1">
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.passport_id']}" /></td>
+												<td class="value"><h:inputText id="passport_id"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.passport_id}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.passport_given_by']}" /></td>
+												<td class="value"><h:inputText id="passport_given_by"
+														disabled="true" autocomplete="off"
+														value="#{hrc03Bean.customer.passport_given_by}" /></td>
+											</tr>
+											<tr>
+												<td class="key"><h:outputLabel value="#{msg['hr.customer.passport_given_date']}" /></td>
+												<td class="value"><p:calendar id="passport_given_date"
+														disabled="true" styleClass="bldat" pattern="dd.MM.yyyy"
+														autocomplete="off"
+														value="#{hrc03Bean.customer.passport_given_date}"
+														converterMessage="Date is invalid." navigator="true"
+														locale="#{systemLocale.currentLanguage}"
+														yearRange="1930:2015">
+
+													</p:calendar></td>
+											</tr>
+										</table>
+									</fieldset>
+								</div>
+
+								<div class="ui-grid-row">
+									<div class="ui-grid-col-6">
+										<fieldset class="passportInfoFieldSet">
+											<legend>#{msg['hr.customer.bank_account']}</legend>
+											<p:dataTable value="#{hrc03Bean.baList}" var="ba"
+												rowKey="#{ba.ba_id}" id="hrc-bank-account">
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="IBAN" />
+													</f:facet>
+													<p:inputText value="#{ba.iban}" style="width:200px;"
+														disabled="true"></p:inputText>
+												</p:column>
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['hr.customer.currency']}" />
+													</f:facet>
+													<p:selectOneMenu value="#{ba.currency}" disabled="true">
+														<f:selectItem itemLabel="#{msg['hr.customer.select']}" itemValue="" />
+														<f:selectItems value="#{currencyF4Bean.currency_list}"
+															var="wa_currency" itemLabel="#{wa_currency.text20}"
+															itemValue="#{wa_currency.currency}" />
+													</p:selectOneMenu>
+												</p:column>
+												<p:column>
+													<f:facet name="header">
+														<h:outputText value="#{msg['hr.customer.bank']}" />
+													</f:facet>
+													<p:selectOneMenu value="#{ba.bank_id}" disabled="true">
+														<f:selectItem itemLabel="#{msg['hr.customer.select']}" itemValue="0" />
+														<f:selectItems value="#{hrc03Bean.bankList}" var="bank"
+															itemLabel="#{bank.name_ru}" itemValue="#{bank.b_id}" />
+													</p:selectOneMenu>
+												</p:column>
+											</p:dataTable>
+										</fieldset>
+									</div>
+								</div>
+							</div>
+						</div>
+					</h:form>
+					<div class="ui-grid-col-8">
+							<ui:include src="../address/AddressListTable.xhtml">
+								<ui:param name="selectedCustomer" value="#{hrc03Bean.customer}"></ui:param>
+							</ui:include>
+						</div>
+					<h:form id="bkpf-list">
+						<p:dialog header="#{hrc03Bean.bkpfDialogTitle}"
+							widgetVar="bkpfList" id="bkpfList" dynamic="true" width="700px">
+							<p:dataTable scrollable="true" tablestyle="width:800px"
+								styleClass="payroll-table-month" scrollHeight="200"
+								emptyMessage="Нет записей" id="bkpf-list-table" var="bkpf"
+								value="#{hrc03Bean.bkpfList}">
+
+								<p:column headerText="#{msg['bkpf.belnr.long']}">
+									<p:outputLabel value="#{bkpf.belnr}"></p:outputLabel>
+								</p:column>
+								<p:column headerText="#{msg['amount']}}" rendered="#{bkpf.waers == 'USD'}">
+									<p:outputLabel value="#{bkpf.dmbtr}"></p:outputLabel>
+								</p:column>
+								<p:column headerText="#{msg['amount']}" rendered="#{bkpf.waers != 'USD'}">
+									<p:outputLabel value="#{bkpf.wrbtr}"></p:outputLabel>
+								</p:column>
+								<p:column headerText="#{msg['hr.customer.currency']}">
+									<p:outputLabel value="#{bkpf.waers}"></p:outputLabel>
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+					</h:form>
+					
+				</f:view>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

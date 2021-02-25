@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>#{msg['logistics.mat_movements']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.activeMenu {
+	
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="#{msg['breadcrumb.reports']} > #{msg['breadcrumb.log']} > #{msg['logistics.mat_movements']}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/reports/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{msg['logistics.mat_movements']}" />
+			</ui:include>
+
+
+			<div class="ui-grid ui-grid-responsive" style="margin-top: 10px;">
+				<div class="ui-grid-row" style="margin-top: 10px;">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm">
+							<p:panel header="#{msg.advanced_search}">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="#{msg.company}"></p:outputLabel>
+									<p:selectOneMenu value="#{repWerksLogBean.bukrs}"
+										rendered="#{userinfo.sys_admin or userinfo.main}">
+										<p:ajax update="werks"></p:ajax>
+										<f:selectItem itemLabel="#{msg['select']}" itemValue=""></f:selectItem>
+										<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+											itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+									</p:selectOneMenu>
+									<p:outputLabel
+										value="#{bukrsF4Bean.getNameByBukrs(repWerksLogBean.bukrs)}"
+										rendered="#{!userinfo.sys_admin and !userinfo.main}"></p:outputLabel>
+
+									<p:outputLabel value="#{msg['logistics.whouse']}"></p:outputLabel>
+									<p:selectOneMenu id="werks" value="#{repWerksLogBean.werks}">
+										<f:selectItem itemLabel="#{msg['select']}" itemValue="0"></f:selectItem>
+										<f:selectItems
+											value="#{werksBean.getUserWerks(repWerksLogBean.bukrs)}"
+											var="w" itemLabel="#{w.text45}" itemValue="#{w.werks}"></f:selectItems>
+									</p:selectOneMenu>
+
+
+									<p:outputLabel value="#{msg['date_from']}"></p:outputLabel>
+									<p:calendar yearRange="2016:2021" pattern="dd.MM.yyyy"
+										autocomplete="off" navigator="true"
+										value="#{repWerksLogBean.fromDate}"
+										converterMessage="Date is invalid."
+										locale="#{systemLocale.currentLocale.getLanguage()}" />
+
+									<p:outputLabel value="#{msg['date_to']}"></p:outputLabel>
+									<p:calendar yearRange="2016:2021" pattern="dd.MM.yyyy"
+										autocomplete="off" navigator="true"
+										value="#{repWerksLogBean.toDate}"
+										converterMessage="Date is invalid."
+										locale="#{systemLocale.currentLocale.getLanguage()}" />
+
+									<p:outputLabel value="#{msg['logistics.oper_type']}"></p:outputLabel>
+									<p:selectOneMenu value="#{repWerksLogBean.typeId}">
+										<f:selectItem itemLabel="#{msg['select']}" itemValue="0"></f:selectItem>
+										<f:selectItem itemLabel="#{msg['logistics.oper_1']}" itemValue="1"></f:selectItem>
+										<f:selectItem itemLabel="#{msg['logistics.oper_2']}" itemValue="2"></f:selectItem>
+										<f:selectItem itemLabel="#{msg['logistics.oper_3']}" itemValue="3"></f:selectItem>
+										<f:selectItem itemLabel="#{msg['logistics.oper_4']}" itemValue="4"></f:selectItem>
+										<f:selectItem itemLabel="#{msg['logistics.oper_5']}" itemValue="6"></f:selectItem>
+										<f:selectItem itemLabel="#{msg['logistics.oper_6']}" itemValue="7"></f:selectItem>
+										<f:selectItem itemLabel="#{msg['logistics.oper_7']}" itemValue="9"></f:selectItem>
+										<f:selectItem itemLabel="#{msg['logistics.oper_8']}" itemValue="10"></f:selectItem>
+									</p:selectOneMenu>
+
+									<p:outputLabel value="#{msg['logistics.matnr_code']}"></p:outputLabel>
+									<p:inputText value="#{repWerksLogBean.code}"></p:inputText>
+
+									<p:outputLabel value="#{msg['employee']}"></p:outputLabel>
+									<p:panel id="selectedStaffPanel">
+										<h:outputText value="#{repWerksLogBean.selectedStaff.getLF()}"
+											rendered="#{!empty repWerksLogBean.selectedStaff.staff_id}"></h:outputText>
+										<p:commandButton icon="ui-icon-close" type="push"
+											update="selectedStaffPanel"
+											actionListener="#{repWerksLogBean.removeSelectedStaff()}"
+											styleClass="f4button">
+										</p:commandButton>
+										<p:commandButton icon="ui-icon-newwin" type="push"
+											oncomplete="PF('StaffListDialog').show();"
+											styleClass="f4button">
+										</p:commandButton>
+
+									</p:panel>
+
+									<p:outputLabel value=""></p:outputLabel>
+									<p:commandButton value="#{msg['form']}"
+										actionListener="#{repWerksLogBean.generateList()}"
+										update=":messages,:dataForm:dataTable"></p:commandButton>
+								</h:panelGrid>
+							</p:panel>
+						</h:form>
+					</div>
+
+
+
+					<div class="ui-grid-col-9"
+						style="margin-left: 10px; margin-bottom: 20px;">
+						<h:form id="dataForm">
+							<p:dataTable id="dataTable" value="#{repWerksLogBean.outputList}"
+								var="item" style="width:95%;">
+								<f:facet name="header"></f:facet>
+
+								<p:column headerText="Дата"
+									style="width:100px;text-align:center;">
+									<h:outputText value="#{item.date}">
+										<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+									</h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.matnr_code']}"
+									style="width:150px;text-align:center;">
+									<h:outputText value="#{item.matnrObject.code}"></h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.matnr_name']}">
+									<h:outputText value="#{item.matnrObject.text45}"></h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.in']}"
+									style="width:100px;text-align:center;">
+									<h:outputText value="#{item.inQuantity}"></h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.out']}"
+									style="width:100px;text-align:center;">
+									<h:outputText value="#{item.outQuantity}"></h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['balance']}"
+									style="width:100px;text-align:center;">
+									<h:outputText value="#{item.balance}"></h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.sender']}">
+									<h:outputText value="#{item.sender}"></h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.receiver']}">
+									<h:outputText value="#{item.receiver}"></h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.description']}">
+									<h:outputText value="#{item.note}"></h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.link_to_doc']}" style="width:60px;">
+									<p:button icon="ui-icon-extlink" href="#{item.documentLink}"
+										target="_blank" rendered="#{!empty item.documentLink}"></p:button>
+								</p:column>
+
+								<p:columnGroup type="footer">
+									<p:row>
+										<p:column colspan="3" style="text-align:right"
+											footerText="#{msg['logistics.total']}:" />
+										<p:column footerText="#{repWerksLogBean.inTotal}" />
+										<p:column footerText="#{repWerksLogBean.outTotal}" />
+										<p:column footerText="" />
+										<p:column footerText="" />
+										<p:column footerText="" />
+										<p:column footerText="" />
+									</p:row>
+								</p:columnGroup>
+
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<p:dialog widgetVar="StaffListDialog" modal="true" resizable="false"
+		appendTo="@(body)" header="#{msg['employees']}" width="800" height="500">
+
+		<h:form id="staffSearchForm">
+			<p:panel header="#{msg.advanced_search}">
+				<h:panelGrid columns="4" cellpadding="10">
+					<p:outputLabel value="#{msg['hr.staff.lastname']}"></p:outputLabel>
+					<p:inputText value="#{repWerksLogBean.staffSearchModel.lastname}"></p:inputText>
+
+					<p:outputLabel value="#{msg['hr.staff.firstname']}"></p:outputLabel>
+					<p:inputText value="#{repWerksLogBean.staffSearchModel.firstname}"></p:inputText>
+
+
+					<p:outputLabel value=""></p:outputLabel>
+					<p:outputLabel value=""></p:outputLabel>
+					<p:outputLabel value=""></p:outputLabel>
+					<p:commandButton value="#{msg.search}"
+						actionListener="#{repWerksLogBean.loadStaffList()}"
+						update=":messages,:StaffListDlgForm:staffListDlgTable"></p:commandButton>
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+
+		<h:form id="StaffListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="staffListDlgTable" var="item"
+					rowKey="#{item.staff_id}" value="#{repWerksLogBean.staffList}"
+					emptyMessage="#{msg.no_records}" selectionMode="single"
+					paginator="true" rows="500"
+					selection="#{repWerksLogBean.selectedStaff}">
+					<p:ajax event="rowDblselect"
+						listener="#{repWerksLogBean.onSelectStaff}" update=":searchForm" />
+
+					<p:column headerText="#{msg['hr.staff.lastname']}">
+						<h:outputText value="#{item.lastname}" />
+					</p:column>
+
+					<p:column headerText="#{msg['hr.staff.firstname']}">
+						<h:outputText value="#{item.firstname}" />
+					</p:column>
+
+					<p:column headerText="#{msg['hr.staff.middlename']}">
+						<h:outputText value="#{item.middlename}" />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>

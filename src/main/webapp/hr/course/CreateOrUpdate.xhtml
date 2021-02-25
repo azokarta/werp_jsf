@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<p:dialog id="CourseCreateDlg" widgetVar="CourseCreateDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="#{msg['hr.course.new_course']}">
+		<h:form id="CourseCreateForm">
+			<h:panelGroup id="display"
+				rendered="#{hrsCourseListBean.selected != null}">
+				<p:panelGrid columns="2">
+
+					<p:outputLabel value="#{msg['hr.course.course_id']}" />
+					<p:selectOneMenu value="#{hrsCourseListBean.selected.course_id}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+						<f:selectItems value="#{hrsCourseListBean.courseList}" var="c"
+							itemLabel="#{c.name_ru}" itemValue="#{c.c_id}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="#{msg['hr.course.educator_id']}" />
+					<h:panelGrid columns="3">
+						<p:inputText id="staff-fio" size="35" autocomplete="off"
+							value="#{hrsDialogBean.selected.getLF()}" disabled="true" />
+						<p:commandButton icon="ui-icon-newwin" type="push" id="pyr-staff_id"
+							oncomplete="PF('StaffListDialog').show();">
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-closethick" type="push"
+							action="#{hrsDialogBean.Reset}" update=":CourseCreateForm">
+						</p:commandButton>
+					</h:panelGrid>
+
+					<p:outputLabel value="#{msg['hr.course.begin_date']}" />
+					<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+						value="#{hrsCourseListBean.selected.begin_date}"
+						converterMessage="Wrong Date" navigator="true">
+					</p:calendar>
+
+					<p:outputLabel value="#{msg['hr.course.finish_date']}" />
+					<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+						value="#{hrsCourseListBean.selected.finish_date}"
+						converterMessage="Wrong Date" navigator="true">
+					</p:calendar>
+
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{hrsCourseListBean.Create}"
+					value="#{msg.save}" update=":CourseListForm:courseList,:messages" />
+				<p:commandButton actionListener="#{hrsCourseListBean.Reset}"
+					value="#{msg.cancel}" oncomplete="PF('CourseCreateDialog').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+	<ui:include src="/hr/staff/ListDialog.xhtml">
+		<ui:param name="formId" value=":CourseCreateForm" />
+		<ui:param name="mainFormBean" value="#{hrsCourseListBean}" />
+	</ui:include>
+</ui:composition>
+</html>

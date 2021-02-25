@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="StaffExamDlg" widgetVar="StaffExamDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="#{hrsExamListBean.getListDialogHeader()}" width="90%">
+		<h:form id="examListForm">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2" rendered="#{hrsExamListBean.selectedStaff != null}"
+					style="width:90%;">
+					
+					<p:dataTable scrollable="true" scrollHeight="400"
+						emptyMessage="#{msg.no_records}" id="examList" var="item"
+						rowKey="#{item.se_id}" value="#{hrsExamListBean.items}">
+						
+						<f:facet name="header" id="tableHeader">
+							<p:commandButton id="examCreateButton" icon="ui-icon-plus"
+								title="Create" actionListener="#{hrsExamListBean.prepareCreationList}"
+								update=":ExamCreateForm"
+								oncomplete="PF('ExamCreateDialog').show()"
+								style="float:right;margin-right:5px;" />
+								
+							<div style="clear: both;"></div>
+						</f:facet>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.exam.title']}" />
+							</f:facet>
+							<h:outputText value="#{item.title}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.exam.grade']}" />
+							</f:facet>
+							<h:outputText value="#{item.grade}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.exam.exam_date']}" />
+							</f:facet>
+							<h:outputText value="#{item.exam_date}">
+								<f:convertDateTime type="date" pattern="dd.MM.yyyy"></f:convertDateTime>
+							</h:outputText>
+						</p:column>
+						
+					</p:dataTable>
+				</p:panelGrid>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+	<ui:include src="CreateOrUpdate.xhtml" />
+</ui:composition>
+</html>

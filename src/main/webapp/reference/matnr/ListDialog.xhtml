@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="MatnrListDlg" widgetVar="MatnrListDialog" modal="true"
+		resizable="false" appendTo="@(body)" header="Список материалов"
+		width="800" height="500">
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-12">
+				<h:form id="MatnrDlgSearchForm"
+					onkeypress="if(event.keyCode == 13){document.getElementById('MatnrDlgSearchForm:MatnrDlgSearchBtn').click();return false;}">
+					<h:panelGrid columns="4" cellpadding="10">
+						<p:outputLabel rendered="false" value="#{msg.company}"></p:outputLabel>
+						<p:selectOneMenu rendered="false" value="#{matnrBean.searchModel.bukrs}">
+							<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+							<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+								itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="Название товара"></p:outputLabel>
+						<p:inputText value="#{matnrBean.searchModel.text45}"></p:inputText>
+
+						<p:outputLabel value="Код товара"></p:outputLabel>
+						<p:inputText value="#{matnrBean.searchModel.code}"></p:inputText>
+
+						<p:outputLabel></p:outputLabel>
+						<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+							id="MatnrDlgSearchBtn"
+							update=":MatnrListDlgForm:matnrListDlgTable"
+							actionListener="#{matnrBean.Search}"></p:commandButton>
+					</h:panelGrid>
+				</h:form>
+			</div>
+		</div>
+
+		<h:form id="MatnrListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="matnrListDlgTable" var="item"
+					rowKey="#{item.matnr}" value="#{matnrBean.items}"
+					emptyMessage="#{msg.no_records}" selectionMode="single"
+					selection="#{matnrBean.selected}" paginator="true" rows="30">
+					<p:ajax event="rowSelect"
+						update=":MatnrSendForm" />
+					<p:ajax event="rowUnselect"
+						update=":MatnrSendForm" />
+					<p:column headerText="Название">
+						<h:outputText value="#{item.text45}" />
+					</p:column>
+					<p:column headerText="Code">
+						<h:outputText value="#{item.code}" />
+					</p:column>
+					<p:column headerText="Название">
+						<h:outputText value="#{item.text45}" />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup>
+		</h:form>
+		<f:facet name="footer">
+			<h:form id="MatnrSendForm">
+
+				<p:commandButton
+					actionListener="#{mainFormBean.assignMatnr(matnrBean.selected)}"
+					value="Ok" update="#{formId},:messages"
+					oncomplete="PF('MatnrListDialog').hide()">
+				</p:commandButton>
+					&nbsp;
+					<p:commandButton value="Отмена"
+					oncomplete="PF('MatnrListDialog').hide()" />
+			</h:form>
+		</f:facet>
+	</p:dialog>
+
+</ui:composition>
+</html>

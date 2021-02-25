@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>Сервис-заявки</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("CustomerSearchForm:sc_fiz_yur_input").value == 1) {
+				document.getElementById("CustomerSearchForm:sc_birthday_input").value = null;
+				document.getElementById("CustomerSearchForm:sc_birthday_input").disabled = true;
+				document.getElementById("CustomerSearchForm:sc_passport_id").value = null;
+				document.getElementById("CustomerSearchForm:sc_passport_id").disabled = true;
+				document.getElementById("CustomerSearchForm:sc_firstname").value = null;
+				document.getElementById("CustomerSearchForm:sc_firstname").disabled = true;
+				document.getElementById("CustomerSearchForm:sc_lastname").value = null;
+				document.getElementById("CustomerSearchForm:sc_lastname").disabled = true;
+				document.getElementById("CustomerSearchForm:sc_middlename").value = null;
+				document.getElementById("CustomerSearchForm:sc_middlename").disabled = true;
+
+				document.getElementById("CustomerSearchForm:sc_name").disabled = false;
+				document.getElementById("CustomerSearchForm:sc_iin_bin").disabled = false;
+
+			} else if (document
+					.getElementById("CustomerSearchForm:sc_fiz_yur_input").value == 2) {
+				document.getElementById("CustomerSearchForm:sc_birthday_input").disabled = false;
+				document.getElementById("CustomerSearchForm:sc_passport_id").disabled = false;
+				document.getElementById("CustomerSearchForm:sc_firstname").disabled = false;
+				document.getElementById("CustomerSearchForm:sc_lastname").disabled = false;
+				document.getElementById("CustomerSearchForm:sc_middlename").disabled = false;
+				document.getElementById("CustomerSearchForm:sc_iin_bin").disabled = false;
+
+				document.getElementById("CustomerSearchForm:sc_name").value = null;
+				document.getElementById("CustomerSearchForm:sc_name").disabled = true;
+			} else {
+				document.getElementById("CustomerSearchForm:sc_iin_bin").value = null;
+				document.getElementById("CustomerSearchForm:sc_iin_bin").disabled = true;
+				document.getElementById("CustomerSearchForm:sc_birthday_input").value = null;
+				document.getElementById("CustomerSearchForm:sc_birthday_input").disabled = true;
+				document.getElementById("CustomerSearchForm:sc_passport_id").value = null;
+				document.getElementById("CustomerSearchForm:sc_passport_id").disabled = true;
+				document.getElementById("CustomerSearchForm:sc_firstname").value = null;
+				document.getElementById("CustomerSearchForm:sc_firstname").disabled = true;
+				document.getElementById("CustomerSearchForm:sc_lastname").value = null;
+				document.getElementById("CustomerSearchForm:sc_lastname").disabled = true;
+				document.getElementById("CustomerSearchForm:sc_middlename").value = null;
+				document.getElementById("CustomerSearchForm:sc_middlename").disabled = true;
+				document.getElementById("CustomerSearchForm:sc_name").value = null;
+				document.getElementById("CustomerSearchForm:sc_name").disabled = true;
+			}
+		}
+	</script>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"> <b>Menu</b>
+			</span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Сервис > Заявки" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Список заявок клиентов" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+
+					<h:form id="ServAppListForm">
+
+						<div class="container">
+							<fieldset>
+								<legend>
+									<h:outputLabel value="#{msg.header}" />
+								</legend>
+
+								<div style="float: left;">
+									<fieldset style="height: 82px; border: 1px solid #ddd;">
+										<legend>
+											<h:outputLabel value="#{msg['dmsc.branch']}" />
+										</legend>
+										<table>
+											<tr>
+												<td><h:outputLabel value="#{msg.company}" /></td>
+												<td><p:selectOneMenu id="bukrs"
+														value="#{salistBean.servappModel.searchModel.bukrs}">
+
+														<f:selectItem itemLabel="#{msg.company}" itemValue="0" />
+														<f:selectItems value="#{salistBean.bukrs_list}"
+															var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+															itemValue="#{wa_bukrs.bukrs}" />
+													</p:selectOneMenu></td>
+											</tr>
+											<tr>
+												<td><h:outputLabel value="Филиал" /></td>
+												<td><p:selectOneMenu styleClass="branch" id="branchref"
+														value="#{salistBean.servappModel.searchModel.branch_id}">
+														<f:selectItem itemLabel="Выберите офис" itemValue="0" />
+														<f:selectItems value="#{salistBean.branch_list}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+													</p:selectOneMenu></td>
+											</tr>
+										</table>
+									</fieldset>
+								</div>
+
+								<div style="float: left;">
+									<div>
+										<fieldset style="height: 82px; border: 1px solid #ddd;">
+											<legend> #{msg['dmsc.date']} </legend>
+
+											<table>
+												<tr>
+													<td><h:outputLabel value="#{msg['dmsc.dateFrom']} " /></td>
+													<td><p:calendar id="start_date" styleClass="dateField"
+															value="#{salistBean.servappModel.searchModel.p_start_date}"
+															navigator="true" pattern="dd.MM.yyyy" mask="true"
+															converterMessage="Date is invalid." /> <h:outputLabel
+															value="#{msg['dmsc.dateFrom1']} " /></td>
+												</tr>
+												<tr>
+													<td><h:outputLabel value=" #{msg['dmsc.dateTo']} " /></td>
+													<td><p:calendar id="end_date" styleClass="dateField"
+															value="#{salistBean.servappModel.searchModel.p_end_date}"
+															navigator="true" pattern="dd.MM.yyyy" mask="true"
+															converterMessage="Date is invalid." />
+														#{msg['dmsc.dateTo1']}</td>
+												</tr>
+											</table>
+										</fieldset>
+									</div>
+
+								</div>
+
+								<div style="float: left;">
+									<div>
+										<fieldset style="height: 82px; border: 1px solid #ddd;">
+											<legend> #{msg['dmsc.status']}, #{msg['dmsc.type']}
+											</legend>
+											<table>
+												<tr>
+													<td><h:outputLabel value="#{msg['dmsc.status']}: " /></td>
+													<td><p:selectOneMenu id="servapp_status"
+															value="#{salistBean.servappModel.searchModel.app_status}">
+															<f:selectItem itemLabel="#{msg['dmsc.all']}"
+																itemValue="0" />
+															<f:selectItem itemLabel="Новая" itemValue="1" />
+															<f:selectItem itemLabel="В обработке" itemValue="2" />
+															<f:selectItem itemLabel="Выполнена" itemValue="3" />
+															<f:selectItem itemLabel="Отменена" itemValue="4" />
+														</p:selectOneMenu></td>
+												</tr>
+												<tr>
+													<td><h:outputLabel value="#{msg['dmsc.type']}: " /></td>
+													<td><p:selectOneMenu id="servapp_type"
+															value="#{salistBean.servappModel.searchModel.app_type}">
+															<f:selectItem itemLabel="#{msg['dmsc.all']}"
+																itemValue="0" />
+															<f:selectItem itemLabel="ROBOCLEAN - Сервис"
+																itemValue="3" />
+															<f:selectItem itemLabel="ROBOCLEAN - Профилактика"
+																itemValue="6" />
+															<f:selectItem itemLabel="CEBILON - Сервис" itemValue="1" />
+															<f:selectItem itemLabel="CEBILON - Замена фильтров"
+																itemValue="7" />
+															<f:selectItem itemLabel="Жалоба / Пожелание"
+																itemValue="4" />
+															<f:selectItem itemLabel="Другое" itemValue="5" />
+														</p:selectOneMenu></td>
+												</tr>
+											</table>
+										</fieldset>
+									</div>
+								</div>
+
+								<div style="float: left;">
+									<div>
+										<fieldset style="height: 82px; border: 1px solid #ddd;">
+											<legend>#{msg['dmsc.searchByNumber']} </legend>
+
+											<table>
+												<tr>
+													<td><h:outputLabel value="№ Заявки: " /></td>
+													<td><p:inputText id="sapp_num" maxlength="20"
+															style="width: 95px;" autocomplete="off"
+															value="#{salistBean.servappModel.searchModel.app_number}" /></td>
+												</tr>
+
+												<tr>
+													<td><h:outputLabel value="#{msg['dmsc.contractNo']} " /></td>
+													<td><p:inputText id="contr_num" maxlength="20"
+															style="width: 95px;" autocomplete="off"
+															value="#{salistBean.servappModel.searchModel.contract_number}" /></td>
+												</tr>
+
+											</table>
+										</fieldset>
+									</div>
+								</div>
+
+								<div style="float: left;">
+									<fieldset style="height: 82px; border: 1px solid #ddd;">
+										<legend>#{msg['dmsc.staff']}</legend>
+
+										<table>
+											<tr>
+												<td><h:outputLabel value="Принял: " /></td>
+												<td><p:selectOneMenu id="createdBy" disabled="false"
+														value="#{salistBean.servappModel.searchModel.created_by}">
+														<f:selectItem itemLabel="Неизвестно" itemValue="0" />
+														<f:selectItems value="#{salistBean.user_list}" var="user"
+															itemLabel="#{user.username}" itemValue="#{user.user_id}" />
+													</p:selectOneMenu></td>
+											</tr>
+										</table>
+									</fieldset>
+								</div>
+
+								<div style="float: right; margin-left: 25px;">
+									<table>
+										<tr>
+											<td></td>
+											<td><p:commandButton type="push" value="Поиск"
+													icon="ui-icon ui-icon-search" style="height:63px;"
+													actionListener="#{salistBean.loadServAppOutputTable}"
+													update=":messages" id="srchButton">
+												</p:commandButton></td>
+										</tr>
+									</table>
+								</div>
+							</fieldset>
+							<p:hotkey bind="ctrl+space" actionListener="#{salistBean.loadServAppOutputTable}" update=":messages" />
+						</div>
+
+   						<p:tooltip id="toolTipFade" for="srchButton" value="ctrl+пробел" position="top"/>
+    					<p:tooltip id="toolTipFade2" for=":ServAppListForm:SAlist:createButton" value="ctrl+стрелка налево" position="top"/>
+											
+						<div class="container">
+						 <p:hotkey bind="ctrl+left"  update=":ServAppCreateForm" actionListener="#{salistBean.prepareCreate}" oncomplete="PF('ServAppCreateDialog').show()" />
+	
+						 
+					
+						 
+						 
+						 
+						 
+						 
+							<p:dataTable id="SAlist" value="#{salistBean.servappModel}"
+								var="item" selectionMode="single" lazy="true"
+								selection="#{salistBean.selectedSA}" paginator="true"
+								rowKey="#{item.id}" rows="20"
+								rowsPerPageTemplate="10, 20, 50, 100" resizableColumns="true"
+								liveResize="true">
+								<p:ajax event="rowDblselect" oncomplete="PF('ServAppViewDlg').show()"  update=":ServAppViewForm" global="false" />
+								<p:ajax event="rowSelect"
+									update="createButton viewButton editButton deleteButton" />
+								<p:ajax event="rowUnselect"
+									update="createButton viewButton editButton deleteButton" />
+
+								<p:column width="110">
+									<f:facet name="header">
+										<h:outputText value="№ заявки" />
+									</f:facet>
+									<h:outputText value="#{item.app_number}" />
+								</p:column>
+
+								<p:column width="100">
+									<f:facet name="header">
+										<h:outputText value="Компания" />
+									</f:facet>
+									<p:selectOneMenu id="bukrsSA" disabled="true"
+										value="#{item.bukrs}">
+										<f:selectItem itemLabel=" " itemValue="0" />
+										<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+											var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column width="110">
+									<f:facet name="header">
+										<h:outputText value="Филиал" />
+									</f:facet>
+									<p:selectOneMenu styleClass="branch" id="branchSApp"
+										value="#{item.branch_id}" disabled="true">
+										<f:selectItem itemLabel=" " itemValue="0" />
+										<f:selectItems value="#{branchF4Bean.branch_list}"
+											var="wa_branch" itemLabel="#{wa_branch.text45}"
+											itemValue="#{wa_branch.branch_id}" />
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column width="80">
+									<f:facet name="header">
+										<h:outputText value="Дог. SN" />
+									</f:facet>
+									<h:outputText value="#{item.contract_number}" />
+									<h:link outcome="/dms/contract/dmsc03" target="_blank"
+										styleClass="urlLinks"
+										rendered="#{!empty item.contract_number}">
+										<f:param name="contract_number"
+											value="#{item.contract_number}" />
+										<h:graphicImage value="/img/link.png"
+											style="float:right; width:15px; height:15px;" />
+									</h:link>
+								</p:column>
+
+								<p:column width="220">
+									<f:facet name="header">
+										<h:outputText value="Заявитель" />
+									</f:facet>
+									<h:outputText value="#{item.applicant_name}" />
+								</p:column>
+
+								<p:column width="80">
+									<f:facet name="header">
+										<h:outputText value="Дата" />
+									</f:facet>
+									<h:outputText value="#{item.adate}">
+										<f:convertDateTime pattern="dd.MM.yyyy" />
+									</h:outputText>
+								</p:column>
+
+								<p:column width="185">
+									<f:facet name="header">
+										<h:outputText value="Вид заявки" />
+									</f:facet>
+									<p:selectOneMenu id="type" value="#{item.app_type}"
+										disabled="true">
+										<f:selectItem itemLabel="Неопределенный вид" itemValue="0" />
+										<f:selectItem itemLabel="ROBOCLEAN - Сервис" itemValue="3" />
+										<f:selectItem itemLabel="ROBOCLEAN - Профилактика"
+											itemValue="6" />
+										<f:selectItem itemLabel="CEBILON - Сервис" itemValue="1" />
+										<f:selectItem itemLabel="CEBILON - Замена фильтров"
+											itemValue="7" />
+										<f:selectItem itemLabel="Жалоба / Пожелание" itemValue="4" />
+										<f:selectItem itemLabel="Другое" itemValue="5" />
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column width="120">
+									<f:facet name="header">
+										<h:outputText value="Статус заявки" />
+									</f:facet>
+									<p:selectOneMenu id="sa_type" value="#{item.app_status}"
+										disabled="true">
+										<f:selectItem itemLabel="Новая" itemValue="1" />
+										<f:selectItem itemLabel="В обработке" itemValue="2" />
+										<f:selectItem itemLabel="Выполнена" itemValue="3" />
+										<f:selectItem itemLabel="Отменена" itemValue="4" />
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Инфо" />
+									</f:facet>
+									<h:outputText value="#{item.info}" />
+								</p:column>
+
+								<p:column width="120">
+									<f:facet name="header">
+										<h:outputText value="Принял" />
+									</f:facet>
+									<p:selectOneMenu id="createdBy" value="#{item.created_by}"
+										disabled="true">
+										<f:selectItem itemLabel="Неизвестно" itemValue="0" />
+										<f:selectItems value="#{salistBean.user_list}" var="user"
+											itemLabel="#{user.username}" itemValue="#{user.user_id}" />
+									</p:selectOneMenu>
+								</p:column>
+
+
+								<f:facet name="header">
+									<p:outputPanel>
+										<p:commandButton id="createButton" icon="ui-icon-plus"
+											value="Создать" update=":ServAppCreateForm"
+											actionListener="#{salistBean.prepareCreate}"
+											oncomplete="PF('ServAppCreateDialog').show()" />
+										<p:commandButton id="viewButton" icon="ui-icon-search"
+											value="Просмотр" update=":ServAppViewForm"
+											oncomplete="PF('ServAppViewDlg').show()"
+											disabled="#{empty salistBean.selectedSA}" />
+										<p:commandButton id="editButton" icon="ui-icon-pencil"
+											value="Редактировать" update=":ServAppEditForm"
+											actionListener="#{salistBean.prepareUpdate}"
+											oncomplete="PF('ServAppEditDlg').show()"
+											disabled="#{empty salistBean.selectedSA}" />
+										<p:commandButton id="deleteButton" icon="ui-icon-trash"
+											value="Удалить" update="SAlist"
+											actionListener="#{salistBean.destroy}" disabled="true" />
+										<p:commandButton id="toggler" type="button" value="Столбцы"
+											style="float:right" icon="ui-icon-calculator" />
+										<p:columnToggler datasource="SAlist" trigger="toggler" />
+									</p:outputPanel>
+								</f:facet>
+							</p:dataTable>
+						</div>
+
+					</h:form>
+
+					<ui:include src="create.xhtml" />
+					<ui:include src="edit.xhtml" />
+					<ui:include src="view.xhtml" />
+					<ui:include src="contractlist.xhtml" />
+					<ui:include src="customerWidget.xhtml" />
+
+					<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+						align="center">
+						<p:commandButton value="#{msg['dmsc.yes']}" type="button"
+							align="center" styleClass="ui-confirmdialog-yes"
+							icon="ui-icon-check" />
+						<p:commandButton value="#{msg['dmsc.no']}" type="button"
+							align="center" styleClass="ui-confirmdialog-no"
+							icon="ui-icon-close" />
+					</p:confirmDialog>
+				</f:view>
+
+			</div>
+		</div>
+	</div>
+
+
+</h:body>
+</html>

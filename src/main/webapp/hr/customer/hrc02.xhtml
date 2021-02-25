@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<f:metadata>
+	<f:viewParam name="customerId" value="#{hrc02Bean.customerId}" />
+	<f:viewParam name="iinBinSearch" value="#{hrc02Bean.iinBinSearch}" />
+	<f:event type="preRenderView" listener="#{hrc02Bean.init}" />
+</f:metadata>
+
+<h:head>
+	<title>#{msg['hr.customer.update_customer']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css" />
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP');
+                         $(this).toggleClass('shiftLeft');
+                         $('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.hrc02']}" />
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+				<ui:include src="Form.xhtml">
+					<ui:param name="mode" value="update"></ui:param>
+				</ui:include>
+
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+
+						<div class="ui-grid-col-4">
+							<h:form id="bankAccountForm">
+								<fieldset class="passportInfoFieldSet">
+									<legend>#{msg['hr.customer.bank_account']}</legend>
+									<p:commandButton type="push" value="#{msg['hr.customer.add_account']}"
+										icon="ui-icon ui-icon-plus"
+										actionListener="#{hrc02Bean.addBankAccount}"
+										update="hrc-bank-account"
+										disabled="#{empty hrc02Bean.customer.id}">
+									</p:commandButton>
+									<p:dataTable value="#{hrc02Bean.baList}" var="ba"
+										rowKey="#{ba.ba_id}" id="hrc-bank-account">
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="IBAN" />
+											</f:facet>
+											<p:inputText value="#{ba.iban}" style="width:200px;"></p:inputText>
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['hr.customer.currency']}" />
+											</f:facet>
+											<p:selectOneMenu value="#{ba.currency}">
+												<f:selectItem itemLabel="#{msg['hr.customer.select']}"
+													itemValue="" />
+												<f:selectItems value="#{currencyF4Bean.currency_list}"
+													var="wa_currency" itemLabel="#{wa_currency.text20}"
+													itemValue="#{wa_currency.currency}" />
+											</p:selectOneMenu>
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['hr.customer.bank']}" />
+											</f:facet>
+											<p:selectOneMenu value="#{ba.bank_id}">
+												<f:selectItem itemLabel="#{msg['hr.customer.select']}"
+													itemValue="0" />
+												<f:selectItems value="#{hrc02Bean.bankList}" var="bank"
+													itemLabel="#{bank.name_ru}" itemValue="#{bank.b_id}" />
+											</p:selectOneMenu>
+										</p:column>
+										<p:column style="width:50px;">
+											<p:commandButton title="#{msg['hr.customer.delete']}"
+												icon="ui-icon ui-icon-circle-close"
+												update="hrc-bank-account"
+												actionListener="#{hrc02Bean.removeBankAccount(ba)}">
+											</p:commandButton>
+										</p:column>
+									</p:dataTable>
+								</fieldset>
+							</h:form>
+						</div>
+
+
+						<div class="ui-grid-col-8">
+							<ui:include src="../address/AddressListTable.xhtml">
+								<ui:param name="selectedCustomer" value="#{hrc02Bean.customer}"></ui:param>
+							</ui:include>
+						</div>
+					</div>
+				</div>
+
+				<h:form id="bkpf-list">
+					<p:dialog header="#{hrc02Bean.bkpfDialogTitle}"
+						widgetVar="bkpfList" id="bkpfList" dynamic="true" width="700px">
+						<p:dataTable scrollable="true" tablestyle="width:800px"
+							styleClass="payroll-table-month" scrollHeight="200"
+							emptyMessage="#{msg['empty']}" id="bkpf-list-table" var="bkpf"
+							value="#{hrc02Bean.bkpfList}">
+
+							<p:column headerText="#{msg['bkpf.belnr.long']}">
+								<p:outputLabel value="#{bkpf.belnr}"></p:outputLabel>
+							</p:column>
+							<p:column headerText="#{msg['amount']} " rendered="#{bkpf.waers == 'USD'}">
+								<p:outputLabel value="#{bkpf.dmbtr}"></p:outputLabel>
+							</p:column>
+							<p:column headerText="#{msg['amount']} " rendered="#{bkpf.waers != 'USD'}">
+								<p:outputLabel value="#{bkpf.wrbtr}"></p:outputLabel>
+							</p:column>
+							<p:column headerText="#{msg['bkpf.waers.long']}">
+								<p:outputLabel value="#{bkpf.waers}"></p:outputLabel>
+							</p:column>
+						</p:dataTable>
+					</p:dialog>
+				</h:form>
+				
+			</div>
+		</div>
+	</div>
+
+</h:body>
+</html>

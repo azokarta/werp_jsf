@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{hrAllDocListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="HR > #{msg['hr.all_documents']}" />
+				</ui:include>
+			</ui:insert>
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{msg['hr.all_documents']}" />
+			</ui:include>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel id="horizontal" header="#{msg.advanced_search}"
+							toggleable="true" toggleOrientation="vertical" collapsed="false">
+							<h:panelGrid columns="4" cellpadding="10">
+								<p:outputLabel value="#{msg.company}"
+									rendered="#{userinfo.sys_admin or userinfo.main}"></p:outputLabel>
+								<p:selectOneMenu
+									rendered="#{userinfo.sys_admin or userinfo.main}"
+									value="#{hrAllDocListBean.searchModel.bukrs}"
+									disabled="#{!userinfo.main}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel rendered="#{userinfo.sys_admin or userinfo.main}"
+									value="#{msg.branch}"></p:outputLabel>
+								<p:selectOneMenu id="branch_id"
+									rendered="#{userinfo.sys_admin or userinfo.main}"
+									value="#{hrAllDocListBean.searchModel.branchId}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems
+										value="#{branchF4Bean.getAllBranchByBukrs(hrAllDocListBean.searchModel.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg['hr.doc.type']}"></p:outputLabel>
+								<p:selectOneMenu value="#{hrAllDocListBean.searchModel.typeId}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems
+										value="#{hrAllDocListBean.getDocTypes().entrySet()}"
+										var="dType" itemValue="#{dType.key}"
+										itemLabel="#{dType.value}" />
+								</p:selectOneMenu>
+								
+								<p:outputLabel value="#{msg['status']}"></p:outputLabel>
+								<p:selectOneMenu value="#{hrAllDocListBean.searchModel.statusId}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems
+										value="#{hrAllDocListBean.getStatuses().entrySet()}"
+										var="st" itemValue="#{st.key}"
+										itemLabel="#{st.value}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" update=":DocumentListForm:datalist"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<h:form id="DocumentListForm">
+					<p:dataTable id="datalist" value="#{hrAllDocListBean.dataModel}"
+						var="item" paginator="true" paginatorPosition="bottom"
+						rowKey="#{item.id}" rows="50" lazy="true">
+
+						<f:facet name="header" id="tableHeader">
+							<span
+								style="display: block; float: left; color: blue; font-weight: bold;">#{msg['hr.total']}:
+								#{hrAllDocListBean.dataModel.rowCount}</span>
+							<div style="clear: both;"></div>
+						</f:facet>
+
+						<p:column style="width:100px;text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="№" />
+							</f:facet>
+							<h:outputText value="#{item.getFormattedRegNumber()}" />
+						</p:column>
+
+						<p:column style="width:100px;">
+							<f:facet name="header">
+								<h:outputText value="#{msg['company']}" />
+							</f:facet>
+							<h:outputText value="#{bukrsF4Bean.getNameByBukrs(item.bukrs)}" />
+						</p:column>
+
+						<p:column style="width:150px;">
+							<f:facet name="header">
+								<h:outputText value="#{msg['branch']}" />
+							</f:facet>
+							<h:outputText
+								value="#{branchF4Bean.getBranchNameByID(item.branchId)}" />
+						</p:column>
+
+						<p:column sortBy="#{item.typeId}" style="width:300px;">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.doc.type']}" />
+							</f:facet>
+							<h:outputText value="#{item.getDocTypeName()}" />
+						</p:column>
+
+						<p:column sortBy="#{item.statusId}" style="width:150px;">
+							<f:facet name="header">
+								<h:outputText value="#{msg['status']}" />
+							</f:facet>
+							<h:outputText value="#{item.getStatusName()}" />
+						</p:column>
+
+						<p:column sortBy="#{item.createdAt}">
+							<f:facet name="header">
+								<h:outputText value="#{msg['created_at']}" />
+							</f:facet>
+							<h:outputText value="#{item.createdAt}" />
+						</p:column>
+
+						<p:column>
+							<p:button target="_blank" value="#{msg['view']}"
+								outcome="View.xhtml?id=#{item.id}" icon="ui-icon-search"
+								title="#{msg['view']}">
+							</p:button>
+						</p:column>
+
+					</p:dataTable>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

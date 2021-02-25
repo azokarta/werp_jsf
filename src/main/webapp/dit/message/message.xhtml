@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Сообщения</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+	<h:outputStylesheet name="main2.css" library="css" />
+	<h:outputStylesheet name="main-form.css" library="css" />
+</h:head>
+<h:body>
+	<ui:include src="/template/sessionTimeOut.xhtml" />
+    <div class="ui-grid ui-grid-responsive">
+        <div class="ui-grid"  id="menubar">
+        	
+            <ui:insert name="header">
+				<ui:include src="/template/header2.xhtml">
+					<ui:param name="pageTitle"
+						value="#{msg['breadcrumb.message']}" />
+				</ui:include>
+			</ui:insert>
+        </div>
+        <h:form id="form" enctype="multipart/form-data"> 
+        <div class="ui-grid">  
+        
+        	<p:toolbar styleclass="mp_toolbar"> 
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{messageBean.pageName}"/>
+									</f:facet>
+								</p:toolbar>
+								<p:separator />
+            <div class="ui-grid">
+            	
+                <div class="ui-grid-col-2" >
+                	<div style="margin: auto;width: 60%;" >
+                	<p:commandButton value="Написать"   icon="ui-icon-pencil" actionListener="#{messageBean.writeMessage}" update=":form"/>
+
+                	<p:menu id="menu">
+                		
+				        <p:submenu >
+				            <p:menuitem value="Входящие #{messageBean.notReadMessNum}"  icon="ui-icon-mail-closed" actionListener="#{messageBean.loadMessIn}" 
+				              style="#{messageBean.activeMess == 1 or  messageBean.activeMess == 4 ? 'color:#FAA04C;' : ''} 
+				              #{messageBean.countNotRead != 0 ? 'font-weight:bold;' : ''}"  update=":form"/>
+				            <p:menuitem value="Отправленные" icon="ui-icon-circle-arrow-w" actionListener="#{messageBean.loadMessTo}"  
+				            style="#{messageBean.activeMess == 2 or  messageBean.activeMess == 5 ? 'color:#FAA04C;' : ''}" update=":form"/>
+				        </p:submenu>
+				    </p:menu>
+				    
+				    </div>
+                </div>
+                <div class="ui-grid-col-9">
+                	
+							<p:dataTable id="messtable" rendered="#{messageBean.activeMess == 2 or  messageBean.activeMess == 1? 'true' : 'false'}"
+								value="#{messageBean.l_mess}" var="item" emptyMessage = "#{msg.empty_rows}"
+								selection="#{messageBean.selected_mess}" paginator="true"
+								 rowKey="#{item.message_to_id}"
+								rows="20" styleClass="margin-right:30px;">
+													
+								<f:facet name="header" id="tableHeader">
+								
+									
+									<p:commandButton value="Пометить прочитанным"  rendered="#{messageBean.activeMess==1}" icon="ui-icon-pencil" actionListener="#{messageBean.markRead}" update=":form:messtable"/>
+									<p:commandButton value="Пометить непрочитанным"  rendered="#{messageBean.activeMess==1}" icon="ui-icon-pencil" actionListener="#{messageBean.markUnread}" update=":form:messtable"/>		
+									<p:commandButton value="Удалить"  rendered="#{messageBean.activeMess==1}" icon="ui-icon-pencil" actionListener="#{messageBean.deleteMessage}" />
+								</f:facet>
+								<p:column selectionMode="multiple" style="width:16px;text-align:center" />
+								<p:column style="width:26px;" >
+								<p:commandButton action="#{messageBean.readMessage}" icon="ui-icon-search" update="">
+									<f:setPropertyActionListener target="#{messageBean.read_message}" value="#{item}" />
+								</p:commandButton>
+								</p:column>
+								<p:column style="width:20%;" rendered="#{messageBean.activeMess==1}">
+									<h:outputText value="#{item.mess_from}" style="white-space: nowrap;#{item.read_bool==1 ? 'font-weight:bold;color:black' : ''}" />
+								</p:column>
+								<p:column style="width:20%;" rendered="#{messageBean.activeMess==2}" >
+									<h:outputText value="#{item.mess_to}" style="white-space: nowrap;#{item.read_bool==1 ? 'font-weight:bold;color:black' : ''}"/>
+								</p:column>
+								<p:column>
+									<h:outputText value="#{item.mess_head_text}" style="white-space: nowrap;#{item.read_bool==1 ? 'font-weight:bold;color:black' : ''}"/>
+								</p:column>
+								<p:column style="width:60px;">
+									<h:outputText value="#{item.mess_date}" style="#{item.read_bool==1 ? 'font-weight:bold;color:black' : ''}"/>
+								</p:column>	
+							</p:dataTable>
+							
+							
+						<p:panelGrid id="sendPanel" style="border:0px;" styleClass="searchPanelGrid" rendered="#{messageBean.activeMess==3 ? 'true' : 'false'}"> 
+							<p:row>
+						    	<p:column colspan="2">
+						    		<p:commandButton value="Отправить"   icon="ui-icon-pencil" actionListener="#{messageBean.sendMessage}" update=":form"/>
+						    	</p:column>
+    						</p:row>
+    						<p:row>
+        						<p:column style="font-weight: bold;">
+        							<p:outputLabel value="Кому:" for="messTo" />
+        						</p:column>
+ 
+        						<p:column >
+        							<p:autoComplete id="messTo" value="#{messageBean.selected_userstaff}" multiple="true" completeMethod="#{messageBean.autocompleteUS}" size="100"
+                        			var="wa" itemLabel="#{wa.username}" itemValue="#{wa}" converter="#{messageBean.messageToConverter}"  forceSelection="true"  >
+                        			
+							            <p:column style="width:10%">
+							                <h:outputText value="#{wa.username}" />
+							            </p:column>
+				 
+							            <p:column>
+							                <h:outputText value="#{wa.userFio}" />
+							            </p:column>
+				        			</p:autoComplete>
+				        		</p:column>
+ 
+    						</p:row>
+    						<p:row>
+    							<p:column style="font-weight: bold;">
+    								<p:outputLabel value="Тема:" for="messHeadText" />
+    							</p:column>
+    							<p:column>
+    								<p:inputText id = "messHeadText" value="#{messageBean.new_message.mess_head_text}" maxlength="100" size="100" />
+    							</p:column>
+    						</p:row>
+    						<p:row>
+    							
+    							<p:column colspan="2">
+    								<p:fileUpload fileUploadListener="#{messageBean.handleFileUpload}" mode="advanced" dragDropSupport="false" label="Выберите"
+										cancelLabel="Отменить" uploadLabel="Загрузить"
+                  					multiple="true" sizeLimit="500000"  allowTypes="/(\.|\/)(gif|jpe?g|png|pdf)$/" />
+                  					
+                  				<p:dataTable id="attachTable"  value="#{messageBean.l_ma}" var="item"  emptyMessage = "">
+									<p:column >
+										<h:outputText value="#{item.ext}" />
+										<p:commandButton icon="ui-icon-close" type="push" actionListener="#{messageBean.removeFile(item.ext)}" styleClass="f4button" />
+									</p:column>
+								</p:dataTable>
+    							</p:column>
+    						</p:row>
+    						
+    						
+    						
+    						<p:row>
+						    	<p:column colspan="2">
+						    		<p:editor id="editor" widgetVar="editorWidget" value="#{messageBean.new_message.mess_text}"  width="800" />
+						    	</p:column>
+    						</p:row>
+    					</p:panelGrid>	
+    					
+    					<p:panelGrid style="border:0px;" styleClass="searchPanelGrid" rendered="#{messageBean.activeMess == 4 or  messageBean.activeMess == 5 ? 'true' : 'false'}"> 
+							
+    						<p:row>
+        						<p:column style="font-weight: bold;">
+        							<p:outputLabel value="От:" rendered="#{messageBean.activeMess == 4 ? 'true' : 'false'}"/>
+        							<p:outputLabel value="Кому:" rendered="#{messageBean.activeMess == 5 ? 'true' : 'false'}"/>
+        						</p:column>
+ 
+        						<p:column >
+        							<h:outputText value="#{messageBean.read_message.mess_from}" rendered="#{messageBean.activeMess == 4 ? 'true' : 'false'}"  style="white-space: nowrap;"/>
+        							<h:outputText value="#{messageBean.read_message.mess_to}" rendered="#{messageBean.activeMess == 5 ? 'true' : 'false'}" style="white-space: nowrap;"/>
+        							
+				        		</p:column>
+ 
+    						</p:row>
+    						<p:row>
+    							<p:column style="font-weight: bold;">
+    								<p:outputLabel value="Тема:" />
+    							</p:column>
+    							<p:column>
+    								<p:inputText value="#{messageBean.read_message.mess_head_text}" maxlength="100" size="100" disabled="true" />
+    							</p:column>
+    						</p:row>
+    						
+    						<p:row>
+    							<p:column style="font-weight: bold;">
+    								<p:outputLabel value="Время:"  />
+    							</p:column>
+    							<p:column style="width:60px;">
+									<h:outputText value="#{messageBean.read_message.mess_date}" />
+								</p:column>	
+    						</p:row>
+    							<p:row>
+    							
+    							<p:column >
+    							</p:column>
+	    							
+    							<p:column >
+                  					<p:dataTable id="attachTable2"  value="#{messageBean.l_ma}" var="item" style="width:160px;"  emptyMessage = "">
+											<p:column >
+												<h:outputText value="#{item.ext}" />
+												<p:commandButton value="Загрузить" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
+													<p:fileDownload value="#{messageBean.download(item.ext)}" />
+												</p:commandButton>
+											</p:column>
+											
+											
+										</p:dataTable>
+    							</p:column>
+    						</p:row>
+    						<p:row>
+						    	<p:column colspan="2">
+						    		<p:editor widgetVar="editorWidget2" value="#{messageBean.read_message.mess_text}"  width="800" disabled="true" />
+						    		
+    								
+						    	</p:column>
+    						</p:row>
+    					</p:panelGrid>
+						
+				         
+                </div>
+                <div class="ui-grid-col-1">
+                </div>
+            </div>
+            
+            
+        </div>
+        </h:form>
+    </div>
+
+
+</h:body>
+
+</html>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<f:metadata>
+	<f:event type="preRenderView"
+		listener="#{lgOrderInBean.setMode('view')}" />
+</f:metadata>
+<h:head>
+	<title>#{lgOrderInBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="" />
+				</ui:include>
+			</ui:insert>
+			<h:form id="form">
+				<div class="ui-grid-row">
+					<div style="width: 95%; margin: auto;">
+						<h2 style="width: 300px;">#{lgOrderInBean.pageHeader}</h2>
+						<p:button outcome="/logistics/order/in/Update.xhtml"
+							id="updateBtn" value="Редактировать" icon="ui-icon-pencil"
+							title="Редактировать" disabled="#{!lgOrderInBean.editable}">
+							<f:param name="orderId" value="#{lgOrderInBean.order.id}" />
+						</p:button>
+						<p:commandButton id="sendBtn" value="Отправить"
+							disabled="#{!lgOrderInBean.editable}"
+							update="sendBtn,updateBtn, :messages"
+							actionListener="#{lgOrderInBean.Send()}"></p:commandButton>
+					</div>
+				</div>
+
+				<div class="ui-grid ui-grid-responsive">
+
+					<div class="ui-grid-row" style="padding-bottom: 10px;">
+						<div class="ui-grid-col-4">
+							<p:panel header="#{msg['logistics.order.order_data']}"
+								style="margin-bottom:20px">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="№"></p:outputLabel>
+									<p:outputLabel value="#{lgOrderInBean.title}"></p:outputLabel>
+
+
+									<p:outputLabel value="#{msg['logistics.order.werks_from']}"></p:outputLabel>
+									<p:outputLabel
+										value="#{werksF4Bean.getName(lgOrderInBean.order.werks_from)}"></p:outputLabel>
+
+									<p:outputLabel value="На склад"></p:outputLabel>
+									<p:outputLabel
+										value="#{werksF4Bean.getName(lgOrderInBean.order.werks_to)}"></p:outputLabel>
+
+								</h:panelGrid>
+							</p:panel>
+						</div>
+
+						<div class="ui-grid-col-8">
+							<p:panel header="Материалы для заказа" style="margin-bottom:20px"
+								id="orderMatnrPanel">
+
+								<p:dataTable id="orderMatnrTable"
+									value="#{lgOrderInBean.orderItems}" var="item"
+									emptyMessage="#{msg.no_records}" rowKey="#{item.matnr_id}">
+
+									<p:column headerText="Материал">
+										<p:outputLabel value="#{item.matnrName}"></p:outputLabel>
+									</p:column>
+
+									<p:column headerText="Количество">
+										<p:outputLabel value="#{item.quantity}"></p:outputLabel>
+									</p:column>
+
+									<p:column headerText="Примечание">
+										<p:outputLabel value="#{item.info}"></p:outputLabel>
+									</p:column>
+								</p:dataTable>
+							</p:panel>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</div>
+	</div>
+</h:body>
+</html>

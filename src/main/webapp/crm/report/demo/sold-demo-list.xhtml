@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['list_sold_demo']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['list_sold_demo']}" />
+				</ui:include>
+			</ui:insert>
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{msg['list_sold_demo']}" />
+			</ui:include>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel id="horizontal" header="#{msg.advanced_search}"
+							toggleable="true" toggleOrientation="vertical" collapsed="false">
+							<h:panelGrid columns="8" cellpadding="10">
+								<p:outputLabel value="#{msg.company}"
+									rendered="#{userinfo.sys_admin or userinfo.main}"></p:outputLabel>
+								<p:selectOneMenu
+									rendered="#{userinfo.sys_admin or userinfo.main}"
+									value="#{soldDemoBean.searchModel.bukrs}"
+									disabled="#{!userinfo.main}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel
+									value="#{msg.branch}"></p:outputLabel>
+								<p:selectOneMenu id="branch_id"
+									value="#{soldDemoBean.searchModel.branchId}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+									<f:selectItems
+										value="#{branchBean.getUserBranches(soldDemoBean.searchModel.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel rendered="false">#{msg['dmsc.dealer']}</p:outputLabel>
+								<p:selectOneMenu rendered="false"
+									value="#{hrStaffListBean.staffModel.departmentId}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems value="#{departmentF4Bean.l_dep}" var="dep"
+										itemLabel="#{dep.name_ru}" itemValue="#{dep.dep_id}" />
+								</p:selectOneMenu>
+								
+								<p:outputLabel>#{msg['date_from']}:</p:outputLabel>
+								<p:calendar styleClass="budat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{soldDemoBean.searchModel.fromDate}"/>
+											
+								<p:outputLabel>#{msg['date_to']}:</p:outputLabel>
+								<p:calendar styleClass="budat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{soldDemoBean.searchModel.toDate}"/>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" update=":DataListForm :messages"
+									actionListener="#{soldDemoBean.loadItems()}"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="DataListForm">
+						<p:dataTable id="datalist" value="#{soldDemoBean.items}"
+							var="item" selection="#{hrStaffListBean.selected}"
+							paginator="true" paginatorPosition="bottom" rowKey="#{item.id}"
+							rows="50" lazy="false">
+
+							<p:column style="width:70px;text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="№" />
+								</f:facet>
+								<h:outputText value="#{item.id}" />
+							</p:column>
+							
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['branch']}" />
+								</f:facet>
+								<h:outputText value="#{branchF4Bean.getName(item.branchId)}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['dmsc.dealer']}" />
+								</f:facet>
+								<h:outputText value="#{item.dealer.getLF()}"
+									rendered="#{!empty item.dealer}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['dms.demo.demosec_id']}" />
+								</f:facet>
+								<h:outputText value="#{item.appointer.getLF()}"
+									rendered="#{!empty item.appointer}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['date']}" />
+								</f:facet>
+								<h:outputText value="#{item.dateTime}">
+									<f:convertDateTime pattern="dd.MM.yyyy" timeZone="Asia/Almaty"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+
+							<p:column style="width:250px;text-align:center;">
+
+								<p:button target="_blank"
+									outcome="/dms/contract/dmsc01.xhtml?demo_id=#{item.id}"
+									value="#{msg['to_reg_contract']}"></p:button>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

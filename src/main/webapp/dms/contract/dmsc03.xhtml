@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<f:metadata>
+	<f:viewParam name="contract_number"
+		value="#{dmsc03Bean.contract_number}" />
+	<f:viewParam name="contract_id" value="#{dmsc03Bean.contract_id}" />
+	<f:event type="preRenderView" listener="#{dmsc03Bean.init}" />
+</f:metadata>
+<h:head>
+	<title>#{msg['dmsc.viewContract']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+</h:head>
+
+<h:body>
+
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.dmsc03']}" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="#{msg['dmsc.viewContract']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+
+				<f:view>
+
+					<h:form id="form">
+
+						<p:growl id="messages" sticky="false" showDetail="true" />
+
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg['dmsc.edit']}"
+									icon="ui-icon ui-icon-pencil" update="messages"
+									actionListener="#{dmsc03Bean.go_editPage}" />
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+								<p:commandButton icon="ui-icon-newwin" type="push"
+									value="#{msg['dmsc.paymentHistory']}"
+									onclick="PF('bsidPaidWidget').show();" />
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+								<p:commandButton icon="ui-icon-newwin" type="push"
+									value="#{msg['dmsc.serviceHistory']}">
+									<p:ajax listener="#{dmsc03Bean.prepareCRMHisDlg}" />
+									</p:commandButton>
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+								<p:commandButton type="push" value="#{msg['dmsc.newContract']}"
+									icon="ui-icon ui-icon-plus" update="messages"
+									actionListener="#{dmsc03Bean.go_toNewContractPage}" />
+							</f:facet>
+
+							<f:facet name="right">
+								<h:outputLabel>#{msg['dmsc.contractNo']} </h:outputLabel>
+								<h:inputText id="contract_number_search" maxlength="14"
+									autocomplete="off" value="#{dmsc03Bean.contract_number_search}" />
+								<h:outputLabel>&nbsp;</h:outputLabel>
+								<p:commandButton type="push" value="#{msg['dmsc.search']}"
+									icon="ui-icon ui-icon-search"
+									actionListener="#{dmsc03Bean.to_search}" update="messages" />
+							</f:facet>
+						</p:toolbar>
+
+						<!--
+						<div id="search"
+							style="position: absolute; margin-top: -40px; margin-left: 185px;">
+							
+							 
+							<div style="display: inline; float: left; margin-top: 8px;">
+								<table>
+									<tr>
+										<td>&nbsp;<h:outputLabel value=" Оплатить: " /> <h:link
+												outcome="/finance/accounting/cash/faci01" target="_blank">
+												<f:param name="belnr" value="#{dmsc03Bean.belnr}" />
+												<f:param name="gjahr" value="#{dmsc03Bean.gjahr}" />
+												<f:param name="bukrs" value="#{dmsc03Bean.p_bukrs}" />
+												<b><h:outputText value="В кассу" /></b>
+											</h:link> &nbsp;|&nbsp; <h:link
+												outcome="/finance/accounting/bank/fabi" target="_blank">
+												<f:param name="belnr" value="#{dmsc03Bean.belnr}" />
+												<f:param name="gjahr" value="#{dmsc03Bean.gjahr}" />
+												<f:param name="bukrs" value="#{dmsc03Bean.p_bukrs}" />
+												<b><h:outputText value="Через банк" /></b>
+											</h:link>
+										</td>
+
+									</tr>
+								</table>
+							</div>
+						</div>
+						 -->
+
+						<div class="ui-grid-row" style="margin-top: 15px;">
+
+							<div id="contract" style="display: block; float: left;">
+
+								<fieldset class="contractViewEditFieldSet">
+									<legend>#{msg['dmsc.contract']}</legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.bukrs']}" /></td>
+											<td><p:selectOneMenu id="bukrs"
+													value="#{dmsc03Bean.p_contract.bukrs}" disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}"
+														itemValue="0" />
+													<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+														var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+														itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.branch']}" /></td>
+											<td><p:selectOneMenu id="branch"
+													value="#{dmsc03Bean.p_contract.branch_id}" disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+														itemValue="0" />
+													<f:selectItems value="#{branchF4Bean.branch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td colspan="2">
+												<table>
+													<tr>
+														<td><h:outputLabel value="#{msg['service']}" /></td>
+														<td><p:selectOneMenu id="servBranch"
+																update="messages"
+																value="#{dmsc03Bean.p_contract.serv_branch_id}"
+																disabled="true">
+																<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+																	itemValue="0" />
+																<f:selectItems value="#{branchF4Bean.branch_list}"
+																	var="wa_branch" itemLabel="#{wa_branch.text45}"
+																	itemValue="#{wa_branch.branch_id}" />
+															</p:selectOneMenu></td>
+														<td width="75" align="right"><h:outputLabel
+																value="#{msg['finances']} " /></td>
+														<td><p:selectOneMenu id="finBranch" disabled="true"
+																value="#{dmsc03Bean.p_contract.finBranchId}">
+																<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+																	itemValue="0" />
+																<f:selectItems value="#{branchF4Bean.branch_list}"
+																	var="wa_branch" itemLabel="#{wa_branch.text45}"
+																	itemValue="#{wa_branch.branch_id}" />
+															</p:selectOneMenu></td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.contr_type']}" /></td>
+											<td><p:selectOneMenu id="contract_type_id"
+													value="#{dmsc03Bean.p_contract.contract_type_id}"
+													disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.select_contr_type']}"
+														itemValue="0" />
+													<f:selectItems
+														value="#{contractTypeF4Bean.contractType_list}"
+														var="wa_contractType" itemLabel="#{wa_contractType.name}"
+														itemValue="#{wa_contractType.contract_type_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.status']}" /></td>
+											<td><p:selectOneMenu id="contract_status_id"
+													value="#{dmsc03Bean.p_contract.contract_status_id}"
+													disabled="true">
+													<f:selectItems
+														value="#{contractStatusF4Bean.contractStatus_list}"
+														var="wa_contractStatus"
+														itemLabel="#{wa_contractStatus.getName(systemLocale.currentLocale)}"
+														itemValue="#{wa_contractStatus.contract_status_id}" />
+												</p:selectOneMenu> <p:selectOneMenu id="contract_last_state"
+													style="margin-left: 10px;"
+													value="#{dmsc03Bean.p_contract.last_state}" disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.lsFormalised']}"
+														itemValue="1" />
+													<f:selectItem itemLabel="#{msg['dmsc.lsIssued']}"
+														itemValue="2" />
+													<f:selectItem itemLabel="#{msg['dmsc.lsReturned']}"
+														itemValue="3" />
+													<f:selectItem itemLabel="#{msg['dmsc.lsMounted']}"
+														itemValue="4" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.contractNo']}" /></td>
+											<td><h:inputText id="dogSN" size="10" autocomplete="off"
+													value="#{dmsc03Bean.p_contract.contract_number}"
+													disabled="true" /> <h:outputLabel
+													value=" #{msg['dmsc.barcode']} " style="margin-left: 20px;" />
+												<h:inputText id="dogBarCode" size="15" autocomplete="off"
+													value="#{dmsc03Bean.p_contract.contract_barcode}"
+													disabled="true" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['old']} SN " /></td>
+											<td><h:inputText id="oldSN" size="20" autocomplete="off"
+													value="#{dmsc03Bean.p_contract.old_sn}" disabled="true" /></td>
+										</tr>
+
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.customer']}" /></td>
+											<td><h:inputText id="fio" size="35" autocomplete="off"
+													value="#{dmsc03Bean.p_fio}" disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.demo_secretary']}" /></td>
+											<td><h:inputText id="demo_sc" size="35"
+													autocomplete="off" value="#{dmsc03Bean.p_fioDemoSec}"
+													disabled="true" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.dealer']}" /></td>
+											<td><h:inputText id="dealer" size="35"
+													autocomplete="off" value="#{dmsc03Bean.p_fioDealer}"
+													disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.collector']}" /></td>
+											<td><h:inputText id="collector" size="35"
+													autocomplete="off" value="#{dmsc03Bean.p_fioColl}"
+													disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.fitter']}" /></td>
+											<td><h:inputText id="fitter" size="35"
+													autocomplete="off" value="#{dmsc03Bean.p_fioFitter}"
+													disabled="true" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.referender']}" /></td>
+											<td><h:inputText id="ref-id" size="35"
+													autocomplete="off" value="#{dmsc03Bean.p_fioRef}"
+													disabled="true" />
+											<p:button target="_blank" styleClass="f4button"
+													outcome="/dms/contract/dmsc03?contract_id=#{dmsc03Bean.p_contract.ref_contract_id}"
+													icon="ui-icon-zoomin" title="View">
+												</p:button></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.price']}" /></td>
+											<td><h:inputText id="price" size="10" autocomplete="off"
+													value="#{dmsc03Bean.p_contract.price}" disabled="true" />
+												<h:outputLabel id="currencyName"
+													value=" #{dmsc03Bean.p_currency}" /> <p:commandButton
+													style="margin-left: 30px" type="push" value="Edit Price"
+													actionListener="#{dmsc03Bean.GoToEditPrice}"
+													disabled="#{dmsc03Bean.p_contract.price eq dmsc03Bean.p_contract.paid}"
+													update="messages" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel
+													value="#{msg['dmsc.advance_payment']}" /></td>
+											<td><h:inputText id="firstpayment" size="10"
+													autocomplete="off"
+													value="#{dmsc03Bean.p_contract.first_payment}"
+													disabled="true" /> <h:outputLabel id="currencyName2"
+													value=" #{dmsc03Bean.p_currency}" /> <h:outputLabel
+													value="#{msg['dmsc.payment_schedule']}"
+													style="margin-left: 30px;" /> <h:inputText
+													id="payment_schedule" size="5" autocomplete="off"
+													style="margin-left: 10px;"
+													value="#{dmsc03Bean.p_contract.payment_schedule}"
+													disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.paid']}" /></td>
+											<td><h:inputText id="paid" size="10" autocomplete="off"
+													value="#{dmsc03Bean.p_contract.paid}" disabled="true" /> <h:outputLabel
+													id="currencyName5" value=" #{dmsc03Bean.p_currency}" /> <h:outputLabel
+													value="#{msg['dmsc.remain']}" style="margin-left: 30px;" />
+												<h:inputText id="remain" size="10"
+													style="margin-left: 10px;" autocomplete="off"
+													value="#{dmsc03Bean.remain}" disabled="true" /> <h:outputLabel
+													id="currencyName4" value=" #{dmsc03Bean.p_currency}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel
+													value="#{msg['dmsc.dealer_discount']} &nbsp;&nbsp;" /></td>
+											<td><h:inputText id="dealer_discount" size="10"
+													autocomplete="off"
+													value="#{dmsc03Bean.p_contract.dealer_subtract}"
+													disabled="true" /> <h:outputLabel id="currencyName3"
+													value=" #{dmsc03Bean.p_currency}" /> <h:outputLabel
+													value="#{msg['dmsc.ref_discount']} " rendered="false"
+													style="margin-left: 30px;" /> <p:selectBooleanCheckbox
+													style="margin-left: 5px;" value="#{dmsc03Bean.ref_disc}"
+													disabled="true" rendered="false" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.bank_partner']}" /></td>
+											<td><p:selectOneMenu id="bank_partner"
+													value="#{dmsc03Bean.p_contract.bank_partner_id}"
+													disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.without_bank']}"
+														itemValue="0" />
+													<f:selectItems
+														value="#{bankPartnerF4Bean.bankPartner_list}"
+														var="wa_bpartner" itemLabel="#{wa_bpartner.name_full}"
+														itemValue="#{wa_bpartner.id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.registered_in']}: " /></td>
+											<td><p:selectOneMenu id="subcompany" disabled="true"
+													value="#{dmsc03Bean.p_contract.legal_entity_id}">
+													<f:selectItem itemLabel="#{msg['dmsc.choose_sales_company']}"
+														itemValue="0" />
+													<f:selectItems
+														value="#{dmsc03Bean.sc_list}"
+														var="wa_sc" itemLabel="#{wa_sc.name_ru}"
+														itemValue="#{wa_sc.sc_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.contract_date']}" /></td>
+											<td><p:calendar id="contract_date"
+													styleClass="dateField" pattern="dd.MM.yyyy"
+													autocomplete="off"
+													value="#{dmsc03Bean.p_contract.contract_date}"
+													converterMessage="Date is invalid." disabled="true" /> <h:outputLabel
+													style="margin-left: 20px;"
+													value=" #{msg['dmsc.date_issued']} &nbsp;&nbsp;" /> <p:calendar
+													id="matnr_release_date" styleClass="dateField"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{dmsc03Bean.p_contract.matnr_release_date}"
+													converterMessage="Date is invalid." disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.promo_camp']}" /></td>
+											<td><h:inputText id="promoName" name="promoName"
+													size="33" autocomplete="off"
+													value="#{dmsc03Bean.p_promoName}" disabled="true" /> <p:commandButton
+													icon="ui-icon-newwin" type="push"
+													oncomplete="PF('PromotionDlg').show();"
+													styleClass="f4button">
+												</p:commandButton></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.matnr_serial']}" /></td>
+											<td><h:inputText id="barcode" autocomplete="off"
+													value="#{dmsc03Bean.p_contract.tovar_serial}"
+													disabled="true" /></td>
+										</tr>
+
+									</table>
+								</fieldset>
+							</div>
+
+
+							<div id="contact" class="contactFieldDiv"
+								style="display: block; float: left;">
+								<fieldset class="contractViewEditFieldSet">
+									<legend>#{msg['dmsc.contact_info']}</legend>
+									<table>
+
+										<tr>
+											<td><b><h:outputLabel
+														value="#{msg['dmsc.addr_home']}" /></b></td>
+											<td><p:inputTextarea rows="2" cols="25" disabled="true"
+													autoResize="false" style="font-size: 1em;"
+													value="#{dmsc03Bean.addrHome.address}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.tel_dom']} " /></td>
+											<td><p:inputTextarea id="tel_mob1" rows="2" cols="25"
+													disabled="true" autoResize="false" style="font-size: 1em;"
+													value="#{dmsc03Bean.addrHome.telDom}  #{dmsc03Bean.addrHome.telMob1}  #{dmsc03Bean.addrHome.telMob2}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><b><h:outputLabel
+														value="#{msg['dmsc.addr_rab']}" /></b></td>
+											<td><p:inputTextarea rows="2" cols="25" disabled="true"
+													autoResize="false" style="font-size: 1em;"
+													value="#{dmsc03Bean.addrWork.address}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.tel_dom']} " /></td>
+											<td><p:inputTextarea id="telWork" rows="2" cols="25"
+													disabled="true" autoResize="false" style="font-size: 1em;"
+													value="#{dmsc03Bean.addrWork.telDom}  #{dmsc03Bean.addrWork.telMob1}  #{dmsc03Bean.addrWork.telMob2}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><b><h:outputLabel value="#{msg['dmsc.addr_service']}" /></b></td>
+											<td><p:inputTextarea rows="2" cols="25" disabled="true"
+													autoResize="false" style="font-size: 1em;"
+													value="#{dmsc03Bean.addrService.address}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.tel_dom']} " /></td>
+											<td><p:inputTextarea id="telServ" rows="2" cols="25"
+													disabled="true" autoResize="false" style="font-size: 1em;"
+													value="#{dmsc03Bean.addrService.telDom}  #{dmsc03Bean.addrService.telMob1}  #{dmsc03Bean.addrService.telMob2}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.email']}" /></td>
+											<td><p:inputText id="email" disabled="true" size="27"
+													value="#{dmsc03Bean.selectedCustomer.email}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.info']}" /></td>
+											<td><p:inputTextarea rows="4" cols="25"
+													counter="display" maxlength="255" disabled="true"
+													counterTemplate="#{msg['dmsc.hint_left']} {0} #{msg['dmsc.hint_char']}"
+													autoResize="false" style="font-size: 1em;"
+													value="#{dmsc03Bean.p_contract.info}" /><br /> <h:outputText
+													style="color:#aaa;" styleClass="notetext" id="display" />
+
+											</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.reissuedDate']}" /></td>
+											<td><p:calendar id="new_contract_date"
+													styleClass="dateField" pattern="dd.MM.yyyy"
+													autocomplete="off"
+													value="#{dmsc03Bean.p_contract.new_contract_date}"
+													converterMessage="Date is invalid." disabled="true">
+
+												</p:calendar></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.cancelledDate']}" /></td>
+											<td><p:calendar id="cancel_date" styleClass="dateField"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{dmsc03Bean.p_contract.cancel_date}"
+													converterMessage="Date is invalid." disabled="true">
+
+												</p:calendar></td>
+										</tr>
+
+									</table>
+								</fieldset>
+							</div>
+
+							<div class="paymentFieldDiv"
+								style="display: block; float: left; margin-top: 12px;">
+								<fieldset class="payment_scheduleFieldSet"
+									style="margin-top: -12px; height: 52em;">
+									<legend>#{msg['dmsc.payment_graph']}</legend>
+
+									<div class="ui-grid-row">
+										<table>
+											<tr>
+												<td><h:outputLabel value="#{msg['dmsc.awkey']}: " /></td>
+												<td><h:inputText id="awkey" size="20"
+														autocomplete="off" value="#{dmsc03Bean.p_contract.awkey}"
+														disabled="true" /> 
+													<p:button target="_blank"
+														styleClass="f4button"
+														outcome="/accounting/reports/fa03?belnr=#{dmsc03Bean.belnr}&#38;gjahr=#{dmsc03Bean.gjahr}&#38;bukrs=#{dmsc03Bean.p_contract.bukrs}"
+														icon="ui-icon-zoomin" title="View" id="viewButton4">
+													</p:button></td>
+											</tr>
+											<tr>
+												<td width="97px"><h:outputLabel
+														value="#{msg['dmsc.first_payment']}" /></td>
+												<td><p:inputText id="first_payment" size="10"
+														autocomplete="off" disabled="true"
+														value="#{dmsc03Bean.psDetFirstPayment.ps.sum}">
+													</p:inputText> <p:inputText id="first_paid" size="10" autocomplete="off"
+														disabled="true"
+														value="#{dmsc03Bean.psDetFirstPayment.ps.paid}">
+													</p:inputText></td>
+											</tr>
+										</table>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="paymentScheduleDiv"
+											style="display: block; float: left;">
+
+											<p:dataTable id="PaymentTable" var="ps" rowKey="#{ps.index}"
+												value="#{dmsc03Bean.psDetL}"
+												emptyMessage="#{msg['dmsc.nalichka']}"
+												style="margin-top: 10px; width:310px;">
+
+												<p:column headerText="" style="width:15px;">
+													<h:outputText value="#{ps.index}" />
+												</p:column>
+												<p:column headerText="#{msg['dmsc.date']}"
+													style="width:77px;">
+													<p:calendar styleClass="dateField" pattern="dd.MM.yyyy"
+														autocomplete="off" value="#{ps.ps.payment_date}"
+														converterMessage="Date is invalid."
+														disabled="#{ps.mon_dis}">
+													</p:calendar>
+												</p:column>
+												<p:column headerText="#{msg['dmsc.amount']}">
+													<h:inputText size="10" autocomplete="off"
+														value="#{ps.ps.sum}" disabled="#{ps.mon_dis}">
+													</h:inputText>
+												</p:column>
+												<p:column headerText="#{msg['dmsc.paid']}">
+													<h:inputText size="10" autocomplete="off"
+														value="#{ps.ps.paid}" disabled="#{ps.mon_dis}">
+													</h:inputText>
+												</p:column>
+											</p:dataTable>
+										</div>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+
+						<div class="ui-grid-row" style="margin-top: 5px;">
+							<p:dataTable value="#{dmsc03Bean.chL}" var="ch" rowKey="#{ch.id}"
+								emptyMessage="#{msg['dmsc.emptyRec']}" widgetVar="50"
+								id="contractHistoryTable" styleClass="outputTable-table"
+								headerClass="outputTable-table-header"
+								rowClasses="outputTable-table-odd-row, outputTable-table-even-row">
+
+								<f:facet name="header">
+									<p:outputPanel>
+										<p:outputLabel value="#{msg['dmsc.editHistory']}" />
+									</p:outputPanel>
+								</f:facet>
+
+								<p:column style="text-align:center;width:30px;">
+									<f:facet name="header">
+										<h:outputText value="" />
+									</f:facet>
+									<h:outputText value="#{ch.id}">
+									</h:outputText>
+								</p:column>
+
+								<p:column style="text-align:center;width:100px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.date']}" />
+									</f:facet>
+									<p:calendar id="cancel_date" styleClass="dateField"
+										pattern="dd.MM.yyyy" autocomplete="off" value="#{ch.rec_date}"
+										converterMessage="Date is invalid." disabled="true">
+									</p:calendar>
+								</p:column>
+								<p:column style="text-align:center;width:300px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.change']}" />
+									</f:facet>
+									<p:selectOneMenu id="choper_on" value="#{ch.oper_on}"
+										disabled="true">
+										<f:selectItem itemLabel="" itemValue="0" />
+										<f:selectItems value="#{contractOperF4Bean.contractOper_list}"
+											var="wa_co" itemLabel="#{wa_co.oper_name_ru}"
+											itemValue="#{wa_co.id}" />
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column style="text-align:center;width:150px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.changeOper']}" />
+									</f:facet>
+									<p:selectOneMenu id="change_oper_type" value="#{ch.oper_type}"
+										disabled="true">
+										<f:selectItem itemLabel="#{msg['dmsc.changeOperAdd']}"
+											itemValue="1" />
+										<f:selectItem itemLabel="#{msg['dmsc.changeOperRemove']}"
+											itemValue="2" />
+										<f:selectItem itemLabel="#{msg['dmsc.changeOperChange']}"
+											itemValue="3" />
+										<f:selectItem itemLabel="#{msg['dmsc.changeOperIssue']}"
+											itemValue="4" />
+										<f:selectItem itemLabel="#{msg['dmsc.changeOperReturn']}"
+											itemValue="5" />
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column style="text-align:center;width:300px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.old']}" />
+									</f:facet>
+									<h:outputText value="#{ch.old_text}">
+									</h:outputText>
+								</p:column>
+
+								<p:column style="text-align:center;width:300px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.new']}" />
+									</f:facet>
+									<h:outputText value="#{ch.new_text}">
+									</h:outputText>
+								</p:column>
+
+								<p:column style="text-align:center;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.Description']}" />
+									</f:facet>
+									<h:outputText value="#{ch.info}">
+									</h:outputText>
+								</p:column>
+
+							</p:dataTable>
+						</div>
+
+						<p:dialog header="#{msg['dmsc.paymentHistory']}"
+							widgetVar="bsidPaidWidget" dynamic="true" width="600"
+							height="400">
+
+							<p:dataTable scrollable="true" scrollHeight="350" id="bsidPaid"
+								var="o" value="#{dmsc03Bean.l_bkpfPaid}"
+								sortBy="#{o.bkpf.bukrs}">
+								
+								<p:column headerText="#{msg['bkpf.awkey.long']}"
+									style="width:45px">
+									<h:outputText value="#{o.bkpf.belnr}" />
+								</p:column>
+								
+								<p:column headerText="Дата "
+									style="width:50px">
+									<h:outputText value="#{o.bkpf.bldat}" >
+										<f:convertDateTime pattern="dd-MM-yyyy" />
+									</h:outputText>
+								</p:column>
+								
+								<p:column headerText="#{msg['dmsc.year']}" style="width:15px">
+									<h:outputText value="#{o.bkpf.gjahr}" />
+								</p:column>
+								<p:column headerText="#{msg['dmsc.type']}" style="width:15px">
+									<h:outputText value="#{o.bkpf.blart}" />
+								</p:column>
+								<p:column headerText="#{msg['dmsc.Description']}"
+									style="width:150px">
+									<h:outputText value="#{o.info}" />
+								</p:column>
+
+								<p:column headerText="#{msg['dmsc.amountIn']} "
+									style="width:50px">
+									<h:outputText value="#{o.bkpf.wrbtr}">
+										<f:convertNumber pattern="#0.00" />
+									</h:outputText>
+								</p:column>
+								
+								<p:summaryRow>
+									<p:column colspan="5" style="text-align:right">
+										<h:outputText value="#{msg['dmsc.total']}:" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{dmsc03Bean.sum_wrbtr}">
+											<f:convertNumber type="currency" currencySymbol="" />
+										</h:outputText>
+									</p:column>
+								</p:summaryRow>
+
+							</p:dataTable>
+						</p:dialog>
+
+					</h:form>
+
+					<ui:include src="promolist.xhtml">
+						<ui:param name="selectMode" value="" />
+						<ui:param name="sourceList" value="#{dmsc03Bean.promoTable}" />
+						<ui:param name="selectedTarget" value="#{dmsc03Bean.selectedPTS}" />
+						<ui:param name="assignTarget"
+							value="#{dmsc01Bean.assignSelectedPromos}" />
+						<ui:param name="renderSelectButton" value="false" />
+						<ui:param name="renderStart" value="false" />
+						<ui:param name="renderEnd" value="false" />
+					</ui:include>
+					
+					<ui:include src="servhistorydlg.xhtml" >
+						<ui:param name="formBean" value="#{dmsc03Bean}" />
+					</ui:include>
+
+				</f:view>
+			</div>
+		</div>
+	</div>
+
+</h:body>
+</html>

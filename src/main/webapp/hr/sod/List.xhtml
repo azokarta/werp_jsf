@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="SodListDlg" widgetVar="SodListDialog"
+		modal="true" resizable="true" appendTo="@(body)"
+		header="#{hrsSodListBean.listDialogHeader}" width="90%">
+		<h:form id="SodListForm">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2"
+					rendered="#{hrsSodListBean.selectedStaff != null}"
+					style="width:90%">
+					<p:dataTable scrollable="true" scrollHeight="400"
+						emptyMessage="#{msg.no_records}" id="sodList" var="sod"
+						rowKey="#{sod.sod_id}" selection="#{hrsSodListBean.selected}" selectionMode="single"
+						value="#{hrsSodListBean.items}">
+						
+						<p:ajax event="rowSelect"
+							update="sodCreateButton sodUpdateButton" />
+						<p:ajax event="rowUnselect"
+							update="sodCreateButton sodUpdateButton" />
+							
+						<f:facet name="header" id="tableHeader">
+
+							<p:commandButton id="sodCreateButton" icon="ui-icon-plus"
+								title="Create"
+								actionListener="#{hrsSodListBean.prepareCreate}"
+								update=":SodCreateForm"
+								oncomplete="PF('SodCreateDialog').show()"
+								style="float:right;margin-right:5px;" />
+								
+							<p:commandButton id="sodUpdateButton" icon="ui-icon-pencil"
+								title="Update" disabled="#{empty hrsSodListBean.selected}"
+								update=":SodUpdateForm"
+								oncomplete="PF('SodUpdateDialog').show()"
+								style="float:right;margin-right:5px;" />
+
+							<div style="clear: both;"></div>
+						</f:facet>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="ID" />
+							</f:facet>
+							<h:outputText value="#{sod.sod_id}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.official_data.sub_company_id']}" />
+							</f:facet>
+							<h:outputText
+								value="#{sod.sub_company_id}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.official_data.post']}" />
+							</f:facet>
+							<h:outputText
+								value="#{sod.post}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.official_data.salary']}" />
+							</f:facet>
+							<h:outputText
+								value="#{sod.salary}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.official_data.currency']}" />
+							</f:facet>
+							<h:outputText value="#{sod.currency}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.official_data.pension']}" />
+							</f:facet>
+							<h:outputText
+								value="#{sod.pension}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.official_data.ipn']}" />
+							</f:facet>
+							<h:outputText
+								value="#{sod.ipn}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.official_data.comment']}" />
+							</f:facet>
+							<h:outputText
+								value="#{sod.comment}" />
+						</p:column>
+						
+					</p:dataTable>
+				</p:panelGrid>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+	<ui:include src="Create.xhtml" />
+	<ui:include src="Update.xhtml" />
+</ui:composition>
+</html>

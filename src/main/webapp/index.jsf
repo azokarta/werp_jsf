@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>ERP Systems</title>
+
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="reset.css" library="css" />
+	<h:outputStylesheet name="index.css" library="css" />
+
+
+
+</h:head>
+<h:body name="001">
+	<div class="loginPanel">
+		<fieldset>
+			<f:view>
+				<h:form id="form" onkeypress="if(event.keyCode == 13){document.getElementById('form:loginBtn').click();return false;}">
+
+					<p:growl id="messages" sticky="false" showDetail="true" />
+
+					<h:panelGrid id="panel" columns="1" cellpadding="1" cellspacing="1">
+
+						<h:graphicImage value="img/aura.png" styleClass="avatar" />
+
+						<h:inputText id="username" size="16" required="true"
+							requiredMessage="#{msg.please_enter_username}"
+							value="#{userinfo.username}" />
+						<p:watermark id="usernameWater" for="username"
+							value="#{msg.username}" />
+						<h:message for="username" />
+
+						<div class="bar">
+							<i></i>
+						</div>
+
+						<h:inputSecret id="password" size="16" required="true"
+							requiredMessage="#{msg.please_enter_password}"
+							value="#{userinfo.password}" />
+						<p:watermark id="passwordWater" for="password"
+							value="#{msg.password}" />
+						<h:message for="password" />
+
+						<br />
+						<h:panelGrid id="panel1" columns="2" cellpadding="1"
+							cellspacing="1">
+							<h:outputLabel value="&nbsp;&nbsp;#{msg.system_language}&nbsp;" />
+							<h:selectOneMenu id="language" value="#{userinfo.u_language}">
+								<p:ajax listener="#{systemLocale.changeLocale}" />
+								<f:selectItem itemValue="ru" itemLabel="RU" />
+								<f:selectItem itemValue="en" itemLabel="EN" />
+								<f:selectItem itemValue="tr" itemLabel="TR" />
+							</h:selectOneMenu>
+							<h:message for="language" />
+						</h:panelGrid>
+
+						<br />
+						<p:menubar>
+							<p:menuitem id="loginBtn" value="#{msg.login}" icon="ui-icon ui-icon-check"
+								actionListener="#{userinfo.login}" update="messages" />
+						</p:menubar>
+
+
+					</h:panelGrid>
+
+				</h:form>
+
+
+
+			</f:view>
+		</fieldset>
+	</div>
+</h:body>
+</html>

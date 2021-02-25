@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="DemoCreateDlg" widgetVar="DemoCreateDlg" modal="true"
+		resizable="false" appendTo="@(body)"
+		header="Добавление/Редактирование демо" width="600">
+		<h:form id="DemoCreateForm" rendered="#{!empty dmsdListBean.selected}">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2" style="width:550px;">
+					<p:outputLabel value="#{msg.company}"></p:outputLabel>
+					<p:selectOneMenu id="bukrs" value="#{dmsdListBean.selected.bukrs}"
+						rendered="#{userinfo.sys_admin or userinfo.main}">
+						<p:ajax update="branchId dealerBranchId"></p:ajax>
+						<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+						<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="wa_bukrs"
+							itemLabel="#{wa_bukrs.name}" itemValue="#{wa_bukrs.bukrs}" />
+					</p:selectOneMenu>
+					<p:outputLabel style="float:right;"
+						value="#{bukrsF4Bean.getNameByBukrs(userinfo.bukrs)}"
+						rendered="#{!userinfo.sys_admin and !userinfo.main}"></p:outputLabel>
+
+					<p:outputLabel value="Филиал"></p:outputLabel>
+					<p:selectOneMenu id="branchId" rendered="#{userinfo.sys_admin or userinfo.main}"
+						value="#{dmsdListBean.selected.branchId}">
+						<p:ajax listener="#{dmsdListBean.onChangeBranch}"
+							update="demosecId"></p:ajax>
+						<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+						<f:selectItems
+							value="#{branchF4Bean.getAllBranchByBukrs(dmsdListBean.selected.bukrs)}"
+							var="br" itemLabel="#{br.text45}" itemValue="#{br.branch_id}" />
+					</p:selectOneMenu>
+					<p:selectOneMenu rendered="#{!userinfo.sys_admin and !userinfo.main}"
+						value="#{dmsdListBean.selected.branchId}">
+						<p:ajax listener="#{dmsdListBean.onChangeBranch}"
+							update="demosecId"></p:ajax>
+						<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+						<f:selectItems
+							value="#{dmsdListBean.userBranches}"
+							var="br" itemLabel="#{br.text45}" itemValue="#{br.branch_id}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Демо секр."></p:outputLabel>
+					<p:selectOneMenu id="demosecId"
+						value="#{dmsdListBean.selected.demosecId}">
+						<f:selectItem itemValue="0" itemLabel="Выберите демо секр."></f:selectItem>
+						<f:selectItems value="#{dmsdListBean.secretars}" var="sec"
+							itemValue="#{sec.staff_id}" itemLabel="#{sec.firstname} #{sec.lastname}"></f:selectItems>
+					</p:selectOneMenu>
+					
+					
+					<p:outputLabel value="Филиал дилера"></p:outputLabel>
+					<p:selectOneMenu id="dealerBranchId" rendered="#{userinfo.sys_admin or userinfo.main}"
+						value="#{dmsdListBean.selected.dealerBranchId}">
+						<p:ajax listener="#{dmsdListBean.onChangeDealerBranch}"
+							update="dealerId"></p:ajax>
+						<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+						<f:selectItems
+							value="#{branchF4Bean.getAllBranchByBukrs(dmsdListBean.selected.bukrs)}"
+							var="br" itemLabel="#{br.text45}" itemValue="#{br.branch_id}" />
+					</p:selectOneMenu>
+					<p:selectOneMenu rendered="#{!userinfo.sys_admin and !userinfo.main}"
+						value="#{dmsdListBean.selected.dealerBranchId}">
+						<p:ajax listener="#{dmsdListBean.onChangeDealerBranch}"
+							update="dealerId"></p:ajax>
+						<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+						<f:selectItems
+							value="#{dmsdListBean.userBranches}"
+							var="br" itemLabel="#{br.text45}" itemValue="#{br.branch_id}" />
+					</p:selectOneMenu>
+					
+
+					<p:outputLabel value="Дилер"></p:outputLabel>
+					<p:selectOneMenu id="dealerId"
+						value="#{dmsdListBean.selected.dealerId}">
+						<f:selectItem itemValue="0" itemLabel="Выберите дилера"></f:selectItem>
+						<f:selectItems value="#{dmsdListBean.dealers}" var="dealer"
+							itemValue="#{dealer.staff_id}" itemLabel="#{dealer.firstname} #{dealer.lastname}"></f:selectItems>
+					</p:selectOneMenu>
+
+					
+
+					<p:outputLabel for="datetime" value="Дата/Время:" />
+					<p:calendar id="datetime" value="#{dmsdListBean.selected.dateTime}"
+						pattern="dd.MM.yyyy HH:mm" mask="true" />
+
+					<p:outputLabel value="ФИО клиента"></p:outputLabel>
+					<p:inputText value="#{dmsdListBean.selected.customerName}"></p:inputText>
+
+					<p:outputLabel value="Адрес клиента"></p:outputLabel>
+					<p:inputText value="#{dmsdListBean.selected.customerAddress}"></p:inputText>
+
+					<p:outputLabel value="Моб. тел клиента"></p:outputLabel>
+					<p:inputText value="#{dmsdListBean.selected.customerMobile}"></p:inputText>
+
+					<p:outputLabel value="Статус демо"></p:outputLabel>
+					<p:selectOneMenu value="#{dmsdListBean.selected.statusId}">
+						<f:selectItem itemLabel="Выберите статус" itemValue="0"></f:selectItem>
+						<f:selectItems value="#{dmsdListBean.getStatuses().entrySet()}"
+							var="st" itemLabel="#{st.getValue()}" itemValue="#{st.getKey()}"></f:selectItems>
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Количество рекомендации"></p:outputLabel>
+					<p:inputText value="#{dmsdListBean.selected.refCount}"></p:inputText>
+
+					<p:outputLabel value="Местоположение"></p:outputLabel>
+					<p:selectOneMenu value="#{dmsdListBean.selected.location}">
+						<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+						<f:selectItem itemLabel="ГОРОД" itemValue="1" />
+						<f:selectItem itemLabel="ЗАГОРОД" itemValue="2" />
+					</p:selectOneMenu>
+
+
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{dmsdListBean.Save}"
+					value="Сохранить" update=":DemoListForm:datalist,:messages,:DemoCreateForm" />
+				<p:commandButton type="push" actionListener="#{dmsdListBean.Reset}"
+					value="Отмена" onclick="PF('MatnrCreateDialog').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+	<style>
+table.ui-panelgrid input {
+	width: 90%;
+}
+
+table.ui-panelgrid {
+	margin-bottom: 10px;
+}
+
+table.ui-panelgrid tr.ui-widget-content td label.ui-outputlabel {
+	font-style: italic;
+	font-weight: bold;
+	text-align: right;
+	float: right;
+	margin-right: 2px;
+	display: block;
+}
+</style>
+
+</ui:composition>
+</html>

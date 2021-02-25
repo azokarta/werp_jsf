@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<f:view locale="#{systemLocale.currentLocale}" />
+
+<f:metadata>
+	<f:viewParam name="contract_number"
+		value="#{editPriceDMSCBean.contract_number}" />
+	<f:event type="preRenderView" listener="#{editPriceDMSCBean.init}" />
+</f:metadata>
+
+<h:head>
+	<title>#{msg['dmsc.editPrice']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>			
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.dmsceditprice']}" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="#{msg['dmsc.editPriceContract']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+
+					<h:form id="form">
+
+						<p:growl id="messages" sticky="false" showDetail="true" />
+
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg['dmsc.save']}" id="save_button"
+									disabled="#{editPriceDMSCBean.p_disabled_save_button}"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{editPriceDMSCBean.to_update}"
+									update="messages">
+									<p:confirm header="Confirmation" message="#{msg['dmsc.hint_save_changes']}?"
+										icon="ui-icon-alert" />
+								</p:commandButton>
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+								<p:commandButton type="push" value="#{msg['dmsc.distribute']}"
+									id="spread_button" style="margin-left:5px;"
+									actionListener="#{editPriceDMSCBean.to_spread_payment_table}"
+									update="messages">
+								</p:commandButton>
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+								<p:commandButton type="push" value="#{msg['dmsc.check']}" id="check_button"
+									icon="#{editPriceDMSCBean.p_check_icon}"
+									style="margin-left:10px;"
+									actionListener="#{editPriceDMSCBean.to_check_payment_table}"
+									update="messages">
+								</p:commandButton> &nbsp; <h:outputLabel
+									styleClass="#{editPriceDMSCBean.p_check_text_color}"
+									value="* #{editPriceDMSCBean.p_check_text}" id="check_text" />
+							</f:facet>
+							<f:facet name="right">
+								<h:outputLabel value="#{msg['dmsc.contractNo']} " />
+								<h:inputText id="contract_number_search" maxlength="14"
+									autocomplete="off"
+									value="#{editPriceDMSCBean.contract_number_search}" />
+								<h:outputLabel value=" " />
+								<p:commandButton type="push" value="#{msg['dmsc.search']}"
+									icon="ui-icon ui-icon-search"
+									actionListener="#{editPriceDMSCBean.to_search}"
+									update="messages" />
+							</f:facet>
+						</p:toolbar>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+							align="center">
+							<p:commandButton value="#{msg['dmsc.yes']}" type="button" align="center"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="#{msg['dmsc.no']}" type="button" align="center"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+						<div class="ui-grid-row" style="margin-top: 5px;">
+							<div id="contract" style="display: block; float: left;">
+
+								<fieldset class="contractFieldSet"
+									style="height: 50em; width: 32em;">
+									<legend>#{msg['dmsc.contract']}</legend>
+
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.bukrs']}" /></td>
+											<td><p:selectOneMenu id="bukrs"
+													value="#{editPriceDMSCBean.p_contract.bukrs}"
+													disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}" itemValue="0" />
+													<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+														var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+														itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.branch']}" /></td>
+											<td><p:selectOneMenu id="branch"
+													value="#{editPriceDMSCBean.p_contract.branch_id}"
+													disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.select_branch']}" itemValue="0" />
+													<f:selectItems value="#{branchF4Bean.branch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.contr_type']}" /></td>
+											<td><p:selectOneMenu id="contract_type_id"
+													value="#{editPriceDMSCBean.p_contract.contract_type_id}"
+													disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.select_contr_type']}"
+														itemValue="0" />
+													<f:selectItems
+														value="#{contractTypeF4Bean.contractType_list}"
+														var="wa_contractType" itemLabel="#{wa_contractType.name}"
+														itemValue="#{wa_contractType.contract_type_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.status']}" /></td>
+											<td><p:selectOneMenu id="contract_status_id"
+													value="#{editPriceDMSCBean.p_contract.contract_status_id}"
+													disabled="true">
+													<f:selectItems
+														value="#{contractStatusF4Bean.contractStatus_list}"
+														var="wa_contractStatus"
+														itemLabel="#{wa_contractStatus.getName(systemLocale.currentLocale)}"
+														itemValue="#{wa_contractStatus.contract_status_id}" />
+												</p:selectOneMenu>
+												
+												 <p:selectOneMenu id="contract_last_state"
+													style="margin-left: 10px;"
+													value="#{editPriceDMSCBean.p_contract.last_state}" disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.lsFormalised']}" itemValue="1" />
+													<f:selectItem itemLabel="#{msg['dmsc.lsIssued']}" itemValue="2" />
+													<f:selectItem itemLabel="#{msg['dmsc.lsReturned']}" itemValue="3" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value=" #{msg['dmsc.contractNo']}: " /></td>
+											<td><h:inputText id="dogSN" size="10" autocomplete="off"
+													value="#{editPriceDMSCBean.p_contract.contract_number}"
+													disabled="true" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value=" #{msg['dmsc.barcode']}: " /></td>
+											<td><h:inputText id="dogBarCode" size="15"
+													autocomplete="off"
+													value="#{editPriceDMSCBean.p_contract.contract_barcode}"
+													disabled="true" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.customer']}" /></td>
+											<td><h:inputText id="fio" size="35" autocomplete="off"
+													value="#{editPriceDMSCBean.p_fioCustomer}" disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.dealer']}" /></td>
+											<td><h:inputText id="dealer" size="35"
+													autocomplete="off" value="#{editPriceDMSCBean.p_fioDealer}"
+													disabled="true" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.price']}" /></td>
+											<td><h:inputText id="price_list_id" size="10"
+													autocomplete="off"
+													value="#{editPriceDMSCBean.p_contract.price}"
+													disabled="true">
+													<f:convertNumber type="number" groupingUsed="true"
+														minFractionDigits="2" pattern="#0.00" />
+												</h:inputText> <p:commandButton icon="ui-icon-newwin" type="push"
+													oncomplete="PF('priceWidget').show();" disabled="false"
+													styleClass="f4button">
+													<p:ajax event="click"
+														listener="#{editPriceDMSCBean.preparePrice}" />
+												</p:commandButton> <h:outputLabel id="currencyName"
+													value=" #{editPriceDMSCBean.p_currency}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.payment_schedule']}" /></td>
+											<td><p:inputText id="payment_schedule" size="5"
+													autocomplete="off"
+													value="#{editPriceDMSCBean.p_contract.payment_schedule}"
+													disabled="false">
+													<p:ajax event="change"
+														listener="#{editPriceDMSCBean.monthController}"
+														update="messages" />
+												</p:inputText></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.paid']}" /></td>
+											<td><h:inputText id="paid" autocomplete="off" size="10"
+													value="#{editPriceDMSCBean.p_contract.paid}"
+													disabled="true" /> <h:outputLabel id="currencyName2"
+													value=" #{editPriceDMSCBean.p_currency}" /></td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.dealer_discount']}" /></td>
+											<td><h:inputText id="dealer_discount" size="10"
+													autocomplete="off"
+													value="#{editPriceDMSCBean.p_contract.dealer_subtract}"
+													disabled="false" >
+														<f:ajax event="change"
+															listener="#{editPriceDMSCBean.dealerDiscController}"
+															update="messages" />
+													</h:inputText> 
+													<h:outputLabel id="currencyName7"
+													value=" #{editPriceDMSCBean.p_currency}" />
+												</td>
+										</tr>
+
+									</table>
+								</fieldset>
+							</div>
+
+							<div class="paymentFieldDiv"
+								style="display: block; float: left; margin-top: 12px;">
+								<fieldset class="payment_scheduleFieldSet"
+									style="margin-top: -12px; height: 50em;">
+									<legend>#{msg['dmsc.payment_graph']}</legend>
+
+									<div class="ui-grid-row">
+										<table>
+											<tr>
+												<td><h:outputLabel value="#{msg['dmsc.awkey']}: " /></td>
+												<td colspan="2"><h:inputText id="awkey" size="20"
+														autocomplete="off"
+														value="#{editPriceDMSCBean.p_contract.awkey}"
+														disabled="true" /></td>
+											</tr>
+											<tr>
+												<td><h:outputLabel value="#{msg['dmsc.first_payment']}" /></td>
+												<td><p:inputText id="first_payment" size="10"
+														autocomplete="off"
+														value="#{editPriceDMSCBean.psDetFirstPayment.ps.sum}"
+														disabled="false">
+														<p:ajax event="keyup"
+															listener="#{editPriceDMSCBean.assign_firstPayment}"
+															update="messages" />
+													</p:inputText></td>
+												<td><h:inputText size="10" autocomplete="off" id="first_paid"
+														value="#{editPriceDMSCBean.psDetFirstPayment.ps.paid}"
+														disabled="true">
+													</h:inputText></td>
+
+											</tr>
+										</table>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="paymentScheduleDiv"
+											style="display: block; float: left;">
+
+											<p:dataTable id="PaymentTable" var="ps" rowKey="#{ps.index}"
+												value="#{editPriceDMSCBean.psDetL}"
+												emptyMessage="#{msg['dmsc.nalichka']}"
+												style="margin-top: 10px; width:310px;">
+
+												<p:column headerText=" " style="width:15px;">
+													<h:outputText value="#{ps.index}" />
+												</p:column>
+												<p:column headerText="#{msg['dmsc.date']}" style="width:77px;">
+													<p:calendar styleClass="dateField" pattern="dd.MM.yyyy"
+														autocomplete="off" value="#{ps.ps.payment_date}"
+														converterMessage="Date is invalid."
+														disabled="#{ps.mon_dis}">
+														<p:ajax event="click"
+															listener="#{editPriceDMSCBean.disable_save_button}"
+															update=":messages" />
+													</p:calendar>
+												</p:column>
+												<p:column headerText="#{msg['dmsc.amount']}">
+													<h:inputText size="10" autocomplete="off"
+														value="#{ps.ps.sum}" disabled="#{ps.mon_dis}">
+														<p:ajax event="keyup"
+															listener="#{editPriceDMSCBean.disable_save_button}"
+															update=":messages" />
+													</h:inputText>
+												</p:column>
+												<p:column headerText="#{msg['dmsc.paid']}">
+													<h:inputText size="10" autocomplete="off"
+														value="#{ps.ps.paid}" disabled="true">
+													</h:inputText>
+												</p:column>
+											</p:dataTable>
+										</div>
+
+									</div>
+
+								</fieldset>
+							</div>
+						</div>
+
+						<div class="ui-grid-row" style="margin-top: 5px;">
+							<p:dataTable value="#{editPriceDMSCBean.chL}" var="ch" rowKey="#{ch.id}"
+								emptyMessage="#{msg['dmsc.emptyRec']}" widgetVar="50"
+								id="contractHistoryTable" styleClass="outputTable-table"
+								headerClass="outputTable-table-header"
+								rowClasses="outputTable-table-odd-row, outputTable-table-even-row">
+
+								<f:facet name="header">
+									<p:outputPanel>
+										<p:outputLabel value="#{msg['dmsc.editHistory']}" />
+									</p:outputPanel>
+								</f:facet>
+
+								<p:column style="text-align:center;width:30px;">
+									<f:facet name="header">
+										<h:outputText value="" />
+									</f:facet>
+									<h:outputText value="#{ch.id}">
+									</h:outputText>
+								</p:column>
+
+								<p:column style="text-align:center;width:100px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.date']}" />
+									</f:facet>
+									<p:calendar id="cancel_date" styleClass="dateField"
+										pattern="dd.MM.yyyy" autocomplete="off" value="#{ch.rec_date}"
+										converterMessage="Date is invalid." disabled="true">
+									</p:calendar>
+								</p:column>
+								<p:column style="text-align:center;width:300px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.change']}" />
+									</f:facet>
+									<p:selectOneMenu id="choper_on" value="#{ch.oper_on}"
+										disabled="true">
+										<f:selectItem itemLabel="" itemValue="0" />
+										<f:selectItems value="#{contractOperF4Bean.contractOper_list}"
+											var="wa_co" itemLabel="#{wa_co.oper_name_ru}"
+											itemValue="#{wa_co.id}" />
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column style="text-align:center;width:150px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.changeOper']}" />
+									</f:facet>
+									<p:selectOneMenu id="change_oper_type" value="#{ch.oper_type}"
+										disabled="true">
+										<f:selectItem itemLabel="#{msg['dmsc.changeOperAdd']}" itemValue="1" />
+										<f:selectItem itemLabel="#{msg['dmsc.changeOperRemove']}" itemValue="2" />
+										<f:selectItem itemLabel="#{msg['dmsc.changeOperChange']}" itemValue="3" />
+										<f:selectItem itemLabel="#{msg['dmsc.changeOperIssue']}" itemValue="4" />
+										<f:selectItem itemLabel="#{msg['dmsc.changeOperReturn']}" itemValue="5" />
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column style="text-align:center;width:300px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.old']}" />
+									</f:facet>
+									<h:outputText value="#{ch.old_text}">
+									</h:outputText>
+								</p:column>
+
+								<p:column style="text-align:center;width:300px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.new']}" />
+									</f:facet>
+									<h:outputText value="#{ch.new_text}">
+									</h:outputText>
+								</p:column>
+
+								<p:column style="text-align:center;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.Description']}" />
+									</f:facet>
+									<h:outputText value="#{ch.info}">
+									</h:outputText>
+								</p:column>
+
+							</p:dataTable>
+						</div>
+						<p:dialog header="#{msg['dmsc.priceList']}" widgetVar="priceWidget"
+							dynamic="true" width="545" height="400">
+
+							<div style="float: right; margin: 7px 7px 0 0;">
+								<p:panelGrid align="right">
+									<p:row>
+										<p:column style="font-weight: bold;">#{msg['dmsc.exRate']} USD: </p:column>
+										<p:column style="font-weight: bold;">
+											<p:outputLabel id="exchageRate"
+												value="#{editPriceDMSCBean.p_currate} #{editPriceDMSCBean.p_currency}" />
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+							</div>
+
+							<div class="wrapRTClass">
+
+								<p:dataTable value="#{editPriceDMSCBean.priceTable}" var="p"
+									rowKey="#{p.pListId}" selectionMode="single"
+									selection="#{editPriceDMSCBean.selectedPrice}"
+									emptyMessage="#{msg['dmsc.emptyRec']}" widgetVar="50" id="priceTable"
+									styleClass="outputTable-table"
+									headerClass="outputTable-table-header"
+									rowClasses="outputTable-table-odd-row, outputTable-table-even-row">
+
+									<f:facet name="header">
+										<p:commandButton process="priceTable"
+											actionListener="#{editPriceDMSCBean.assignPriceListId}"
+											onclick="PF('priceWidget').hide();" value="#{msg['dmsc.select']}"
+											update=":messages" />
+									</f:facet>
+
+
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="Дата от" />
+										</f:facet>
+										<p:calendar id="from_date" styleClass="dateField"
+														value="#{p.from_date}"
+														navigator="true" pattern="dd.MM.yyyy" mask="true"
+														converterMessage="Date is invalid." disabled='true' />
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="Валюта" />
+										</f:facet>
+										<h:outputText value="#{p.waers}" />
+									</p:column>
+
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.price']}" />
+										</f:facet>
+										<h:outputText value="#{p.priceNative}">
+											<f:convertNumber type="number" groupingUsed="true"
+												minFractionDigits="2" pattern="#0,000.00" />
+										</h:outputText>
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.first_payment']}" />
+										</f:facet>
+										<h:outputText value="#{p.firstPayment}">
+											<f:convertNumber type="number" groupingUsed="true"
+												minFractionDigits="2" pattern="#0,000.00" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.remain']}" />
+										</f:facet>
+										<h:outputText value="#{p.mrest}">
+											<f:convertNumber type="number" groupingUsed="true"
+												minFractionDigits="2" pattern="#0,000.00" />
+										</h:outputText>
+									</p:column>
+
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.payment_schedule']}" />
+										</f:facet>
+										<h:outputText value="#{p.month}" />
+									</p:column>
+									
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="Премия" />
+										</f:facet>
+										<h:outputText value="#{p.premDiv}" />
+									</p:column>
+
+								</p:dataTable>
+							</div>
+
+						</p:dialog>
+					</h:form>
+
+				</f:view>
+			</div>
+		</div>
+	</div>
+
+
+</h:body>
+</html>

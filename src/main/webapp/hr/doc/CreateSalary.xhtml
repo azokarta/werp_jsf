@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{hrDocSalaryBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+
+	<style>
+.keyLabel {
+	font-style: italic;
+	font-size: 13px;
+	display: block;
+	float: right;
+	margin-right: 2px;
+}
+
+.valLabel {
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.beginDate input.hasDatepicker {
+	width: 70px;
+}
+</style>
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="HR > #{hrDocSalaryBean.pageHeader} " />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{hrDocSalaryBean.pageHeader}" />
+			</ui:include>
+
+			<div class="container">
+				<h:form id="form" rendered="#{!empty hrDocSalaryBean.document}">
+					<p:toolbar styleclass="mp_toolbar">
+						<f:facet name="left">
+							<p:commandButton type="push" value="Сохранить все должности"
+								icon="ui-icon ui-icon-check"
+								actionListener="#{hrDocSalaryBean.Save()}" update=":messages">
+							</p:commandButton>
+						</f:facet>
+					</p:toolbar>
+
+					<div class="ui-grid-row"
+						style="margin-bottom: 7px; border-top: 1px solid #ddd;">
+						<div class="ui-grid-col-3"
+							style="display: block; float: left; background-color: #EBF0FA;">
+							<h:panelGrid columns="2" cellpadding="5" cellspacing="5">
+								<p:outputLabel styleClass="keyLabel" value="Номер документа"></p:outputLabel>
+								<p:outputLabel styleClass="valLabel"
+									value="№#{hrDocSalaryBean.document.getFormattedRegNumber()}"></p:outputLabel>
+									
+								<p:outputLabel styleClass="keyLabel" value="Тип документа"></p:outputLabel>
+								<p:outputLabel styleClass="valLabel"
+									value="#{hrDocSalaryBean.document.getDocTypeName()}"></p:outputLabel>
+
+								<p:outputLabel styleClass="keyLabel" value="Компания"></p:outputLabel>
+								<p:outputLabel styleClass="valLabel"
+									value="#{bukrsF4Bean.getNameByBukrs(hrDocSalaryBean.document.bukrs)}"></p:outputLabel>
+
+								<p:outputLabel styleClass="keyLabel" value="Филиал"></p:outputLabel>
+								<p:outputLabel styleClass="valLabel"
+									value="#{branchF4Bean.getBranchNameByID(hrDocSalaryBean.document.branchId)}"></p:outputLabel>
+							</h:panelGrid>
+
+							<p:dataTable value="#{hrDocSalaryBean.document.hrDocApprovers}"
+								var="r" style="margin-top:10px;">
+								<f:facet name="header">
+									<p:outputLabel style="float:left;" value="Согласовавшие"></p:outputLabel>
+									<div style="clear: both;"></div>
+								</f:facet>
+								<p:column headerText="ФИО">
+									<p:outputLabel value="#{r.title}"></p:outputLabel>
+								</p:column>
+							</p:dataTable>
+						</div>
+
+						<div class="ui-grid-col-9" style="display: block; float: left;">
+							<p:dataTable value="#{hrDocSalaryBean.document.hrDocItems}"
+								var="item">
+
+								<p:column headerText="Сотрудник" style="text-align:center;">
+									<p:outputLabel value="#{item.staff.getLF()}"
+										rendered="#{!empty item.staff}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="Филиал"
+									style="text-align:center;width:60px;">
+									<p:outputLabel
+										value="#{branchF4Bean.getBranchNameByID(item.branchId)}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="Департамент"
+									style="text-align:center;width:60px;">
+									<p:outputLabel
+										value="#{departmentF4Bean.getName(item.departmentId,userinfo.u_language)}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="Должность"
+									style="text-align:center;max-width:100px;">
+									<p:selectOneMenu value="#{item.positionId}"
+										style="width:150px;">
+										<f:selectItem itemValue="0" itemLabel="Не выбрано"></f:selectItem>
+										<f:selectItems value="#{positionF4Bean.position_list}" var="p"
+											itemLabel="#{p.text}" itemValue="#{p.position_id}"></f:selectItems>
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column headerText="Дата начало"
+									style="text-align:center;width:100px;">
+									<p:calendar value="#{item.beginDate}" pattern="dd.MM.yyyy"
+										style="width:60px;" styleClass="beginDate">
+									</p:calendar>
+								</p:column>
+
+								<p:column headerText="Менеджер">
+									<p:selectOneMenu value="#{item.managerId}" style="width:150px;">
+										<f:selectItem itemValue="0" itemLabel="Не выбрано"></f:selectItem>
+										<f:selectItems
+											value="#{hrDocSalaryBean.getBranchManagers(item.branchId)}"
+											var="m" itemLabel="#{m.getLF()}" itemValue="#{m.staff_id}"></f:selectItems>
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column headerText="Оклад">
+									<p:inputText value="#{item.amount}"></p:inputText>
+								</p:column>
+								<p:column headerText="Валюта">
+									<p:selectOneMenu value="#{item.currency}">
+										<f:selectItem itemLabel="Выберите валюту" itemValue="0"></f:selectItem>
+										<f:selectItems value="#{currencyF4Bean.currency_list}"
+											var="cur" itemLabel="#{cur.text20}"
+											itemValue="#{cur.currency}"></f:selectItems>
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column headerText="Бизнес сфера">
+									<p:selectOneMenu value="#{item.businessAreaId}">
+										<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+										<f:selectItems value="#{businessAreaF4Bean.l_ba}" var="ba"
+											itemLabel="#{ba.name}" itemValue="#{ba.business_area_id}"></f:selectItems>
+									</p:selectOneMenu>
+								</p:column>
+							</p:dataTable>
+						</div>
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

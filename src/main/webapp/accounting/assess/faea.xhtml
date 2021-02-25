@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+	<f:viewParam name="branch_id" value="#{faeaBean.p_branch.branch_id}" />
+	<f:viewParam name="bukrs" value="#{faeaBean.p_bukrs.bukrs}" />
+	<f:event type="preRenderView" listener="#{faeaBean.init}" />
+</f:metadata>
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	
+	<script type="text/javascript">
+	
+
+	    
+	
+	
+
+	</script>
+</h:head>
+<h:body>
+    <h:outputScript library="js" name="money.js" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet library="css" name="reports/finance/rfcoj.css" />
+	
+	
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.faea']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+							<h:form id="form">
+								<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,faeaBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+								<p:growl id="messages" sticky="false" showDetail="true" /> 
+								<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<p:commandButton type="push" value="#{msg.save}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{faeaBean.to_save}" />						
+									</f:facet>
+									<f:facet name="right">
+										<p:commandButton value="#{msg.print_out}" type="button"
+											icon="ui-icon-print" ajax="false">
+											<p:printer target="table1" />
+										</p:commandButton>
+										<p:commandButton value="Excel" type="push"
+											icon="ui-icon-arrowthickstop-1-s" ajax="false">
+											<p:dataExporter type="xls" target="table1"
+												postProcessor="#{faeaBean.postProcessXLS}" fileName="report" />
+										</p:commandButton>
+									</f:facet>
+								</p:toolbar>
+							<div style = "display: inline-block;">
+								<div style = "float:left;margin-right:45px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg.company}" /></td>
+											<td>
+												<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{faeaBean.p_bukrs.bukrs}" >
+													<p:ajax listener ="#{faeaBean.changeBukrs}" />
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemValue="#{wa_bukrs.bukrs}" itemLabel="#{wa_bukrs.name}" />
+												</p:selectOneMenu>
+												
+												
+												</td>
+											
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.branch}" /></td>
+											<td>
+													
+												<p:selectOneMenu id="branch" value="#{faeaBean.p_branch.branch_id}">
+													<p:ajax listener ="#{faeaBean.loadCashOffices}" />
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{branchF4Bean.getByBukrsOrBusinessAreaOfficesOnly(faeaBean.p_bukrs.bukrs,userinfo.bukrs,0,0,0,userinfo.branch_id)}"
+														var="branch" itemLabel="#{branch.text45}"
+														itemValue="#{branch.branch_id}" />
+												</p:selectOneMenu>	
+											</td>	
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.type}" /></td>
+											<td>
+													
+												<p:selectOneMenu id="approve" value="#{faeaBean.p_approve}">
+													<f:selectItem itemLabel="#{msg.all}" itemValue="0" />
+													<f:selectItem itemLabel="#{msg['salary_accrual']}" itemValue="6" />
+													<f:selectItem itemLabel="#{msg['salary_deduction']}" itemValue="9" />
+													<f:selectItem itemLabel="#{msg['salary_advance_request']}" itemValue="3" />
+													<f:selectItem itemLabel="#{msg['salary_approved_advance']}" itemValue="4" />
+													<f:selectItem itemLabel="#{msg['salary_rejected']}" itemValue="2" />
+												</p:selectOneMenu>
+												
+											</td>
+										</tr>
+										<tr>
+											<td><p:outputLabel value="#{msg.date_from} " /> </td>
+											<td><p:calendar size="10"
+													id="fdate" pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{faeaBean.s_date_from}"
+													converterMessage="Date is invalid.">
+												</p:calendar>
+												<p:outputLabel value=" " />
+												<p:outputLabel value="#{msg.to} " /> 
+												<p:outputLabel value=" " />
+												<p:calendar id="tdate" size="10"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{faeaBean.s_date_to}"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+										</tr>
+										<tr>
+											<td><p:commandButton value="#{msg.search}" icon="ui-icon-disk"
+													action="#{faeaBean.show}" update="messages" /></td>
+										</tr>
+									</table>
+								</div>
+								<div  style = "float:right">
+									<p:scrollPanel style="width:500px;height:100%"
+														easing="easeOutElastic" id="bracnhCashScrollPanel">
+														<p:dataTable
+															value="#{faeaBean.l_as}" var="o"
+															rows="5" rowKey="#{o.hkont}" id="outputTableBranchCash"
+															emptyMessage="#{msg.empty_rows}" styleClass="outputTable2"
+															headerClass="outputTableHeade2r" 
+															rowClasses="outputTableOddRow2,outputTableEvenRow2">
+															<p:column >
+																<f:facet name="header"><h:outputLabel  value="#{msg['bseg.hkont.long']}"/></f:facet>
+																
+																<h:outputText value="#{hkontF4Bean.getNameByBukrsHkont(faeaBean.p_bukrs.bukrs,o.hkont,systemLocale.currentLocale)}" styleClass="input1" />
+															</p:column>
+															<p:column>
+																<f:facet name="header"><h:outputLabel  value="#{msg.amount}"/></f:facet>
+																<h:outputText value="#{o.amount}">
+																	<f:convertNumber pattern="#,###,##0.00" />
+																</h:outputText>	
+															</p:column>
+															<p:column>
+																<f:facet name="header"><h:outputLabel  value="#{msg['bkpf.waers.long']}"/></f:facet>
+																<h:outputText value="#{o.waers}" />
+															</p:column>
+			
+														</p:dataTable>
+														
+													</p:scrollPanel>
+								</div>		
+								</div>
+								<br />
+								<div class="wrapRTClass">
+
+									<p:dataTable value="#{faeaBean.rt_list}" var="o"
+										paginator="true" rows="20" widgetVar="50" 
+										style="width: 100%;" id="table1" emptyMessage="#{msg.empty_rows}">
+
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg.company}" />
+											</f:facet>
+											<h:outputText value="#{o.bukrs}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.brnch.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.branchName}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg.employee}" />
+											</f:facet>
+											<h:outputText value="#{o.staffFio}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['dmsc.date']}" />
+											</f:facet>
+											<h:outputText value="#{o.payroll_date}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg.amount}" />
+											</f:facet>
+											<h:inputText onkeyup="formatMoney($(this))" onfocus="this.select();" id="summ" value="#{o.dmbtr}"   >
+												<f:convertNumber pattern="#,###,##0.00" />
+										    </h:inputText>
+										</p:column>
+										
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.bktxt.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.approveText}" />
+										</p:column>										
+										
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.waers.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.waers}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['type']}" />
+											</f:facet>
+													
+												<p:selectOneMenu value="#{o.approve}" disabled="true">
+													<f:selectItem itemLabel="#{msg['salary_accrual']}" itemValue="6" />
+													<f:selectItem itemLabel="#{msg['salary_deduction']}" itemValue="9" />
+													<f:selectItem itemLabel="#{msg['salary_advance_request']}" itemValue="3" />
+													<f:selectItem itemLabel="#{msg['salary_approved_advance']}" itemValue="4" />
+													<f:selectItem itemLabel="#{msg['salary_rejected']}" itemValue="2" />
+												</p:selectOneMenu>
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['created']}" />
+											</f:facet>
+											<h:outputText value="#{o.created_byFio}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['approved']}" />
+											</f:facet>
+											<h:outputText value="#{o.approved_byFio}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['status']}" />
+											</f:facet>
+													
+
+												<p:selectOneMenu value="#{o.status}"  rendered="#{!o.noteditable}">
+													<f:selectItem itemLabel="" itemValue="0" />
+													
+													<f:selectItem itemLabel="#{msg['approve']}" itemValue="1" />
+													<f:selectItem itemLabel="#{msg['reject']}" itemValue="2" />
+												</p:selectOneMenu>
+										</p:column>
+									</p:dataTable>
+								</div>
+							</h:form>
+						</f:view>
+
+				</div>
+
+		</div>
+	</div>
+</h:body>
+
+</html>

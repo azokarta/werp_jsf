@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="CustomerListDlg" widgetVar="CustomerListDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Список контрагентов" width="800" height="500">
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-12">
+				<h:form id="CustomerDlgSearchForm"
+					onkeypress="if(event.keyCode == 13){document.getElementById('CustomerDlgSearchForm:CustomerDlgSearchBtn').click();return false;}">
+					<h:panelGrid columns="4" cellpadding="10">
+						<p:outputLabel value="Название"></p:outputLabel>
+						<p:inputText value="#{customerModel.searchModel.name}"></p:inputText>
+
+						<p:outputLabel></p:outputLabel>
+						<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+							id="CustomerDlgSearchBtn"
+							update=":CustomerListDlgForm:CustomerListDlgTable"></p:commandButton>
+					</h:panelGrid>
+				</h:form>
+			</div>
+		</div>
+
+		<h:form id="CustomerListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="CustomerListDlgTable" var="item"
+					rowKey="#{item.id}" value="#{customerModel}"
+					emptyMessage="#{msg.no_records}" selectionMode="single"
+					selection="#{mainFormBean.selectedCustomer}" paginator="true"
+					rows="30" lazy="true">
+					<p:ajax event="rowSelect" update=":CustomerSendForm" />
+					<p:ajax event="rowUnselect" update=":CustomerSendForm" />
+					
+					<p:column headerText="ID" sortBy="#{item.text45}">
+						<h:outputText value="#{item.id}" />
+					</p:column>
+					<p:column headerText="Название" sortBy="#{item.name}">
+						<h:outputText value="#{item.name}" />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup>
+		</h:form>
+		<f:facet name="footer">
+			<h:form id="CustomerSendForm">
+
+				<p:commandButton actionListener="#{mainFormBean.assignCustomer()}"
+					value="Ok" update="#{formId},:messages"
+					oncomplete="PF('CustomerListDialog').hide()">
+				</p:commandButton>
+					&nbsp;
+					<p:commandButton value="Отмена"
+					oncomplete="PF('CustomerListDialog').hide()" />
+			</h:form>
+		</f:facet>
+	</p:dialog>
+
+</ui:composition>
+</html>

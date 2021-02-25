@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+<f:event listener="#{hrPayrollBean.setSelectedStaff(selectedStaff)}" type="preRenderView"></f:event>
+<f:event listener="#{hrPayrollBean.loadItems()}" type="preRenderView"></f:event>
+	<h:form id="formHrPayroll">
+		<style>
+.searchPanelGrid.ui-panelgrid>*>tr, .searchPanelGrid.ui-panelgrid .ui-panelgrid-cell
+	{
+	border: none;
+}
+</style>
+
+		<div class="ui-grid-row">
+
+			<div id="se_detInfoDiv">
+				<p:panelGrid style="border:0px;" styleClass="searchPanelGrid">
+					<p:row>
+						<p:column>
+							<fieldset>
+								<legend>
+									<p:commandButton value="Баланс" disabled="true" />
+								</legend>
+								<p:dataTable
+									value="#{hrPayrollBean.p_outputTablePayroll.l_payroll_schet}"
+									var="o" rows="5" rowKey="#{o.staff_id}" id="otschet"
+									emptyMessage="#{msg['dmsc.emptyRec']}"
+									styleClass="outputTable2" headerClass="outputTableHeade2r"
+									rowClasses="outputTableOddRow2,outputTableEvenRow2">
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.company}" />
+										</f:facet>
+										<h:outputText value="#{bukrsF4Bean.getNameByBukrs(o.bukrs)}" />
+
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.amount}" />
+										</f:facet>
+										<h:outputText value="#{o.dmbtr}">
+											<f:convertNumber pattern="#,###,##0.00" />
+										</h:outputText>
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.currency}" />
+										</f:facet>
+										<h:outputText value="#{o.waers}" />
+									</p:column>
+
+								</p:dataTable>
+							</fieldset>
+
+						</p:column>
+						<p:column>
+							<fieldset>
+								<legend>
+									<p:commandButton value="Депозит" disabled="true" />
+								</legend>
+								<p:dataTable
+									value="#{hrPayrollBean.p_outputTablePayroll.l_payroll_deposit}"
+									var="o" rows="5" rowKey="#{o.staff_id}" id="otdeposit"
+									emptyMessage="#{msg['dmsc.emptyRec']}"
+									styleClass="outputTable2" headerClass="outputTableHeade2r"
+									rowClasses="outputTableOddRow2,outputTableEvenRow2">
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.company}" />
+										</f:facet>
+										<h:outputText value="#{bukrsF4Bean.getNameByBukrs(o.bukrs)}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.amount}" />
+										</f:facet>
+										<h:outputText value="#{o.dmbtr}">
+											<f:convertNumber pattern="#,###,##0.00" />
+										</h:outputText>
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.currency}" />
+										</f:facet>
+										<h:outputText value="#{o.waers}" />
+									</p:column>
+
+								</p:dataTable>
+							</fieldset>
+						</p:column>
+
+						<p:column>
+							<fieldset>
+								<legend>
+									<p:commandButton value="Заблокировано" disabled="true" />
+								</legend>
+								<p:dataTable
+									value="#{hrPayrollBean.p_outputTablePayroll.l_payroll_zablok}"
+									var="o" rows="5" rowKey="#{o.staff_id}" id="otzablok"
+									emptyMessage="#{msg['dmsc.emptyRec']}"
+									styleClass="outputTable2" headerClass="outputTableHeade2r"
+									rowClasses="outputTableOddRow2,outputTableEvenRow2">
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.company}" />
+										</f:facet>
+										<h:outputText value="#{bukrsF4Bean.getNameByBukrs(o.bukrs)}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.amount}" />
+										</f:facet>
+										<h:outputText value="#{o.dmbtr}">
+											<f:convertNumber pattern="#,###,##0.00" />
+										</h:outputText>
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.currency}" />
+										</f:facet>
+										<h:outputText value="#{o.waers}" />
+									</p:column>
+
+								</p:dataTable>
+							</fieldset>
+						</p:column>
+
+						<p:column>
+							<fieldset>
+								<legend>
+									<p:commandButton value="Запрос на аванс" disabled="true" />
+								</legend>
+								<p:dataTable
+									value="#{hrPayrollBean.p_outputTablePayroll.l_payroll_avans_zapros}"
+									var="o" rows="5" rowKey="#{o.staff_id}" id="otzarposavans"
+									emptyMessage="#{msg['dmsc.emptyRec']}"
+									styleClass="outputTable2" headerClass="outputTableHeade2r"
+									rowClasses="outputTableOddRow2,outputTableEvenRow2">
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.company}" />
+										</f:facet>
+										<h:outputText value="#{bukrsF4Bean.getNameByBukrs(o.bukrs)}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.amount}" />
+										</f:facet>
+										<h:outputText value="#{o.dmbtr}">
+											<f:convertNumber pattern="#,###,##0.00" />
+										</h:outputText>
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.currency}" />
+										</f:facet>
+										<h:outputText value="#{o.waers}" />
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.status}" />
+										</f:facet>
+										<h:outputText
+											style="background-color: #{o.approve=='3' ? 'yellow' : 'green'}"
+											value="#{o.approve=='3' ? 'Запрос в обработке' : 'Одобрено'}" />
+									</p:column>
+								</p:dataTable>
+							</fieldset>
+						</p:column>
+
+						<p:column>
+							<fieldset>
+								<legend>
+									<p:commandButton value="Долг" disabled="true" />
+								</legend>
+								<p:dataTable
+									value="#{hrPayrollBean.p_outputTablePayroll.l_payroll_dolg}" var="o"
+									rows="5" rowKey="#{o.staff_id}" id="otdolg"
+									emptyMessage="#{msg['dmsc.emptyRec']}"
+									styleClass="outputTable2" headerClass="outputTableHeade2r"
+									rowClasses="outputTableOddRow2,outputTableEvenRow2">
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.company}" />
+										</f:facet>
+										<h:outputText value="#{bukrsF4Bean.getNameByBukrs(o.bukrs)}" />
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.amount}" />
+										</f:facet>
+										<h:outputText value="#{o.dmbtr}">
+											<f:convertNumber pattern="#,###,##0.00" />
+										</h:outputText>
+									</p:column>
+									<p:column>
+										<f:facet name="header">
+											<h:outputLabel value="#{msg.currency}" />
+										</f:facet>
+										<h:outputText value="#{o.waers}" />
+									</p:column>
+
+								</p:dataTable>
+							</fieldset>
+						</p:column>
+
+					</p:row>
+
+				</p:panelGrid>
+
+
+
+
+
+
+				<fieldset class="se_FieldSet">
+					<legend>
+						<p:commandButton value="Детали" disabled="true" />
+					</legend>
+					<p:panelGrid style="border:0px;" styleClass="searchPanelGrid">
+						<p:row>
+							<p:column>
+								<h:outputLabel value="Компания" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="#{hrPayrollBean.p_detailSearchTable.bukrs}">
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="wa"
+										itemLabel="#{wa.name}" itemValue="#{wa.bukrs}" />
+								</p:selectOneMenu>
+							</p:column>
+
+							<p:column>
+								<h:outputLabel value="Тип" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu id="p_detailType"
+									value="#{hrPayrollBean.p_detailSearchTable.detailType}">
+									<f:selectItem itemLabel="Баланс" itemValue="1" />
+									<f:selectItem itemLabel="Депозит" itemValue="2" />
+									<f:selectItem itemLabel="Заблокировано" itemValue="3" />
+									<f:selectItem itemLabel="Запрос на аванс" itemValue="4" />
+									<f:selectItem itemLabel="Долг" itemValue="5" />
+
+								</p:selectOneMenu>
+							</p:column>
+
+						</p:row>
+						<p:row>
+							<p:column>
+								<h:outputLabel value="Дата с " />
+							</p:column>
+							<p:column>
+								<p:calendar id="begDate" styleClass="budat" pattern="dd.MM.yyyy"
+									readOnlyInputText="true"
+									value="#{hrPayrollBean.p_detailSearchTable.begDate}" />
+							</p:column>
+							<p:column>
+								<h:outputLabel value=" по " />
+							</p:column>
+							<p:column>
+								<p:calendar id="endDate" styleClass="budat" pattern="dd.MM.yyyy"
+									readOnlyInputText="true"
+									value="#{hrPayrollBean.p_detailSearchTable.endDate}" />
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column>
+								<h:outputLabel value="Валюта" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu value="#{hrPayrollBean.p_detailSearchTable.waers}">
+									<f:selectItems itemLabel="Баланс" itemValue="1" />
+									<f:selectItems value="#{currencyF4Bean.currency_list}" var="wa"
+										itemLabel="#{wa.currency}" itemValue="#{wa.currency}" />
+								</p:selectOneMenu>
+							</p:column>
+
+							<p:column colspan="2">
+								<p:commandButton actionListener="#{hrPayrollBean.getDatiledInfo}"
+									value="#{msg.search}" />
+							</p:column>
+						</p:row>
+
+
+
+					</p:panelGrid>
+
+					<p:commandLink ajax="false" action="#{hrPayrollBean.downloadExcel()}">
+						<p:graphicImage name="xlsx_export_icon.png" library="img"
+							width="32" />
+					</p:commandLink>
+
+					<br />
+
+
+					<p:dataTable id="detInfoTable" var="o" rowKey="#{o.payroll_id}"
+						rows="50" scrollable="true" scrollHeight="380" paginator="true"
+						value="#{hrPayrollBean.detailedInfo}"
+						emptyMessage="#{msg['dmsc.emptyRec']}">
+
+						<p:column headerText="#{msg.expense_date}">
+							<p:calendar styleClass="budat" pattern="dd.MM.yyyy"
+								autocomplete="off" value="#{o.payroll_date}" disabled="true" />
+						</p:column>
+						<p:column headerText="Дата выдачи">
+							<p:calendar styleClass="budat" pattern="dd.MM.yyyy"
+								autocomplete="off" value="#{o.bldat}" disabled="true" />
+						</p:column>
+						<p:column headerText="#{msg['hr.bonus.coef']}">
+							<h:outputText value="#{o.dmbtr}">
+								<f:convertNumber pattern="#,###,##0.00" />
+							</h:outputText>
+							<h:outputText value=" " />
+							<h:outputText value="#{o.waers}" />
+
+							<f:facet name="footer">
+								<h:outputText value="#{hrPayrollBean.total_detail}"
+									style="color:green">
+									<f:convertNumber pattern="#,###,##0.00" />
+								</h:outputText>
+							</f:facet>
+
+						</p:column>
+						<p:column headerText="СН договор">
+							<h:outputText value="#{o.contract_number}" />
+							<p:button target="_blank"
+								outcome="/dms/contract/dmsc03.xhtml?contract_number=#{o.contract_number}"
+								icon="ui-icon-zoomin" rendered="#{o.contract_number>0}"
+								title="View" id="viewButton1"
+								style="float:right;margin-left:2px;margin-right:2px;" />
+						</p:column>
+						<p:column
+							sortBy="#{bonusTypeF4Bean.getBonusTypeNameString(o.bonus_type_id)}">
+							<f:facet name="header">
+								<h:outputLabel value="#{msg.type}" />
+							</f:facet>
+							<h:outputText
+								value="#{bonusTypeF4Bean.getBonusTypeNameString(o.bonus_type_id)}" />
+						</p:column>
+						<p:column sortBy="#{positionF4Bean.getName(o.position_id)}">
+							<f:facet name="header">
+								<h:outputLabel value="Должность" />
+							</f:facet>
+							<h:outputText id="position"
+								value="#{positionF4Bean.getName(o.position_id)}" />
+						</p:column>
+						<p:column headerText="Тип">
+							<h:outputText id="di_approve" value="#{o.getApproveName('')}" />
+						</p:column>
+						<p:column headerText="Примечание">
+							<h:outputText id="di_bktxt" value="#{o.text45}" />
+						</p:column>
+					</p:dataTable>
+
+				</fieldset>
+			</div>
+		</div>
+	</h:form>
+
+</ui:composition>
+</html>

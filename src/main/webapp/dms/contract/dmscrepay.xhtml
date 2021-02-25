@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>Contract Cancellation Approval</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.dmscrepay']}" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader"
+						value="#{goFast.getTransactionName(systemLocale.currentLocale,dmscrepayBean.getTransactionId())}" />
+				</ui:include>
+			</ui:insert>
+
+			<div>
+				<div id="content" class="container">
+
+					<f:view>
+
+						<!--  MAIN PAGE CONTENT GOES HERE  -->
+
+						<h:form id="form">
+							<p:growl id="messages" sticky="false" showDetail="true" />
+
+							<div class="ui-grid-row">
+
+								<p:panelGrid columns="2">
+									<h:outputLabel value="#{msg['dmsc.bukrs']}: " />
+									<p:selectOneMenu styleClass="bukrs" id="bukrs"
+										value="#{dmscrepayBean.conSearch.bukrs}">
+										<p:ajax listener="#{dmscrepayBean.loadBranch}" />
+										<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="" />
+										<f:selectItems value="#{dmscrepayBean.bukrs_list}"
+											var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+									</p:selectOneMenu>
+
+									<h:outputLabel value="#{msg['dmsc.branch']}: " />
+									<p:selectOneMenu styleClass="branch" id="branch"
+										value="#{dmscrepayBean.conSearch.branch_id}">
+										<p:ajax listener="#{dmscrepayBean.checkBukrs}" />
+										<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+										<f:selectItems value="#{dmscrepayBean.branch_list}"
+											var="wa_branch" itemLabel="#{wa_branch.text45}"
+											itemValue="#{wa_branch.branch_id}" />
+									</p:selectOneMenu>
+
+									<h:outputLabel value="#{msg['dmsc.contractNo']}" />
+									<p:inputText id="contr_num" maxlength="20" style="width: 95px;"
+										autocomplete="off"
+										value="#{dmscrepayBean.conSearch.contract_number}" />
+								</p:panelGrid>
+							</div>
+
+							<p:toolbar styleclass="mp_toolbar" style="margin-top: 5px;">
+								<f:facet name="left">
+									<p:commandButton type="push" value="#{msg['dmsc.search']}"
+										icon="ui-icon ui-icon-search"
+										actionListener="#{dmscrepayBean.searchContractsByCS}" update="messages">
+									</p:commandButton>
+								</f:facet>
+								<f:facet name="right">
+									<p:commandButton type="push" value="#{msg['dmsc.formulate']}"
+										icon="ui-icon ui-icon-refresh" update="messages"
+										actionListener="#{dmscrepayBean.finishThem}" />
+									<span class="ui-separator"> <span
+										class="ui-icon ui-icon-grip-dotted-vertical" />
+									</span>
+									<p:commandButton type="push" value="#{msg['dmsc.save']}"
+										icon="ui-icon ui-icon-check" update="messages"
+										actionListener="#{dmscrepayBean.saveThem}"
+										disabled="#{dmscrepayBean.disableSave}" id="saveButton">
+										<p:confirm header="#{msg['dmsc.confirmation']}"
+											message="#{msg['dmsc.hint_save_changes']}"
+											icon="ui-icon-alert" />
+									</p:commandButton>
+								</f:facet>
+							</p:toolbar>
+							<br />
+							<p:confirmDialog global="true" showEffect="fade"
+								hideEffect="fade" align="center">
+								<p:commandButton value="#{msg['dmsc.yes']}" type="button"
+									align="center" styleClass="ui-confirmdialog-yes"
+									icon="ui-icon-check" />
+								<p:commandButton value="#{msg['dmsc.no']}" type="button"
+									align="center" styleClass="ui-confirmdialog-no"
+									icon="ui-icon-close" />
+							</p:confirmDialog>
+
+
+							<div id="tableContainer" class="ui-grid-row"
+								style="margin-top: 5px;">
+								<p:dataTable value="#{dmscrepayBean.cdOutputList}" var="o"
+									lazy="true" rowKey="#{o.contract_id}"
+									emptyMessage="#{msg['dmsc.emptyRec']}" paginator="true"
+									rows="20" widgetVar="contracts" id="outputTable"
+									styleClass="outputTable-table"
+									headerClass="outputTable-table-header"
+									rowClasses="outputTable-table-odd-row, outputTable-table-even-row"
+									resizableColumns="true" liveResize="true">
+
+
+									<!--selectionMode="single"
+								selection="#{dmscrepayBean.selectedRefContr}"
+										scrollable="true"
+										stickyHeader="true"
+									    scrollHeight="650"
+										<f:facet name="header">
+											<p:commandButton process="outputTable"
+												actionListener="#{dmscrepayBean.assignFoundRefContrId}"
+												onclick="PF('referenceWidget').hide();" value="Выбрать" />
+										</f:facet>
+										-->
+									<f:facet name="header">
+
+										<p:outputPanel>
+											<!-- 
+										<div style="float: left;">
+											<h:outputText value="Быстрый поиск: " />
+											<p:inputText id="globalFilter"
+												onkeyup="PF('contracts').filter()" style="width:150px"
+												placeholder="Ключевое слово" />
+										</div>
+										 -->
+											<p:commandButton id="toggler" type="button"
+												value="#{msg['dmsc.columns']}" style="float:right"
+												icon="ui-icon-calculator" />
+											<p:columnToggler datasource="outputTable" trigger="toggler" />
+										</p:outputPanel>
+
+									</f:facet>
+									<p:column style="text-align:center;width:110px;"
+										rendered="true">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.branch']}" />
+										</f:facet>
+										<h:outputText value="#{o.branch.text45}" />
+									</p:column>
+
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.contractNo']}" />
+										</f:facet>
+										<h:outputText value="#{o.contract.contract_number}" />
+										<h:link outcome="/dms/contract/dmsc03" target="_blank"
+											styleClass="urlLinks">
+											<f:param name="contract_number"
+												value="#{o.contract.contract_number}" />
+											<h:graphicImage value="/img/link.png"
+												style="float:right; width:15px; height:15px;" />
+										</h:link>
+									</p:column>
+
+									<p:column style="text-align:center;width:100px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.contract_date']}" />
+										</f:facet>
+										<p:calendar id="birthday" styleClass="dateField"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{o.contract.contract_date}"
+											converterMessage="Date is invalid." disabled="true">
+										</p:calendar>
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.customer']}" />
+										</f:facet>
+										<h:outputText value="#{o.customer.FIO}" />
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.status']}" />
+										</f:facet>
+										<h:outputText value="#{o.statusName}" />
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="" />
+										</f:facet>
+										<p:selectOneMenu value="#{o.contract.last_state}"
+											disabled="true">
+											<f:selectItem itemLabel="#{msg['dmsc.lsFormalised']}"
+												itemValue="1" />
+											<f:selectItem itemLabel="#{msg['dmsc.lsIssued']}"
+												itemValue="2" />
+											<f:selectItem itemLabel="#{msg['dmsc.lsReturned']}"
+												itemValue="3" />
+										</p:selectOneMenu>
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.cause']}" />
+										</f:facet>
+										<h:outputText value="#{o.contract.info}" />
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.dealer']}" />
+										</f:facet>
+										<h:outputText value="#{o.dealer.LF}" />
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.contr_type']}" />
+										</f:facet>
+										<h:outputText value="#{o.contrType.name}" />
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.price']}" />
+										</f:facet>
+										<h:outputText value="#{o.price}" />
+									</p:column>
+									<p:column
+										style="text-align:center;font-weight: bold;color: #0088ff;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.first_payment']}" />
+										</f:facet>
+										<h:outputText value="#{o.firstPayment}" />
+									</p:column>
+									<!-- 
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="Скидка" />
+										</f:facet>
+										<h:outputText value="#{o.skidka}" />
+									</p:column>
+									 -->
+									<p:column
+										style="text-align:center;font-weight: bold;color: #0088ff;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.paid']}" />
+										</f:facet>
+										<h:outputText value="#{o.paid}" />
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.remain']}" />
+										</f:facet>
+										<h:outputText value="#{o.remain}" />
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.refund']}" />
+										</f:facet>
+										<p:inputText value="#{o.repayment}" size="10">
+											<p:ajax event="keyup"
+												listener="#{dmscrepayBean.disapproveRow(o.index)}" />
+										</p:inputText>
+										<h:outputText value=" #{o.bkpf.waers}" />
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.approve']}" />
+										</f:facet>
+										<p:commandButton type="push" icon="#{o.icon}"
+											update=":messages" id="approveButton"
+											actionListener="#{dmscrepayBean.approveRow(o.index)}" />
+
+									</p:column>
+									<f:facet name="footer">
+									 #{msg['dmsc.foundTotal']}: #{dmscrepayBean.outputLength}
+								</f:facet>
+								</p:dataTable>
+
+							</div>
+						</h:form>
+					</f:view>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

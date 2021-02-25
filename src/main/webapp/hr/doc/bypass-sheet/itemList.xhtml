@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<p:dataTable value="#{hrDocViewBean.document.hrDocItems}"
+		var="item">
+		<f:facet name="header">
+			<p:outputLabel value="Список сотрудников для увольнения"></p:outputLabel>
+		</f:facet>
+		<p:column headerText="ФИО">
+			<p:outputLabel value="#{item.salary.p_staff.getLF()}"></p:outputLabel>
+			
+			<p:button target="_blank" outcome="/hr/staff/View.xhtml"
+				icon="ui-icon-extlink" style="float:right;margin-right:5px;"
+				rendered="#{!empty item.salary}">
+				<f:param name="staffId" value="#{item.salary.staff_id}" />
+			</p:button>
+		</p:column>
+
+		<p:column headerText="Место работы">
+			<p:outputLabel
+				value="#{branchF4Bean.getBranchNameByID(item.salary.branch_id)}"></p:outputLabel>
+		</p:column>
+
+		<p:column headerText="Должность">
+			<p:outputLabel
+				value="#{positionF4Bean.getName(item.salary.position_id)}"></p:outputLabel>
+		</p:column>
+
+		<p:column headerText="Оклад">
+			<h:outputText value="#{item.salary.amount}">
+				<f:convertNumber currencySymbol="#{item.salary.waers}"
+					type="currency"></f:convertNumber>
+			</h:outputText>
+			<h:outputText value=" #{item.salary.waers}"></h:outputText>
+		</p:column>
+
+		<p:column headerText="Дата начало">
+			<p:outputLabel value="#{item.salary.beg_date}">
+				<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+			</p:outputLabel>
+		</p:column>
+		
+		<p:column headerText="Дата увольнения">
+			<p:outputLabel value="#{item.salary.end_date}">
+				<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+			</p:outputLabel>
+		</p:column>
+		
+	</p:dataTable>
+</ui:composition>
+</html>

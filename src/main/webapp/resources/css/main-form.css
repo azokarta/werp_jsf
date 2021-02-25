@@ -1,0 +1,95 @@
+.notemark {
+	color:#ff0088;
+}
+
+.notemarkBlue {
+	color:#0077EA;
+}
+
+
+.notetext {
+	color:#ff0088;
+	font-size: 0.8em;
+}
+
+.noteWarn {
+	color:#ff0088;
+	font-size: 0.8em;
+}
+
+.noteOk {
+	color:#0077EA;
+	font-size: 0.8em;
+}
+
+.noteRegular {
+	color:#555;
+	font-size: 0.8em;
+}
+
+.ui-selectonemenu-panel { 
+   font-size:1em; 
+}
+
+.ui-selectonemenu{
+	font-size:1em; 
+}
+
+input[type="text"] {
+    font-size: 1em;
+}
+
+.dateField .ui-inputfield{ 
+ 	width:6em;
+}
+
+.paymentScheduleRowDiv {
+	width: 100%;
+}
+
+.paymentScheduleDiv {
+	width: 25em;
+}
+
+.contractFieldDiv {
+	width: 41em;
+}
+
+.contactFieldDiv {
+	width: 35em;
+}
+
+.contractFieldSet {
+	min-height: 53em;
+	height: auto;
+	max-height: 55em;
+}
+
+.contractFieldSet_view_edit {
+	min-height: 49em;
+	height: auto;
+	max-height: 55em;
+}
+
+.contractViewEditFieldSet {
+	min-height: 52em;
+	height: auto;
+	max-height: 55em;
+}
+
+.paymentFieldDiv {
+	width: 32em;
+}
+
+.payment_scheduleFieldSet {
+	width: 310px;
+	min-height: 50em;
+	height: auto;
+	max-height: 55em;
+}
+
+.ui-panelgrid>*>tr,
+.ui-panelgrid .ui-panelgrid-cell {
+    border-width: 0px;
+    border: none;
+}

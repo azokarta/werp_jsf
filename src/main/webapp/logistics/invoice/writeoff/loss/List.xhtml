@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>#{logWriteoffLossListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.logItemsTable .numberColumn {
+	width: 80px;
+	text-align: center;
+}
+
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="#{logWriteoffLossListBean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader"
+					value="#{logWriteoffLossListBean.pageHeader}" />
+			</ui:include>
+
+
+			<p:layout fullPage="false">
+
+				<p:layoutUnit position="north" size="50" resizable="true"
+					closable="true" collapsible="true">
+					<p:tabMenu activeIndex="#{param.i}">
+						<p:menuitem value="#{msg['logistics.new_docs']}" outcome="List.xhtml"
+							icon="ui-icon-document">
+							<f:param name="i" value="0" />
+						</p:menuitem>
+						<p:menuitem value="#{msg['logistics.closed_docs']}" outcome="List.xhtml"
+							icon="ui-icon-document">
+							<f:param name="i" value="1" />
+						</p:menuitem>
+
+					</p:tabMenu>
+				</p:layoutUnit>
+
+				<p:layoutUnit position="west" size="200" header="#{msg['search_panel']}"
+					resizable="false" closable="false" collapsible="false">
+					<h:form>
+
+					</h:form>
+				</p:layoutUnit>
+
+				<p:layoutUnit position="center">
+					<p:dataTable value="#{logWriteoffLossListBean.invoiceList}"
+						var="item" tableStyleClass="logItemsTable">
+						<f:facet name="header" id="tableHeader">
+							<p:button title="#{msg['add']}" outcome="Create.xhtml"
+								value="#{msg['add']}" style="float:right;margin-right:5px;" />
+							<div style="clear: both;"></div>
+						</f:facet>
+
+						<p:column headerText="№" sortBy="#{item.reg_number}" style="width:50px;text-align:center;">#{item.getFormattedRegNumber()}</p:column>
+
+						<p:column headerText="#{msg['logistics.sender_whouse']}">
+							<p:outputLabel value="#{werksF4Bean.getName(item.from_werks)}"></p:outputLabel>
+						</p:column>
+
+						<p:column headerText="#{msg['logistics.creator']}">
+							<p:outputLabel value="#{item.creator.getLF()}"
+								rendered="#{!empty item.creator}"></p:outputLabel>
+						</p:column>
+						
+						<p:column headerText="#{msg['logistics.description']}">
+							<p:outputLabel value="#{item.note}"></p:outputLabel>
+						</p:column>
+
+						<p:column headerText="#{msg['logistics.created_at']}">
+							<h:outputText value="#{item.created_at}">
+								<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+							</h:outputText>
+						</p:column>
+						<p:column>
+							<p:button target="_blank" value="#{msg['logistics.view']}" outcome="View.xhtml?id=#{item.id}"
+								icon="ui-icon-search" title="#{msg['logistics.view']}">
+							</p:button>
+						</p:column>
+					</p:dataTable>
+				</p:layoutUnit>
+			</p:layout>
+		</div>
+	</div>
+</h:body>
+</html>

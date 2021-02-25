@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	  xmlns:h="http://xmlns.jcp.org/jsf/html"
+	  xmlns:f="http://xmlns.jcp.org/jsf/core"
+	  xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition>
+	<style>
+.sign_place {
+	border-bottom: 0px #ddd solid;
+}
+
+.sign_place hr {
+	margin-top: 10px;
+}
+
+.sign_place span {
+	margin-top: 13px;
+	font-style: oblique;
+}
+
+.sign_slash {
+	margin-top: 0px;
+	float: left;
+	display: block;
+}
+</style>
+<ui:param name="companyName" value=""></ui:param>
+	<p:dialog id="printDlg" widgetVar="pringDlg" modal="true"
+		resizable="false" appendTo="@(body)"
+		header="#{msg['logistics.act.header']}" width="800"
+		height="500">
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-12">
+				<h:form id="printDlgForm">
+					<table>
+						<tr>
+							<td colspan="3">
+								<h3 style="text-align: center;">#{msg['logistics.act.header']}</h3>
+							</td>
+						</tr>
+						<tr>
+							<td><p:outputLabel value="#{crudBean.invoice.invoice_date}">
+									<f:convertDateTime pattern="dd.MM.yyyyг"></f:convertDateTime>
+								</p:outputLabel></td>
+							<td></td>
+							<td><span style="float: right;">#{msg['branch']}: <em>#{branchF4Bean.getBranchNameByID(crudBean.invoice.branch_id)}</em></span></td>
+						</tr>
+						<tr>
+							<td colspan="3">
+							<p:panel rendered="#{userinfo.u_language != 'en'}">
+								<h:outputText id="act_text" escape="false" value="#{crudBean.getActText1(crudBean.showResponsible)}" />
+							</p:panel>
+							
+							<p:panel rendered="#{userinfo.u_language == 'en'}">
+								<p>
+									We, the undersigned, employees of the company «Aura» LLP represented by ______________________________ , 
+									(hereinafter referred as the - "<strong>Party -1</strong>") acting on its own name, on the one hand and the seller	
+									<em><h:outputText
+											rendered="#{!empty crudBean.invoice.responsible}" style="font-weight:bold"
+											value="#{crudBean.invoice.responsible.getLF()}"></h:outputText></em> hereinafter referred to as the <strong>“Party -2”</strong>)
+									acting on its own name on the other hand, collectively referred to as the “Parties” have compiled 
+									this Act stating that “<strong>Party-1</strong>” has transferred the below-mentioned Goods, 
+									and “<strong>Party-2</strong>” has accepted the below-mentioned Goods:
+								</p> 
+							</p:panel>
+							
+								<p:dataTable value="#{crudBean.invoiceItems}" var="item"
+									emptyMessage="#{msg.no_records}"
+									rowClasses="employeeTableOddRow,employeeTableEvenRow">
+									<p:column style="max-width:70px;text-align:center;">
+										<f:facet name="header">#{msg['logistics.act.code']}</f:facet>
+										<h:outputText value="#{item.matnrObject.code}"></h:outputText>
+									</p:column>
+									<p:column style="width: 25%;">
+										<f:facet name="header">#{msg['logistics.act.goods_name']}</f:facet>
+										<h:outputText value="#{item.matnrObject.text45}"></h:outputText>
+									</p:column>
+
+									<p:column style="width:100px;text-align:center;">
+										<f:facet name="header">#{msg['logistics.act.qty']}</f:facet>
+										<h:outputText value="#{item.quantity}">
+										</h:outputText>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">#{msg['logistics.act.serial_number']}</f:facet>
+										<ui:repeat var="b"
+											value="#{crudBean.getItemBarcodes(item.matnr)}"
+											varStatus="status">#{b}<br />
+										</ui:repeat>
+									</p:column>
+								</p:dataTable>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="3">
+							<h3>#{msg['logistics.act.goods_state']}:</h3>
+							<ui:repeat var="tb"
+									value="#{crudBean.amsOutputTable}">
+									<p:dataTable id="amsDataTable" value="#{tb.items}" var="item"
+										emptyMessage="#{msg.no_records}"
+										rowClasses="employeeTableOddRow,employeeTableEvenRow"
+										style="margin-bottom:20px;">
+										<f:facet name="header">
+											<p:outputLabel style="float:left;"
+												value="#{tb.matnrObject.text45} (#{tb.barcode})"></p:outputLabel>
+											<div style="clear: both;"></div>
+										</f:facet>
+
+										<p:column style="width: 25%;">
+											<f:facet name="header">#{msg['logistics.act.part_name']}</f:facet>
+											<h:outputText value="#{item.matnrObject.text45}"></h:outputText>
+										</p:column>
+
+										<p:column style="width: 70px;text-align:center;">
+											<f:facet name="header">#{msg['logistics.act.code']}</f:facet>
+											<h:outputText value="#{item.code}"></h:outputText>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">#{msg['logistics.act.note']}</f:facet>
+											<p:outputLabel value="#{item.note}"></p:outputLabel>
+										</p:column>
+
+									</p:dataTable>
+								</ui:repeat></td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<p style="display:block;margin-top:20px;"></p>
+								<p:panel rendered="#{userinfo.u_language != 'en'}">
+								<h:outputText escape="false" value="#{crudBean.actText2}" />
+								
+								<h:outputText escape="false" value="#{crudBean.actText3}" >
+								</h:outputText>
+								</p:panel>
+								
+								<p:panel rendered="#{userinfo.u_language == 'en'}">
+									<p>The “Parties” hereby agreed that the above Goods are transferred to the “Manager / Dealer / Director” for temporary ownership for demonstration purposes or for sale to third parties. Until the payment of the Before mentioned price of the Goods or realization of the Goods of third parties.</p>
+								
+								<p>The dealer and manager, as well as the direct supervisor (director) are personally liable for damage to the presentation of the Goods. In the event of damage to the Goods, he/she undertakes to fully compensate for the material damage caused by AuraKazakhstan LLP (Aura Kazakhstan) at its own expense.</p>
+								</p:panel>
+							</td>
+						</tr>
+						<h:panelGroup rendered="#{crudBean.emptyInvoiceNote == false}">
+							<tr>
+								<td colspan="3">
+									<p style="text-align: left; font-weight: bold">#{msg['logistics.act.note']}:</p>
+									<h:outputText escape="false" value="#{crudBean.invoice.note}"/>
+								</td>
+							</tr>
+						</h:panelGroup>
+						<tr>
+							<td><br/><br/>&nbsp;	</td>
+							<td></td>
+							<td></td>
+					</tr>
+
+						<tr>
+							<td style="text-align: center; font-weight: bold">
+								«#{msg['logistics.act.party1']}»</td>
+							<td></td>
+							<td style="text-align: center; font-weight: bold">
+								«#{msg['logistics.act.party2']}»</td>
+						</tr>
+
+						<tr>
+							<td><strong>#{msg['logistics.act.passed']}:</strong><br />
+								<div
+									style="dispaly: block; border: solid 0px red; width: 90%; margin: auto;">
+									<div class="sign_place"
+										style="width: 45%; display: inline-block; float: left;">
+										<hr />
+										<span>(#{msg['logistics.act.signature']})</span>
+									</div>
+									<span class="sign_slash">/</span>
+									<div class="sign_place"
+										style="width: 45%; display: inline-block;">
+										<hr />
+										<span>(#{msg['logistics.act.fullname']})</span>
+									</div>
+								</div></td>
+							<td></td>
+							<td><strong>#{msg['logistics.act.received']}:</strong><br />
+								<div
+									style="dispaly: block; border: solid 0px red; width: 90%; margin: auto;">
+									<div class="sign_place"
+										style="width: 45%; display: inline-block; float: left;">
+										<hr />
+										<span>(#{msg['logistics.act.signature']})</span>
+									</div>
+									<span class="sign_slash">/</span>
+									<div class="sign_place"
+										style="width: 45%; display: inline-block;">
+										<hr />
+										<span>(#{msg['logistics.act.fullname']})</span>
+									</div>
+								</div>
+						</td>
+					</tr>
+					
+					<tr>
+							<td><br/>&nbsp;	</td>
+							<td></td>
+							<td></td>
+					</tr>
+					
+					<tr>
+							<td><em>#{msg['logistics.act.performer']}:</em><br /></td>
+							<td></td>
+							<td></td>
+					</tr>
+					<tr>
+							<td colspan="3">
+								<em>#{msg['logistics.act.whouse_representative']}:</em> ____________________/ <h:outputText value="#{crudBean.invoice.creator.getLF()}" />
+								<div style="font-style: italic;margin-left:180px;">(#{msg['logistics.act.signature']})</div>
+							</td>
+					</tr>
+					
+					</table>
+				</h:form>
+			</div>
+		</div>
+
+		<f:facet name="footer">
+			<h:form id="MatnrSendForm">
+
+				<p:commandButton value="#{msg['logistics.act.print']}" type="button" icon="ui-icon-print"
+					style="margin-bottom: 20px" oncomplete="PF('pringDlg').hide()">
+					<p:printer target=":printDlgForm" />
+				</p:commandButton>
+					&nbsp;
+				<p:commandButton name="show_responsible2" value="#{msg['logistics.act.cancel']}" oncomplete="PF('pringDlg').hide()" />
+
+				<p:selectBooleanCheckbox id="show_responsible" value="#{crudBean.showResponsible}" style="margin-left: 9px; float: right;" itemLabel="#{msg['logistics.act.show_responsible']}">
+					<p:ajax update=":printDlgForm:act_text"/>
+				</p:selectBooleanCheckbox>
+			</h:form>
+		</f:facet>
+	</p:dialog>
+
+</ui:composition>
+</html>

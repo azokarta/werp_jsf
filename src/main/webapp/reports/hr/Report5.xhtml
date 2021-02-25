@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{repHr5Bean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{repHr5Bean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{repHr5Bean.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+							<p:panelGrid columns="2" style="width:99%;margin-top:1px;">
+								<f:facet name="header">Панель для поиска</f:facet>
+								<p:outputLabel value="Компания"></p:outputLabel>
+								<p:selectOneMenu value="#{repHr5Bean.bukrs}"
+									disabled="#{repHr5Bean.disableBukrs}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="Выберите компанию" itemValue=""></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Филиал"></p:outputLabel>
+								<p:selectOneMenu id="branch_id"
+									disabled="#{repHr5Bean.disableBranch}"
+									value="#{repHr5Bean.branchId}">
+									<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+									<f:selectItems
+										value="#{branchBean.getUserBranches(repHr5Bean.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton id="searchBtn" value="Сформировать"
+									actionListener="#{repHr5Bean.generateData()}"
+									update=":dataForm, :messages"></p:commandButton>
+							</p:panelGrid>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="dataForm">
+							<p:dataTable var="item" value="#{repHr5Bean.items}"
+								style="margin-bottom:7px;">
+
+								<p:column headerText="Должность">
+									<p:outputLabel
+										value="#{positionF4Bean.getName(item.positionId)}" />
+								</p:column>
+
+								<p:column headerText="1-я категория (до 1 года)">
+									<p:outputLabel value="#{item.beginnerCount}" />
+								</p:column>
+
+								<p:column headerText="2-я категория (от 1 года до 3-х лет)">
+									<p:outputLabel value="#{item.dealerCount}" />
+								</p:column>
+
+								<p:column headerText="3-я категория (от 3-х лет до 15 лет)">
+									<p:outputLabel value="#{item.profCount}" />
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+</h:body>
+</html>

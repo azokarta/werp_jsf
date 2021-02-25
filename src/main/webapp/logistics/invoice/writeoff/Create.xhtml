@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<f:metadata>
+	<f:event type="preRenderView"
+		listener="#{logWriteoffCrudBean.setMode('create')}" />
+</f:metadata>
+
+<h:head>
+	<title>Новое списание</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="#{msg['breadcrumb.log']} > #{msg['logistics.write_off_doc']} > #{msg['logistics.invoice_for_writeoff']}" />
+				</ui:include>
+			</ui:insert>
+			
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{logWriteoffCrudBean.pageHeader}" />
+			</ui:include>
+
+			<div id="content" class="container">
+				<ui:include src="Form.xhtml">
+					<ui:param name="logInvoiceCrudBean" value="#{logWriteoffCrudBean}" />
+				</ui:include>
+			</div>
+		</div>
+	</div>
+
+	<ui:include src="/hr/salary/ListDialog2.xhtml">
+		<ui:param name="formId" value=":form" />
+		<ui:param name="mainFormBean" value="#{logWriteoffCrudBean}" />
+		<ui:param name="salaryModel"
+			value="#{logWriteoffCrudBean.salaryModel}" />
+	</ui:include>
+</h:body>
+</html>

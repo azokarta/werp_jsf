@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['dmsc.dmsclist']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="dms/dmsclist.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.dmsclist']}" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Одобрение уцененных товаров" />
+				</ui:include>
+			</ui:insert>
+
+			<div>
+				<div id="content" class="container">
+					<f:view>
+						<!--  MAIN PAGE CONTENT GOES HERE  -->
+
+						<h:form id="form">
+							<p:growl id="messages" sticky="false" showDetail="true" />
+
+							<div class="ui-grid-row">
+								<p:panel>
+									<p:panelGrid columns="2" cellpadding="0">
+										<h:panelGrid columns="2" cellpadding="0">
+											<h:outputLabel value="#{msg['dmsc.bukrs']}: " />
+											<p:selectOneMenu styleClass="bukrs" id="bukrs"
+												value="#{wfaclistBean.outputTable.searchModel.bukrs}">
+												<p:ajax listener="#{wfaclistBean.loadBranch2}" />
+												<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}"
+													itemValue="0" />
+												<f:selectItems value="#{wfaclistBean.bukrs_list}"
+													var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+													itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu>
+										</h:panelGrid>
+										<h:panelGrid columns="2" cellpadding="0">
+											<h:outputLabel value="#{msg['dmsc.branch']}: " />
+											<p:selectOneMenu styleClass="branch" id="branch"
+												value="#{wfaclistBean.outputTable.searchModel.branch_id}">
+												<p:ajax listener="#{wfaclistBean.loadStaff}" />
+												<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+													itemValue="-1" />
+												<f:selectItems value="#{wfaclistBean.branch_list}"
+													var="wa_branch" itemLabel="#{wa_branch.text45}"
+													itemValue="#{wa_branch.branch_id}" />
+											</p:selectOneMenu>
+										</h:panelGrid>
+									</p:panelGrid>
+								</p:panel>
+							</div>
+							<div class="ui-grid-row">
+								<p:tabView id="tabView">
+									<p:tab title="Параметры поиска">
+										<div class="ui-grid-row">
+											<div style="float: left;">
+												<h:panelGrid columns="2" cellpadding="3">
+												
+													<h:outputLabel value="#{msg['dmsc.dateFrom']} " />
+													<p:column>
+														<h:panelGrid columns="3" cellpadding="0">
+															<p:calendar id="start_date" styleClass="dateField"
+																value="#{wfaclistBean.outputTable.searchModel.p_start_date}"
+																navigator="true" pattern="dd.MM.yyyy" mask="true"
+																converterMessage="Date is invalid." />
+															<h:outputLabel value="#{msg['dmsc.dateFrom1']} " />
+														</h:panelGrid>
+													</p:column>
+													
+													<h:outputLabel value=" #{msg['dmsc.dateTo']} " />
+													<p:column>
+														<h:panelGrid columns="3" cellpadding="0">
+															<p:calendar id="end_date" styleClass="dateField"
+																value="#{wfaclistBean.outputTable.searchModel.p_end_date}"
+																navigator="true" pattern="dd.MM.yyyy" mask="true"
+																converterMessage="Date is invalid." />
+															<h:outputLabel value=" #{msg['dmsc.dateTo1']} " />
+														</h:panelGrid>
+													</p:column>
+
+												</h:panelGrid>
+											</div>								
+														
+											<div style="float: left;margin-left:15px;">
+												<h:panelGrid columns="2" cellpadding="3">
+													<h:outputLabel value="#{msg['dmsc.contractNo']} " />
+													<p:inputText id="contr_num" maxlength="20"
+														style="width: 95px;" autocomplete="off"
+														value="#{wfaclistBean.outputTable.searchModel.contract_number}" />
+
+													<h:outputLabel value=" Товар SN " />
+													<p:inputText id="tovar_sn" maxlength="20"
+														style="width: 95px;" autocomplete="off"
+														value="#{wfaclistBean.outputTable.searchModel.tovar_serial}" />
+												
+												</h:panelGrid>
+											</div>
+											
+										</div>
+									</p:tab>
+									
+								</p:tabView>
+							</div>
+
+							<p:toolbar styleclass="mp_toolbar" style="margin-top: 5px;">
+								<f:facet name="left">
+									<p:commandButton type="push" value="#{msg['dmsc.search']}"
+										icon="ui-icon ui-icon-search"
+										actionListener="#{wfaclistBean.search}" update="messages">
+									</p:commandButton>
+								</f:facet>								
+							</p:toolbar>
+
+							<div id="tableContainer" class="ui-grid-row"
+								style="margin-top: 5px;">
+								<p:dataTable value="#{wfaclistBean.outputTable}" var="o"
+									lazy="true" rowKey="#{o.contract_id}"
+									emptyMessage="#{msg['dmsc.emptyRec']}" paginator="true"
+									rows="20" rowsPerPageTemplate="10, 20" widgetVar="contracts"
+									id="outputTable" styleClass="outputTable-table"
+									headerClass="outputTable-table-header"
+									rowClasses="outputTable-table-odd-row, outputTable-table-even-row"
+									resizableColumns="true">
+
+									<f:facet name="header">
+										<p:outputPanel>
+											<p:commandButton id="toggler" type="button"
+												value="#{msg['dmsc.columns']}" style="float:right"
+												icon="ui-icon-calculator" />
+											<p:columnToggler datasource="outputTable" trigger="toggler" />
+										</p:outputPanel>
+									</f:facet>
+
+									<p:column style="text-align:center;width:110px;"
+										rendered="true">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.branch']}" />
+										</f:facet>
+										<p:selectOneMenu id="branch" value="#{o.contract.branch_id}"
+											disabled="true">
+											<f:selectItems
+												value="#{wfaclistBean.p_branchF4Bean.branch_list}"
+												var="wa_branch" itemLabel="#{wa_branch.text45}"
+												itemValue="#{wa_branch.branch_id}" />
+										</p:selectOneMenu>
+									</p:column>
+
+									<p:column style="text-align:center;width:100px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.contractNo']}" />
+										</f:facet>
+										<h:outputText value="#{o.contract.contract_number}" />
+										<p:button target="_blank" styleClass="f4button" style="margin-left:5px;"
+											outcome="/dms/contract/wfacmt?contract_number=#{o.contract.contract_number}"
+											icon="ui-icon-zoomin" title="View">
+										</p:button>
+									</p:column>
+
+									<p:column style="text-align:center;width:100px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.contract_date']}" />
+										</f:facet>
+										<p:calendar id="birthday" styleClass="dateField"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{o.contract.contract_date}"
+											converterMessage="Date is invalid." disabled="true">
+										</p:calendar>
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.customer']}" />
+										</f:facet>
+										<p:button target="_blank" styleClass="f4button" style="margin-left:5px;"
+											outcome="/hr/customer/hrc02.xhtml?customerId=#{o.customer.id}"
+											icon="ui-icon-zoomin" title="View">
+										</p:button>
+										<h:outputText value=" #{o.customer.getFullFIO()}" />										
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.matnr_serial']}" />
+										</f:facet>
+										<h:outputText value="#{o.contract.tovar_serial}" />
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.status']}" />
+										</f:facet>
+										<p:selectOneMenu id="contract_status_list"
+											value="#{o.contract.contract_status_id}" disabled="true">
+											<f:selectItem itemLabel="#{msg['dmsc.no']}" itemValue="0" />
+											<f:selectItems
+												value="#{contractStatusF4Bean.getContractStatus_list()}"
+												var="wa_cs" itemLabel="#{wa_cs.name}"
+												itemValue="#{wa_cs.contract_status_id}" />
+										</p:selectOneMenu>
+									</p:column>
+									<p:column style="text-align:center;width:100px;">
+										<f:facet name="header">
+											<h:outputText value="Физ. статус" />
+										</f:facet>
+										<p:selectOneMenu id="lastState" disabled="true"
+											value="#{o.contract.last_state}">
+											<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+											<f:selectItem itemLabel="Оформлен" itemValue="1" />
+											<f:selectItem itemLabel="Выдан" itemValue="2" />
+											<f:selectItem itemLabel="Возврат" itemValue="3" />
+											<f:selectItem itemLabel="Установлен" itemValue="4" />
+										</p:selectOneMenu>
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.dealer']}" />
+										</f:facet>
+										<h:outputText value="#{o.dealer.getLF()}" />
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.collector']}" />
+										</f:facet>
+										<h:outputText value="#{o.collector.getLF()}" />
+									</p:column>
+									<p:column style="text-align:center;width:150px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.type']}" />
+										</f:facet>
+										<p:selectOneMenu id="contract_type_list"
+											value="#{o.contract.contract_type_id}" disabled="true">
+											<f:selectItem itemLabel="#{msg['dmsc.no']}" itemValue="0" />
+											<f:selectItems
+												value="#{contractTypeF4Bean.getContractType_list()}"
+												var="wa_ct" itemLabel="#{wa_ct.name}"
+												itemValue="#{wa_ct.contract_type_id}" />
+										</p:selectOneMenu>
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.price']}" />
+										</f:facet>
+										<h:outputText value="#{o.price}" />
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.paid']}" />
+										</f:facet>
+										<h:outputText value="#{o.paid}" />
+									</p:column>
+									<p:column style="text-align:center;width:80px;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['dmsc.remain']}" />
+										</f:facet>
+										<h:outputText value="#{o.remain}" />
+									</p:column>
+									
+									<f:facet name="footer">
+									 #{msg['dmsc.foundTotal']}: #{wfaclistBean.outputTable.rowCount}
+								</f:facet>
+								</p:dataTable>
+							</div>
+						</h:form>
+						
+					</f:view>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

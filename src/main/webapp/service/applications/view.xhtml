@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:growl id="ViewSAMessages" sticky="true" showDetail="true" />
+
+	<p:dialog id="ServAppViewDlg" widgetVar="ServAppViewDlg"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Новая заявка">
+
+		<h:form id="ServAppViewForm">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2"
+					rendered="#{salistBean.selectedSA != null}">
+
+					<p:outputLabel value="Дата" for="adate" />
+					<p:calendar id="adate" pattern="dd.MM.yyyy" disabled="true"
+						value="#{salistBean.selectedSA.adate}" title="End"
+						showOn="button"/>
+					
+					<p:outputLabel value="Company" for="bukrs" />
+					<p:selectOneMenu id="bukrs" disabled="true"
+						value="#{salistBean.selectedSA.bukrs}" >
+						<p:ajax listener="#{salistBean.updateByNewBukrs}" />
+						<f:selectItems value="#{salistBean.bukrs_list}" var="bukrs"
+							itemLabel="#{bukrs.name}" itemValue="#{bukrs.bukrs}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Филиал" for="branchId" />
+					<p:selectOneMenu id="branchId" disabled="true"
+						value="#{salistBean.selectedSA.branch_id}">
+						<f:selectItems value="#{salistBean.branch_list}" var="branch"
+							itemLabel="#{branch.text45}" itemValue="#{branch.branch_id}" />
+					</p:selectOneMenu>
+
+					<h:outputText value="Статус заявки" />
+					<p:selectOneMenu id="sa_status" value="#{selectedSA.app_status}"
+						disabled="true">
+						<f:selectItem itemLabel="Новая" itemValue="1" />
+						<f:selectItem itemLabel="В обработке" itemValue="2" />
+						<f:selectItem itemLabel="Выполнена" itemValue="3" />
+						<f:selectItem itemLabel="Отменена" itemValue="4" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Принял(а) заявку"
+						for="userName" />
+						<p:selectOneMenu id="userName" disabled="true"
+										value="#{salistBean.selectedSA.created_by}">
+										<f:selectItem itemLabel="Неизвестно" itemValue="0" />
+										<f:selectItems value="#{salistBean.user_list}" var="user"
+											itemLabel="#{user.username}" itemValue="#{user.user_id}" />
+									</p:selectOneMenu>
+																
+					<p:outputLabel value="Имя заявителя (ФИО)" for="name" />
+					<p:inputText id="name" size="45" maxlength="45" disabled="true"
+						value="#{salistBean.selectedSA.applicant_name}"
+						title="Заявитель"/>
+
+					<p:outputLabel value="Тел. номер (опред.)"
+						for="inPhone" />
+					<p:inputText id="inPhone" size="25" maxlength="25"
+						value="#{salistBean.selectedSA.in_phone_num}"
+						title="Phone number" disabled="true" />
+
+					<p:outputLabel value="Договор" for="contract" />
+					<p:column>
+						<p:inputText id="contract" size="37" disabled="true" 
+							value="#{salistBean.selectedSA.contract_number}" title="Договор" />
+					</p:column>
+
+					<p:outputLabel value="Вид заявки" for="type" />
+					<p:selectOneMenu id="type" disabled="true"
+						value="#{salistBean.selectedSA.app_type}">
+						<f:selectItem itemLabel="Выберите вид заявки" itemValue="0" />
+						<f:selectItem itemLabel="ROBOCLEAN - Сервис" itemValue="3" />
+						<f:selectItem itemLabel="ROBOCLEAN - Профилактика" itemValue="6" />
+						<f:selectItem itemLabel="CEBILON - Сервис" itemValue="1" />
+						<f:selectItem itemLabel="CEBILON - Замена фильтров" itemValue="7" />
+						<f:selectItem itemLabel="Жалоба / Пожелание" itemValue="4" />
+						<f:selectItem itemLabel="Другое" itemValue="5" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Примечание" for="info" />
+					<p:inputTextarea id="info" cols="45" rows="4" maxlength="255"
+						counter="charRemain" counterTemplate="Осталось {0} символов."
+						autoResize="false" style="font-size: 1em;" disabled="true"
+						value="#{salistBean.selectedSA.info}" title="Info" />
+					<br />
+					<h:outputText style="color:#aaa;" styleClass="notetext"
+						id="charRemain" />
+				</p:panelGrid>
+
+				<p:commandButton style="margin: 10px 0px 0px 0px;" value="Закрыть"
+					update="display" oncomplete="PF('ServAppViewDlg').hide()">
+				</p:commandButton>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

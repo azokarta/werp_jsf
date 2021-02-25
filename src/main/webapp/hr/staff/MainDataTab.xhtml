@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<h:form id="mainDataForm">
+		<div class="ui-grid-col-8" style="text-align: left;">
+			<p:panelGrid style="width:90%;" styleClass="staffTable"
+				rendered="#{!empty hrStaffBean.staff.staff_id}">
+				<f:facet name="header">
+					<p:outputPanel>
+						<p:commandButton icon="ui-icon-pencil" title="Редактировать"
+							actionListener="#{hrStaffBean.setEditMode(true)}"
+							update="mainDataForm" rendered="false">
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-disk" title="#{msg.save}"
+							actionListener="#{hrStaffBean.Save}"
+							update="mainDataForm, :messages"
+							rendered="#{hrStaffBean.editMode}" />
+						<p:commandButton value="Уволить" title="Уволить"
+							actionListener="#{hrStaffBean.Dismiss()}"
+							update="mainDataForm, :messages"
+							rendered="false" />
+					</p:outputPanel>
+				</f:facet>
+				<p:row>
+					<p:column rowspan="9" colspan="2" style="valign:middle;">
+						<p:graphicImage rendered="#{empty hrStaffBean.staff.image}"
+							width="200" library="img" name="default-avatar.jpg" />
+
+						<h:graphicImage rendered="#{!empty hrStaffBean.staff.image}"
+							width="200" url="/servlet/image?id=#{hrStaffBean.staff.image.id}&amp;date=#{hrStaffBean.staff.image.created_date}&amp;type=#{hrStaffBean.staff.image.mime_type}" />
+
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.lastname']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.lastname}"
+							rendered="#{!hrStaffBean.editMode}"></p:outputLabel>
+						<p:inputText value="#{hrStaffBean.staff.lastname}"
+							rendered="#{hrStaffBean.editMode}"></p:inputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.firstname']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.firstname}"
+							rendered="#{!hrStaffBean.editMode}"></p:outputLabel>
+						<p:inputText value="#{hrStaffBean.staff.firstname}"
+							rendered="#{hrStaffBean.editMode}"></p:inputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.middlename']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.middlename}"
+							rendered="#{!hrStaffBean.editMode}"></p:outputLabel>
+						<p:inputText value="#{hrStaffBean.staff.middlename}"
+							rendered="#{hrStaffBean.editMode}"></p:inputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.iin_bin']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.iin_bin}"
+							rendered="#{!hrStaffBean.editMode}"></p:outputLabel>
+						<p:inputText value="#{hrStaffBean.staff.iin_bin}"
+							rendered="#{hrStaffBean.editMode}"></p:inputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.birthdate']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:calendar yearRange="1940:2015"
+							disabled="#{!hrStaffBean.editMode}" pattern="dd.MM.yyyy"
+							autocomplete="off" navigator="true"
+							locale="#{systemLocale.currentLocale.getLanguage()}"
+							value="#{hrStaffBean.staff.birthday}"
+							converterMessage="Date is invalid.">
+						</p:calendar>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.gender']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{msg['hr.staff.female']}"
+							rendered="#{hrStaffBean.staff.gender == 'female' and !hrStaffBean.editMode}" />
+						<p:outputLabel value="#{msg['hr.staff.male']}"
+							rendered="#{hrStaffBean.staff.gender == 'male' and !hrStaffBean.editMode}" />
+
+						<p:selectOneMenu value="#{hrStaffBean.staff.gender}"
+							rendered="#{hrStaffBean.editMode}">
+							<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+							<f:selectItem itemLabel="#{msg['hr.staff.female']}"
+								itemValue="female" />
+							<f:selectItem itemLabel="#{msg['hr.staff.male']}"
+								itemValue="male" />
+						</p:selectOneMenu>
+					</p:column>
+				</p:row>
+				
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="TS сотрудник" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.scout.getLF()}" rendered="#{!empty hrStaffBean.staff.scout}" />
+						<p:outputLabel rendered="#{!empty hrStaffBean.staff.scout}" value="(#{hrStaffBean.staff.tsIsActive == 1?'ВКЛ':'ОТКЛ'})" />
+					</p:column>
+				</p:row>
+				
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="TS Date" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.tsDate}" />
+					</p:column>
+				</p:row>
+
+			</p:panelGrid>
+		</div>
+	</h:form>
+</ui:composition>
+</html>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<style>
+#printCntForm {
+	font-size: 10px !important;
+}
+</style>
+
+	<p:dialog header="#{msg['print_out']}" widgetVar="printDlg" id="printDlg"
+		minHeight="40" width="850" modal="true">
+		<h:form id="printCntForm">
+			<div class="ui-grid-row">
+
+				<div class="ui-grid-col-9" style="margin-bottom: 10px;">
+					<h:panelGrid columns="2">
+						<p:outputLabel value="#{msg['company']}: "></p:outputLabel>
+						<p:outputLabel style="font-weight:bold;"
+							value="#{bukrsF4Bean.getNameByBukrs(requestCrudBean.request.bukrs)}"></p:outputLabel>
+
+						<p:outputLabel value="#{msg['logistics.request_branch']}:"></p:outputLabel>
+						<p:outputLabel style="font-weight:bold;"
+							value="#{branchF4Bean.getBranchNameByID(requestCrudBean.request.branch_id)}"></p:outputLabel>
+
+						<p:outputLabel value="#{msg['logistics.resp_branch']}"></p:outputLabel>
+						<p:outputLabel style="font-weight:bold;"
+							value="#{branchF4Bean.getBranchNameByID(requestCrudBean.request.res_branch_id)}"></p:outputLabel>
+
+					</h:panelGrid>
+				</div>
+			</div>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<p:dataTable id="itemsForPrint"
+						value="#{requestCrudBean.reqMatnrs}" var="item"
+						emptyMessage="#{msg.no_records}"
+						rowClasses="employeeTableOddRow,employeeTableEvenRow">
+
+						<p:column style="width: 100px;text-align:center;">
+							<f:facet name="header">#{msg['logistics.matnr_code']}</f:facet>
+							<h:outputText value="#{item.matnrObject.code}"></h:outputText>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">#{msg['logistics.material']}</f:facet>
+							<h:outputText rendered="#{userinfo.u_language == 'ru'}" value="#{item.matnrObject.text45}"></h:outputText>
+							<h:outputText rendered="#{userinfo.u_language == 'en'}" value="#{item.matnrObject.name_en}"></h:outputText>
+							<h:outputText rendered="#{userinfo.u_language == 'tr'}" value="#{item.matnrObject.name_tr}"></h:outputText>
+						</p:column>
+
+
+
+						<p:column style="width:70px;text-align:center;">
+							<f:facet name="header">#{msg['logistics.measurement']}</f:facet>
+							<h:outputText value="#{meinsF4Bean.getName(item.units)}"></h:outputText>
+						</p:column>
+
+						<p:column id="quantity_td" style="width:100px;text-align:center;">
+							<f:facet name="header">#{msg['logistics.quantity']}</f:facet>
+							<h:outputText value="#{item.quantity}"></h:outputText>
+						</p:column>
+					</p:dataTable>
+				</div>
+			</div>
+		</h:form>
+
+		<f:facet name="footer">
+			<h:form>
+
+				<p:commandButton value="#{msg['logistics.act.print']}" type="button" icon="ui-icon-print"
+					style="margin-bottom: 20px" oncomplete="PF('printDlg').hide()">
+					<p:printer target=":printCntForm" />
+				</p:commandButton>
+					&nbsp;
+					<p:commandButton value="#{msg['cancel']}" oncomplete="PF('printDlg').hide()" />
+			</h:form>
+		</f:facet>
+	</p:dialog>
+
+</ui:composition>
+</html>

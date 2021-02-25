@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>Сервисы</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+</h:head>
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"> <b>#{msg['menu']}</b>
+			</span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Сервис > Сервисы" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Список сервисов" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+
+					<h:form id="form">
+						<p:growl id="messages" sticky="false" showDetail="true" />
+
+						<div class="ui-grid-row">
+							<p:panel>
+								<p:panelGrid columns="2" cellpadding="0">
+									<h:panelGrid columns="2" cellpadding="0">
+										<h:outputLabel value="#{msg['dmsc.bukrs']}: " />
+										<p:selectOneMenu styleClass="bukrs" id="bukrs"
+											value="#{servicelistBean.outputTable.searchModel.bukrs}">
+											<p:ajax listener="#{servicelistBean.loadBranch2}" />
+											<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}"
+												itemValue="0" />
+											<f:selectItems value="#{servicelistBean.bukrs_list}"
+												var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu>
+									</h:panelGrid>
+									<h:panelGrid columns="2" cellpadding="0">
+										<h:outputLabel value="#{msg['dmsc.branch']}: " />
+										<p:selectCheckboxMenu id="branch" label="Выберите"
+												value="#{servicelistBean.outputTable.searchModel.selBranches}" 
+												filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												<p:ajax listener="#{servicelistBean.loadStaff}" />
+												            <f:selectItems value="#{servicelistBean.branch_list}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+												
+										</p:selectCheckboxMenu>
+										
+									</h:panelGrid>
+								</p:panelGrid>
+							</p:panel>
+						</div>
+
+						<div class="ui-grid-row">
+
+							<p:tabView id="tabView">
+								<p:tab title="Параметры поиска">
+
+									<div class="ui-grid-row">
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<h:outputLabel value="Мастер: " />
+												<p:selectOneMenu id="master"
+													value="#{servicelistBean.outputTable.searchModel.master_id}">
+													<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+													<f:selectItems value="#{servicelistBean.l_master}"
+														var="wa_dealer" itemLabel="#{wa_dealer.firstname}"
+														itemValue="#{wa_dealer.staff_id}" />
+												</p:selectOneMenu>
+
+												<h:outputLabel value="Оператор: " />
+												<p:selectOneMenu id="operator"
+													value="#{servicelistBean.outputTable.searchModel.oper_id}">
+													<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+													<f:selectItems value="#{servicelistBean.l_oper}"
+														var="wa_collector" itemLabel="#{wa_collector.firstname}"
+														itemValue="#{wa_collector.staff_id}" />
+												</p:selectOneMenu>
+											</h:panelGrid>
+										</div>
+
+										<div style="float: left;">
+											<h:panelGrid columns="3" cellpadding="3">
+												<h:outputLabel value="#{msg['dmsc.dateFrom']} " />
+												<p:calendar id="start_date" styleClass="dateField"
+													value="#{servicelistBean.outputTable.searchModel.p_start_date}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true"
+													converterMessage="Date is invalid." />
+												<h:outputLabel value="#{msg['dmsc.dateFrom1']} " />
+
+												<h:outputLabel value=" #{msg['dmsc.dateTo']} " />
+												<p:calendar id="end_date" styleClass="dateField"
+													value="#{servicelistBean.outputTable.searchModel.p_end_date}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true"
+													converterMessage="Date is invalid." />
+												<h:outputLabel value=" #{msg['dmsc.dateTo1']}" />
+											</h:panelGrid>
+										</div>
+
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<h:outputLabel value="Категория: " />
+												<p:selectOneMenu id="servCat"
+													value="#{servicelistBean.outputTable.searchModel.category}">
+													<f:selectItem itemLabel="Все" itemValue="0" />
+													<f:selectItem itemLabel="Уборочная система" itemValue="1" />
+													<f:selectItem itemLabel="Система очистки воды" itemValue="2" />													
+												</p:selectOneMenu>
+
+												<h:outputLabel value="Вид сервиса: " />
+												<p:selectOneMenu id="serv_type"
+													value="#{servicelistBean.outputTable.searchModel.serv_type}">
+													<f:selectItem itemLabel="Все" itemValue="0" />
+													<f:selectItem itemLabel="Замена фильтров" itemValue="1" />
+													<f:selectItem itemLabel="Сервисное обслуживание"
+														itemValue="3" />
+													<f:selectItem itemLabel="Сервис пакет" itemValue="4" />
+													<f:selectItem itemLabel="Установка" itemValue="2" />
+												</p:selectOneMenu>
+											</h:panelGrid>
+										</div>
+										
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<h:outputLabel value="#{msg['dmsc.status']}: " />
+												<p:selectOneMenu id="contract_status_id"
+													value="#{servicelistBean.outputTable.searchModel.serv_status}">
+													<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+													<f:selectItem itemLabel="Новый" itemValue="1" />
+													<f:selectItem itemLabel="В обработке" itemValue="2" />
+													<f:selectItem itemLabel="Обработан" itemValue="3" />
+													<f:selectItem itemLabel="Выполнен" itemValue="4" />
+													<f:selectItem itemLabel="Возврат" itemValue="5" />
+													<f:selectItem itemLabel="Отменен" itemValue="6" />
+												</p:selectOneMenu>
+												
+												<h:outputLabel value="Принял: " />
+												<p:selectOneMenu id="createdBy"
+														disabled="false"
+														value="#{servicelistBean.outputTable.searchModel.created_by}">
+														<f:selectItem itemLabel="Неизвестно" itemValue="0" />
+														<f:selectItems value="#{servicelistBean.user_list}" var="user"
+															itemLabel="#{user.username}" itemValue="#{user.user_id}" />
+												</p:selectOneMenu>
+											</h:panelGrid>
+										</div>
+										
+									</div>
+								</p:tab>
+								
+								<p:tab title="#{msg['dmsc.hint_SearchByNo']}">
+									<div class="ui-grid-row">
+										<div style="float: left;">
+											<h:panelGrid columns="2" cellpadding="3">
+												<h:outputLabel value="Сервис № " />
+												<p:inputText id="serv_num" maxlength="20"
+													style="width: 95px;" autocomplete="off"
+													value="#{servicelistBean.outputTable.searchModel.serv_num}" />
+
+												<h:outputLabel value="Товар SN " />
+												<p:inputText id="tovSN" maxlength="20" style="width: 95px;"
+													autocomplete="off"
+													value="#{servicelistBean.outputTable.searchModel.tovar_sn}" />
+											</h:panelGrid>
+										</div>
+									</div>
+								</p:tab>
+								
+								<p:tab title="Итоги" disabled="#{servicelistBean.disVaultTab}">
+									<div class="ui-grid-row">
+										<div style="float: left;">
+											<h:panelGrid columns="3" cellpadding="3">
+												<h:outputLabel value="Общая сумма " />
+												<p:inputText id="summTotal" disabled="true"
+													size="20" value="#{servicelistBean.summTotal}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+												</p:inputText> 
+												<p:outputLabel value=" #{servicelistBean.currency}" />
+												
+												<h:outputLabel value="Премия мастера " />
+												<p:inputText id="premMaster" maxlength="20"
+													disabled="true" value="#{servicelistBean.premMaster}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+												</p:inputText> <p:outputLabel value=" #{servicelistBean.currency}" />												
+											</h:panelGrid>
+										</div>
+										
+										<div style="float: left;">
+											<h:panelGrid columns="3" cellpadding="3">
+												<h:outputLabel value="Оплачено " />
+												<p:inputText id="paidTotal" maxlength="20"
+													disabled="true" value="#{servicelistBean.paidTotal}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+												</p:inputText> <p:outputLabel value=" #{servicelistBean.currency}" />
+												
+												<h:outputLabel value="Премия оператора " />
+												<p:inputText id="premOper" maxlength="20"
+													disabled="true" value="#{servicelistBean.premOper}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+												</p:inputText> <p:outputLabel value=" #{servicelistBean.currency}" />
+											</h:panelGrid>
+										</div>
+										
+										<div style="float: left;">
+											<h:panelGrid columns="3" cellpadding="3">
+												<h:outputLabel value="Остаток " />
+												<p:inputText id="remainTotal" maxlength="20"
+													disabled="true" value="#{servicelistBean.remainTotal}">
+													<f:convertNumber pattern="¤#,##0.00" currencySymbol="" />
+												</p:inputText> <p:outputLabel value=" #{servicelistBean.currency}" />												
+											</h:panelGrid>
+										</div>
+									</div>
+								</p:tab>
+								
+							</p:tabView>
+						</div>
+
+						<p:toolbar styleclass="mp_toolbar" style="margin-top: 5px;">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg['dmsc.search']}"
+									icon="ui-icon ui-icon-search"
+									actionListener="#{servicelistBean.search}" update="messages">
+								</p:commandButton>
+							</f:facet>
+							<f:facet name="right">
+								<p:commandButton type="push" value="Новый сервис"
+									icon="ui-icon ui-icon-plus" update="messages"
+									actionListener="#{servicelistBean.toNewServicePage}" />
+							</f:facet>
+						</p:toolbar>
+						
+						<div id="tableContainer" class="ui-grid-row"
+							style="margin-top: 5px;">
+							<p:dataTable value="#{servicelistBean.outputTable}" var="o"
+								lazy="true" rowKey="#{o.contract_id}"
+								emptyMessage="#{msg['dmsc.emptyRec']}" paginator="true"
+								rows="15" rowsPerPageTemplate="10, 15, 20" widgetVar="contracts"
+								id="outputTable" styleClass="outputTable-table"
+								headerClass="outputTable-table-header"
+								rowClasses="outputTable-table-odd-row, outputTable-table-even-row"
+								resizableColumns="true" liveResize="true">
+
+								<f:facet name="header">
+
+									<p:outputPanel>
+										<p:commandButton id="toggler" type="button"
+											value="#{msg['dmsc.columns']}" style="float:right"
+											icon="ui-icon-calculator" />
+										<p:columnToggler datasource="outputTable" trigger="toggler" />
+									</p:outputPanel>
+
+								</f:facet>
+
+								<p:column style="text-align:center;width:110px;" rendered="true">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.branch']}" />
+									</f:facet>
+									<p:selectOneMenu id="branch" value="#{o.service.branch_id}"
+										disabled="true">
+										<f:selectItem itemLabel="#{msg['dmsc.no']}" itemValue="0" />
+										<f:selectItems
+											value="#{servicelistBean.p_branchF4Bean.branch_list}"
+											var="wa_branch" itemLabel="#{wa_branch.text45}"
+											itemValue="#{wa_branch.branch_id}" />
+									</p:selectOneMenu>
+								</p:column>
+
+								<p:column style="text-align:center;width:80px;">
+									<f:facet name="header">
+										<h:outputText value="Сервис №" />
+									</f:facet>
+									<h:outputText value="#{o.service.serv_num}" />
+									<h:link outcome="/service/maintenance/service03"
+										target="_blank" styleClass="urlLinks">
+										<f:param name="service_number" value="#{o.service.serv_num}" />
+										<h:graphicImage value="/img/link.png"
+											style="float:right; width:15px; height:15px;" />
+									</h:link>
+								</p:column>
+
+								<p:column style="text-align:center;width:100px;">
+									<f:facet name="header">
+										<h:outputText value="Дата" />
+									</f:facet>
+									<p:calendar id="birthday" styleClass="dateField"
+										pattern="dd.MM.yyyy" autocomplete="off"
+										value="#{o.service.date_open}"
+										converterMessage="Date is invalid." disabled="true">
+									</p:calendar>
+								</p:column>
+								<p:column style="text-align:center;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.customer']}" />
+									</f:facet>
+									<h:outputText
+										value="#{o.service.customer_lastname} #{o.service.customer_firstname} #{o.service.customer_midname}" />
+								</p:column>
+								<p:column style="text-align:center;width:80px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.matnr_serial']}" />
+									</f:facet>
+									<h:outputText value="#{o.service.tovar_sn}" />
+								</p:column>
+								<p:column style="text-align:center;width:80px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.status']}" />
+									</f:facet>
+									<p:selectOneMenu id="serv_status_list"
+										value="#{o.service.serv_status}" disabled="true">
+										<f:selectItem itemLabel="Новый" itemValue="1" />
+										<f:selectItem itemLabel="В обработке" itemValue="2" />
+										<f:selectItem itemLabel="Обработан" itemValue="3" />
+										<f:selectItem itemLabel="Выполнен" itemValue="4" />
+										<f:selectItem itemLabel="Возврат" itemValue="5" />
+										<f:selectItem itemLabel="Отменен" itemValue="6" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column style="text-align:center;">
+									<f:facet name="header">
+										<h:outputText value="Мастер" />
+									</f:facet>
+									<h:outputText value="#{o.master.fullFIO}" />
+								</p:column>
+								<p:column style="text-align:center;">
+									<f:facet name="header">
+										<h:outputText value="Оператор" />
+									</f:facet>
+									<h:outputText value="#{o.oper.fullFIO}" />
+								</p:column>
+								<p:column style="text-align:center;width:80px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.type']}" />
+									</f:facet>
+									<p:selectOneMenu id="serv_type_list"
+										value="#{o.service.serv_type}" disabled="true">
+										<f:selectItem itemLabel="Замена фильтров" itemValue="1" />
+										<f:selectItem itemLabel="Установка" itemValue="2" />
+										<f:selectItem itemLabel="Сервисное обслуживание" itemValue="3" />
+										<f:selectItem itemLabel="Сервис пакет" itemValue="4" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column style="text-align:center;width:80px;">
+									<f:facet name="header">
+										<h:outputText value="Сумма" />
+									</f:facet>
+									<h:outputText value="#{o.service.payment_due}" />
+								</p:column>
+								<p:column style="text-align:center;width:80px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.paid']}" />
+									</f:facet>
+									<h:outputText value="#{o.service.paid}" />
+								</p:column>
+								<p:column style="text-align:center;width:80px;">
+									<f:facet name="header">
+										<h:outputText value="#{msg['dmsc.remain']}" />
+									</f:facet>
+									<h:outputText value="#{o.service.payment_due-o.service.paid}" />
+								</p:column>
+
+								<f:facet name="footer">
+									 #{msg['dmsc.foundTotal']}: #{servicelistBean.outputTable.rowCount}
+								</f:facet>
+							</p:dataTable>
+						</div>
+					</h:form>
+
+				</f:view>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

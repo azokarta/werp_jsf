@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="UserCreateDlg" widgetVar="UserCreateDialog" modal="true"
+		resizable="false" appendTo="@(body)" header="Create User">
+		<h:form id="UserCreateForm">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2"
+					rendered="#{ditUserListBean.selected != null}">
+					<p:outputLabel value="Сотрудник"></p:outputLabel>
+					<h:panelGrid id="responsibleStaffPanel" columns="3">
+						<h:inputText id="responsibleStaffId" size="33"
+							rendered="#{!empty ditUserListBean.selectedStaff}"
+							autocomplete="off"
+							value="#{ditUserListBean.selectedStaff.getLF()}" disabled="true" />
+						<p:commandButton icon="ui-icon-newwin" type="push"
+							update=":staffListForm" oncomplete="PF('employeeWidget').show();"
+							styleClass="f4button">
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-close" type="push"
+							actionListener="#{ditUserListBean.removeStaff()}"
+							update="responsibleStaffPanel" styleClass="f4button">
+							<f:setPropertyActionListener target="#{staffBean.selected}"
+								value="" />
+						</p:commandButton>
+					</h:panelGrid>
+
+					<p:outputLabel value="Username" for="username" />
+					<p:inputText id="username"
+						value="#{ditUserListBean.selected.username}" title="Username" />
+
+					<p:outputLabel value="Password" for="password" />
+					<p:password id="password" autocomplete="off"
+						value="#{ditUserListBean.selected.password}" />
+
+					<p:outputLabel value="Email" for="email" />
+					<p:inputText id="email" value="#{ditUserListBean.selected.email}"
+						title="Email" />
+
+					<p:outputLabel value="Company" for="company" />
+					<p:selectOneMenu id="company"
+						value="#{ditUserListBean.selected.bukrs}">
+						<p:ajax update="branch" />
+						<f:selectItem itemLabel="Выберите компанию" itemValue="0" />
+						<f:selectItems value="#{ditUserListBean.bukrsList}" var="bukrs"
+							itemLabel="#{bukrs.name}" itemValue="#{bukrs.bukrs}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Филиал" for="branch" />
+					<p:selectOneMenu id="branch"
+						value="#{ditUserListBean.selected.branch_id}">
+						<f:selectItem itemLabel="Выберите филиал" itemValue="0" />
+						<f:selectItems value="#{ditUserListBean.getBranchList()}"
+							var="branch" itemLabel="#{branch.text45}"
+							itemValue="#{branch.branch_id}" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Роль" />
+					<p:selectManyMenu value="#{ditUserListBean.selectedRoles}" converter="#{ditUserListBean.roleConvertor}">
+						<f:selectItems value="#{ditUserListBean.roleList}" var="role"
+							itemLabel="#{role.text45}" itemValue="#{role}"></f:selectItems>
+					</p:selectManyMenu>
+
+					<h:outputLabel value="Статус" />
+					<p:selectOneMenu value="#{ditUserListBean.selected.is_active}">
+						<f:selectItem itemLabel="Заблкирован" itemValue="0" />
+						<f:selectItem itemLabel="Активный" itemValue="1" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="IS ROOT" />
+					<p:selectOneMenu value="#{ditUserListBean.selected.is_root}">
+						<f:selectItem itemLabel="Нет" itemValue="0" />
+						<f:selectItem itemLabel="Да" itemValue="1" />
+					</p:selectOneMenu>
+
+				</p:panelGrid>
+				<p:commandButton actionListener="#{ditUserListBean.Save}"
+					value="Save" update="display,:UserListForm:datalist,:messages" />
+				<p:commandButton actionListener="#{ditUserListBean.Reset}"
+					value="Cancel" onclick="PF('UserCreateDialog').hide()"
+					update="display,:UserListForm" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+	<p:dialog header="Сотрудники" widgetVar="employeeWidget" dynamic="true"
+		width="900" height="500" modal="true" appendTo="@(body)">
+		<h:form id="staffListForm">
+			<div id="se_div">
+				<fieldset class="se_FieldSet">
+					<legend>Поиск</legend>
+					<table>
+						<tr>
+							<td><h:outputLabel value="Имя" /></td>
+							<td><h:inputText maxlength="45" autocomplete="off"
+									value="#{staffBean.searchModel.firstname}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="Фамилия" /></td>
+							<td><h:inputText maxlength="45" autocomplete="off"
+									value="#{staffBean.searchModel.lastname}" /></td>
+						</tr>
+						<tr>
+							<td><p:commandButton actionListener="#{staffBean.Search}"
+									value="Искать" update="staffTable" /></td>
+							<td></td>
+						</tr>
+					</table>
+
+				</fieldset>
+			</div>
+			<br />
+
+			<p:dataTable id="staffTable" var="item" rowKey="#{item.staff_id}"
+				value="#{staffBean.items}" emptyMessage="Нет записей"
+				selectionMode="single" selection="#{staffBean.selected}">
+				<f:facet name="header">
+
+					<p:commandButton process="staffTable"
+						actionListener="#{ditUserListBean.assignSelectedStaff(staffBean.selected)}"
+						update=":UserCreateForm:responsibleStaffPanel"
+						oncomplete="PF('employeeWidget').hide();" value="Выбрать" />
+				</f:facet>
+				<p:column headerText="Имя">
+					<h:outputText value="#{item.firstname}" />
+				</p:column>
+				<p:column headerText="Фамилия">
+					<h:outputText value="#{item.lastname}" />
+				</p:column>
+				<p:column headerText="Отчество">
+					<h:outputText value="#{item.middlename}" />
+				</p:column>
+
+				<p:column headerText="Ссылка на карточку">
+					<p:button target="_blank" outcome="/hr/staff/View.xhtml"
+						icon="ui-icon-zoomin" title="View" style="margin-right:5px;">
+						<f:param name="staffId" value="#{item.staff_id}" />
+					</p:button>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['dmsc.dmsclist']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="dms/dmsclist.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Отчет заявок" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Отчет заявок" />
+				</ui:include>
+			</ui:insert>
+
+			<div>
+				<div id="content" class="container">
+					<f:view>
+						<!--  MAIN PAGE CONTENT GOES HERE  -->
+
+						<h:form id="form">
+							<p:growl id="messages" sticky="false" showDetail="true" />
+
+							<div class="ui-grid-row" id="topPanel2">
+								<p:panel rendered="#{sarepBean.tabindex != 0 ? false:true}">
+									<p:panelGrid columns="5" cellpadding="0">
+										<h:panelGrid columns="2" cellpadding="0">
+											<h:outputLabel value="#{msg['dmsc.bukrs']}: " />
+											<p:selectOneMenu styleClass="bukrs" id="bukrs"
+												value="#{sarepBean.srSearch.bukrs}">
+												<p:ajax listener="#{sarepBean.loadBranch2}" />
+												<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}"
+													itemValue="0" />
+												<f:selectItems value="#{sarepBean.bukrs_list}"
+													var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+													itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu>
+										</h:panelGrid>
+										<h:panelGrid columns="2" cellpadding="0">
+											<h:outputLabel value="#{msg['dmsc.branch']}: " />
+											<p:selectCheckboxMenu id="branchMulSelect" label="Выберите"
+												value="#{sarepBean.selBranches}" 
+												filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												            <f:selectItems value="#{sarepBean.branch_list}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+											</p:selectCheckboxMenu>
+										</h:panelGrid>
+
+										<h:panelGrid columns="2" cellpadding="0">
+											<h:outputLabel value="#{msg['dmsc.month']}: " />
+											<p:calendar id="start_date" styleClass="dateField"
+												value="#{sarepBean.srSearch.servapp.adate}" navigator="true"
+												pattern="dd.MM.yyyy" mask="true"
+												converterMessage="Date is invalid." />
+										</h:panelGrid>
+
+										<h:panelGrid columns="2" cellpadding="0">
+											<p:inputSwitch id="byMonth"
+											style="font-weight:bold;margin-left: 10px;"
+											value="#{sarepBean.srSearch.byMonth}" />
+											<h:outputLabel style="margin-left: 5px;" value="Показать за месяц" />
+										</h:panelGrid>
+										
+										<p:commandButton type="push" value="Показать"
+											style="margin-left:15px;margin-bottom:3px;"
+											icon="ui-icon ui-icon-search"
+											actionListener="#{sarepBean.showReport}" update="messages">
+										</p:commandButton>
+
+									</p:panelGrid>
+								</p:panel>
+							</div>
+
+							<div class="ui-grid-row">
+								<p:tabView id="tabView" activeIndex="#{sarepBean.tabindex}">
+									<p:ajax event="tabChange"  update=":form"/>
+									<p:tab title="По филиалам">
+										<div id="tableContainer" class="ui-grid-row wrapRTClass"
+											style="margin-top: 5px;">
+											<p:dataTable value="#{sarepBean.srOutBranch}" var="rec"
+												emptyMessage="#{msg['dmsc.emptyRec']}" width="auto"
+												id="branchTable">
+											
+												<p:column style="text-align:center;width:30px;"
+													rendered="true">
+													<f:facet name="header">
+														<h:outputText value="#" />
+													</f:facet>
+													<h:outputText value="#{rec.branch.branch_id == null ? '' : rec.index}" />
+												</p:column>
+												
+												<p:column style="width:250px;"
+													rendered="true" sortBy="#{rec.branch.text45}">
+													<f:facet name="header">
+														<h:outputText value="#{msg['dmsc.branch']}" />
+													</f:facet>													
+													<h:outputText style="margin-left:15px;" value="#{rec.branch.text45}" />
+												</p:column>
+																								
+												<p:column style="#{rec.branch.branch_id == null ? 'background-color:#ddf8ff;font-weight:bold;' : ''};text-align:center;width:70px;"
+													rendered="true" sortBy="#{rec.rserv}">
+													<f:facet name="header">
+														<h:outputText value="Сервис Убор.Сис." />
+													</f:facet>
+													<h:outputText value="#{rec.rserv}">
+														<f:convertNumber pattern="#0" locale="pt_BR"/>
+													</h:outputText>
+												</p:column>				
+												
+												<p:column style="#{rec.branch.branch_id == null ? 'background-color:#ddf8ff;font-weight:bold;' : ''};text-align:center;width:70px;"
+													rendered="true" sortBy="#{rec.cserv}">
+													<f:facet name="header">
+														<h:outputText value="Сервис Сис.очист.Воды" />
+													</f:facet>
+													<h:outputText value="#{rec.cserv}">
+														<f:convertNumber pattern="#0" locale="pt_BR"/>
+													</h:outputText>
+												</p:column>	
+												
+												<p:column style="#{rec.branch.branch_id == null ? 'background-color:#ddf8ff;font-weight:bold;' : ''};text-align:center;width:70px;"
+													rendered="true" sortBy="#{rec.zf}">
+													<f:facet name="header">
+														<h:outputText value="Замена Фильтр." />
+													</f:facet>
+													<h:outputText value="#{rec.zf}">
+														<f:convertNumber pattern="#0" locale="pt_BR"/>
+													</h:outputText>
+												</p:column>	
+												
+												<p:column style="#{rec.branch.branch_id == null ? 'background-color:#ddf8ff;font-weight:bold;' : ''};text-align:center;width:70px;"
+													rendered="true" sortBy="#{rec.prof}">
+													<f:facet name="header">
+														<h:outputText value="Профилактика Убор.Сис." />
+													</f:facet>
+													<h:outputText value="#{rec.prof}">
+														<f:convertNumber pattern="#0" locale="pt_BR"/>
+													</h:outputText>
+												</p:column>	
+												
+												<p:column style="#{rec.branch.branch_id == null ? 'background-color:#ddf8ff;font-weight:bold;' : ''};text-align:center;width:70px;"
+													rendered="true" sortBy="#{rec.complain}">
+													<f:facet name="header">
+														<h:outputText value="Жалобы/Пожелания" />
+													</f:facet>
+													<h:outputText value="#{rec.complain}">
+														<f:convertNumber pattern="#0" locale="pt_BR"/>
+													</h:outputText>
+												</p:column>	
+												
+												<p:column style="#{rec.branch.branch_id == null ? 'background-color:#ddf8ff;font-weight:bold;' : ''};text-align:center;width:70px;"
+													rendered="true" sortBy="#{rec.others}">
+													<f:facet name="header">
+														<h:outputText value="Другие" />
+													</f:facet>
+													<h:outputText value="#{rec.others}">
+														<f:convertNumber pattern="#0" locale="pt_BR"/>
+													</h:outputText>
+												</p:column>	
+												
+												<p:column style="#{rec.branch.branch_id == null ? 'background-color:#ddf8ff;font-weight:bold;' : ''};text-align:center;width:70px;"
+													rendered="true" sortBy="#{rec.total}">
+													<f:facet name="header">
+														<h:outputText value="Итоги" />
+													</f:facet>
+													<h:outputText value="#{rec.total}">
+														<f:convertNumber pattern="#0" locale="pt_BR"/>
+													</h:outputText>
+												</p:column>	
+																								
+											</p:dataTable>
+										</div>
+									</p:tab>
+
+								</p:tabView>
+							</div>
+
+						</h:form>
+
+						<ui:include src="customerWidget.xhtml" />
+					</f:view>
+				</div>
+
+			</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

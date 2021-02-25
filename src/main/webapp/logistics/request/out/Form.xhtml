@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<p:commandButton rendered="#{requestOutCrudBean.mode != 'view'}"
+					type="push" value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check"
+					actionListener="#{requestOutCrudBean.Save()}" update=":messages">
+				</p:commandButton>
+
+				<p:button rendered="#{requestOutCrudBean.mode == 'view'}"
+					outcome="/logistics/request/out/Update.xhtml?id=#{requestOutCrudBean.request.id}"
+					value="Редактировать" title="Редактировать"
+					style="float:left;margin-right:5px;">
+				</p:button>
+
+				<p:button rendered="#{requestOutCrudBean.mode == 'view'}"
+					style="float:left;margin-right:5px;"
+					outcome="/logistics/request/out/List.xhtml" title="В список"
+					value="В список">
+				</p:button>
+
+			</f:facet>
+		</p:toolbar>
+		<br />
+
+		<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+			<div class="ui-grid-col-5" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>#{msg['logistics.doc_info']}</legend>
+					<table>
+						<tr>
+							<td>№</td>
+							<td><h:outputText value="№#{requestOutCrudBean.request.id}"></h:outputText>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['company']}</td>
+							<td><h:outputText
+									rendered="#{requestOutCrudBean.mode == 'view'}"
+									value="#{bukrsF4Bean.getNameByBukrs(requestOutCrudBean.request.bukrs)}"></h:outputText>
+								<p:selectOneMenu rendered="#{requestOutCrudBean.mode != 'view'}"
+									value="#{requestOutCrudBean.request.bukrs}">
+									<p:ajax listener="#{requestOutCrudBean.changeBukrs}"
+										update="add_matnr_btn,add_rel_doc_btn,selectedMdTable,itemsListTable"></p:ajax>
+									<f:selectItem itemValue="" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemValue="#{b.bukrs}" itemLabel="#{b.name}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['department']}</td>
+							<td><h:outputText
+									rendered="#{requestOutCrudBean.mode == 'view'}"
+									value="#{departmentF4Bean.getName(requestOutCrudBean.request.department_id,userinfo.u_language)}"></h:outputText>
+
+								<p:selectOneMenu rendered="#{requestOutCrudBean.mode != 'view'}"
+									value="#{requestOutCrudBean.request.department_id}">
+									<f:selectItem itemValue="0" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems value="#{departmentF4Bean.l_dep}" var="dep"
+										itemValue="#{dep.dep_id}"
+										itemLabel="#{dep.getName(userinfo.u_language)}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.creator']}</td>
+							<td><h:outputText
+									rendered="#{requestOutCrudBean.mode != 'create'}"
+									value="#{requestOutCrudBean.request.creator.getLF()}">
+								</h:outputText> <h:outputText
+									rendered="#{requestOutCrudBean.mode == 'create' and !empty requestOutCrudBean.userData.staff.staff_id}"
+									value="#{requestOutCrudBean.userData.staff.getLF()}"></h:outputText>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.created_at']}</td>
+							<td><h:outputText
+									value="#{requestOutCrudBean.request.created_at}">
+									<f:convertDateTime pattern="dd.MM.YYYY kk:mm"></f:convertDateTime>
+								</h:outputText></td>
+						</tr>
+
+
+
+
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+
+						<tr>
+							<td colspan="2"></td>
+						</tr>
+
+					</table>
+
+					<div class="ui-grid-col-12" style="margin-top: 20px;">
+						<ui:include src="relatedDocs.xhtml">
+							<ui:param name="reqBean" value="#{requestOutCrudBean}" />
+						</ui:include>
+					</div>
+				</fieldset>
+			</div>
+
+
+			<div class="ui-grid-col-7" style="display: block; float: left;">
+				<ui:include src="matnrList.xhtml">
+					<ui:param name="reqBean" value="#{requestOutCrudBean}" />
+				</ui:include>
+			</div>
+
+		</div>
+	</h:form>
+
+
+
+</ui:composition>
+</html>

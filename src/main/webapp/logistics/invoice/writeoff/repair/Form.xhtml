@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+
+				<p:commandButton rendered="#{crudBean.mode != 'view'}" type="push"
+					value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check" actionListener="#{crudBean.Save()}"
+					update=":messages">
+				</p:commandButton>
+
+				<p:button outcome="Update.xhtml"
+					rendered="#{crudBean.wr.statusId == 1 and crudBean.mode == 'view'}"
+					value="Редактировать">
+					<f:param name="id" value="#{crudBean.wr.id}" />
+				</p:button>
+
+				<p:commandButton
+					rendered="#{crudBean.showWriteoffButton()}"
+					type="push" value="Списать" actionListener="#{crudBean.Writeoff()}"
+					update=":messages">
+				</p:commandButton>
+
+			</f:facet>
+		</p:toolbar>
+		<br />
+
+		<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+			<div class="ui-grid-col-3" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>#{msg['logistics.doc_info']}</legend>
+					<table>
+						<tr>
+							<td>№</td>
+							<td><h:outputText value="№#{crudBean.wr.id}"></h:outputText></td>
+						</tr>
+						<tr>
+							<td>#{msg['company']}</td>
+							<td><werp:companySelect elementId="bukrs"
+									value="#{logWriteoffRepairCrudBean.wr.bukrs}"
+									mode="#{crudBean.mode == 'view'?'view':'update'}"
+									onChangeUpdate=":form:branchSelect:branchId, :form:werksSelect:fromWerks">
+								</werp:companySelect></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['branch']}</td>
+							<td><werp:branchSelect companyValue="#{crudBean.wr.bukrs}"
+									value="#{crudBean.wr.branchId}"
+									mode="#{crudBean.mode == 'view'?'view':'update'}"
+									id="branchSelect" elementId="branchId">
+								</werp:branchSelect></td>
+						</tr>
+
+						<tr>
+							<td><h:outputText value="#{msg['logistics.sender_whouse']}"></h:outputText></td>
+							<td><werp:werksSelect id="werksSelect" elementId="fromWerks"
+									value="#{crudBean.wr.fromWerks}"
+									companyValue="#{crudBean.wr.bukrs}"
+									mode="#{crudBean.mode == 'view'?'view':'update'}">
+								</werp:werksSelect></td>
+						</tr>
+						
+						<tr>
+							<td>#{msg['logistics.repairer']}</td>
+							<td>
+								<p:panel id="masterStaffPanel">
+									<h:outputText rendered="#{!empty crudBean.wr.master}"
+										value="#{crudBean.wr.master.getLF()}"></h:outputText>
+
+									<p:commandButton rendered="#{crudBean.mode != 'view'}"
+										icon="ui-icon-newwin" type="push" update=":messages"
+										oncomplete="PF('SalaryListDialog').show();"
+										styleClass="f4button" />
+								</p:panel>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.material']}</td>
+							<td><p:panel id="matnrPanel">
+									<h:outputText
+										value="#{crudBean.wr.matnrObject.text45} (#{crudBean.wr.barcode})"></h:outputText>
+
+									<p:commandButton rendered="#{crudBean.mode != 'view'}"
+										icon="ui-icon-newwin" type="push"
+										update=":messages,:MatnrListDlg"
+										actionListener="#{crudBean.loadMlListForRepair()}"
+										oncomplete="PF('MatnrListDialog').show();"
+										styleClass="f4button" />
+								</p:panel></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['date']}</td>
+							<td><h:outputText rendered="#{crudBean.mode == 'view'}"
+									value="#{crudBean.wr.date}">
+									<f:convertDateTime pattern="dd.MM.YYYY"></f:convertDateTime>
+								</h:outputText> <p:calendar rendered="#{crudBean.mode != 'view'}"
+									pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{crudBean.wr.date}" converterMessage="Wrong Date"
+									navigator="true">
+								</p:calendar></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.description']}</td>
+							<td><p:inputTextarea value="#{crudBean.wr.note}"
+									rendered="#{crudBean.mode != 'view'}"></p:inputTextarea> <p:panel
+									rendered="#{crudBean.mode == 'view'}">
+									#{crudBean.wr.note}
+								</p:panel></td>
+						</tr>
+						<tr>
+							<td>#{msg['logistics.creator']}</td>
+							<td><h:outputText value=""></h:outputText></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.created_at']}</td>
+							<td><h:outputText value="#{crudBean.wr.createdAt}">
+									<f:convertDateTime pattern="dd.MM.YYYY kk:mm"></f:convertDateTime>
+								</h:outputText></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.status']}</td>
+							<td></td>
+						</tr>
+
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+
+						<tr>
+							<td colspan="2"></td>
+						</tr>
+
+					</table>
+
+					<div class="ui-grid-col-12" style="margin-top: 20px;"></div>
+				</fieldset>
+			</div>
+
+
+			<div class="ui-grid-col-7" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>#{msg['logistics.matnr_for_writeoff']}</legend>
+					<p:toolbar styleclass="mp_toolbar">
+						<f:facet name="left">
+							<p:commandButton disabled="#{empty crudBean.wr.matnrListId}" rendered="#{crudBean.mode != 'view'}"
+								type="push" value="#{msg['add']}" align="right"
+								actionListener="#{crudBean.loadMatnrListPart()}"
+								oncomplete="PF('PartListDialog').show();" id="addItemRowBtn"
+								update=":messages,itemsListTable, :PartListDlg">
+							</p:commandButton>
+
+						</f:facet>
+					</p:toolbar>
+					<p:dataTable id="itemsListTable"
+						value="#{crudBean.wr.writeoffRepairItems}" var="item"
+						emptyMessage="#{msg.no_records}"
+						rowClasses="employeeTableOddRow,employeeTableEvenRow">
+						<p:column>
+							<f:facet name="header">#{msg['logistics.material']}</f:facet>
+							<p:selectOneMenu value="#{item.matnr}"
+								disabled="true">
+								<f:selectItem itemLabel="Выберите зап. часть" itemValue="0"></f:selectItem>
+								<f:selectItems rendered="#{userinfo.u_language == 'ru'}" value="#{crudBean.partList}" var="p"
+									itemLabel="(#{p.code} )-#{p.text45}" itemValue="#{p.matnr}"></f:selectItems>
+								<f:selectItems rendered="#{userinfo.u_language == 'en'}" value="#{crudBean.partList}" var="p"
+									itemLabel="(#{p.code} )-#{p.name_en}" itemValue="#{p.matnr}"></f:selectItems>
+								<f:selectItems rendered="#{userinfo.u_language == 'tr'}" value="#{crudBean.partList}" var="p"
+									itemLabel="(#{p.code} )-#{p.name_tr}" itemValue="#{p.matnr}"></f:selectItems>
+							</p:selectOneMenu>
+						</p:column>
+
+						<p:column style="width:100px;text-align:center;">
+							<f:facet name="header">#{msg['logistics.quantity']}</f:facet>
+							<p:inputText value="#{item.quantity}" onfocus="this.select();"
+								maxlength="10" styleClass="input1"
+								rendered="#{crudBean.mode != 'view'}" style="width:90px;">
+							</p:inputText>
+							<h:outputText value="#{item.quantity}"
+								rendered="#{crudBean.mode == 'view'}">
+							</h:outputText>
+						</p:column>
+
+						<p:column style="width:210px;text-align:center;">
+							<f:facet name="header">#{msg['logistics.state']}</f:facet>
+							<p:selectOneMenu value="#{item.stateId}" style="width:200px;"
+								disabled="#{crudBean.mode == 'view'}">
+								<f:selectItem itemLabel="#{msg['select']}" itemValue="0"></f:selectItem>
+								<f:selectItem itemLabel="#{msg['logistics.state_1']}" itemValue="1"></f:selectItem>
+								<f:selectItem itemLabel="#{msg['logistics.state_2']}" itemValue="2"></f:selectItem>
+								<f:selectItem
+									itemLabel="#{msg['logistics.matnr_unusable']}"
+									itemValue="3"></f:selectItem>
+							</p:selectOneMenu>
+						</p:column>
+
+						<p:column style="width:60px;"
+							rendered="#{crudBean.mode != 'view'}">
+							<p:commandButton icon="ui-icon-close">
+								<p:ajax listener="#{crudBean.deleteItemsRow(item)}"
+									update="itemsListTable"></p:ajax>
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</fieldset>
+			</div>
+		</div>
+	</h:form>
+
+	<p:dialog id="MatnrListDlg" widgetVar="MatnrListDialog" modal="true"
+		resizable="false" appendTo="@(body)" header="#{msg['logistics.matnr_list']}"
+		width="600" height="500">
+		<h:form id="MatnrListDlgForm">
+			<p:dataTable id="matnrListDlgTable" var="item" rowKey="#{item.matnr_list_id}"
+				value="#{crudBean.mlListForRepair}" emptyMessage="#{msg.no_records}"
+				selectionMode="single">
+
+				<p:ajax event="rowDblselect" update=":form, :messages,:PartListDlgForm"
+					global="false" listener="#{crudBean.onSelectMl}" />
+
+				<p:column headerText="#{msg['logistics.matnr_name']}" sortBy="#{item.matnrObject.text45}"
+					filterBy="#{item.matnrObject.text45}" style="width:200px;">
+					<h:outputText value="#{item.matnrObject.text45}" />
+				</p:column>
+				<p:column headerText="#{msg['logistics.ser_num']}" filterBy="#{item.barcode}"
+					style="width:200px;">
+					<h:outputText value="#{item.barcode}" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</p:dialog>
+	
+	<p:dialog id="PartListDlg" widgetVar="PartListDialog" modal="true"
+		resizable="false" appendTo="@(body)" header="#{msg['logistics.parts_list']}"
+		width="600" height="500">
+		<h:form id="PartListDlgForm">
+			<p:dataTable id="partListDlgTable" var="p" rowKey="#{p.matnr}"
+				value="#{crudBean.partList}" emptyMessage="#{msg.no_records}"
+				selectionMode="single">
+
+				<p:ajax event="rowDblselect" update=":form:itemsListTable, :messages"
+					global="false" listener="#{crudBean.onSelectPart}" />
+					
+				<p:column headerText="#{msg['logistics.matnr_code']}" sortBy="#{p.code}"
+					filterBy="#{p.code}" style="width:200px;">
+					<h:outputText value="#{p.code}" />
+				</p:column>
+				
+				<p:column rendered="#{userinfo.u_language == 'ru'}" headerText="#{msg['logistics.matnr_name']}" sortBy="#{p.text45}"
+					filterBy="#{p.text45}">
+					<h:outputText value="#{p.text45}" />
+				</p:column>
+				
+				<p:column rendered="#{userinfo.u_language == 'en'}" headerText="#{msg['logistics.matnr_name']}" sortBy="#{p.name_en}"
+					filterBy="#{p.name_en}">
+					<h:outputText value="#{p.name_en}" />
+				</p:column>
+				
+				<p:column rendered="#{userinfo.u_language == 'tr'}" headerText="#{msg['logistics.matnr_name']}" sortBy="#{p.name_tr}"
+					filterBy="#{p.name_tr}">
+					<h:outputText value="#{p.name_tr}" />
+				</p:column>
+				
+			</p:dataTable>
+		</h:form>
+	</p:dialog>
+	
+</ui:composition>
+</html>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dataTable scrollable="true" scrollHeight="400"
+		emptyMessage="#{msg.no_records}" id="salaryList" var="salary"
+		rowKey="#{salary.salary_id}" value="#{salaryItems}" rendered="#{canView}">
+
+		<f:facet name="header" id="tableHeader">
+			<p:commandButton id="salaryCreateButton" icon="ui-icon-plus"
+				title="Create" actionListener="#{salaryBean.prepareCreate}"
+				update="#{parentElementId}:SalaryCreateForm"
+				oncomplete="PF('SalaryCreateDialog').show()"
+				style="float:right;margin-right:5px;" disabled="#{!canCreate}" />
+
+			<div style="clear: both;"></div>
+		</f:facet>
+		
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="SALARY ID" />
+			</f:facet>
+			<h:outputText style="color:green;" value="#{salary.salary_id}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="" />
+			</f:facet>
+			<h:outputText style="color:green;" value="ТЕКУЩИЙ"
+				rendered="#{salary.isCurrentSalary()}" />
+			<h:outputText style="color:red;" value="ПРЕДЫДУЩИЙ"
+				rendered="#{!salary.isCurrentSalary()}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg.company}" />
+			</f:facet>
+			<h:outputText value="#{bukrsF4Bean.getNameByBukrs(salary.bukrs)}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg.branch}" />
+			</f:facet>
+			<h:outputText value="#{branchF4Bean.getName(salary.branch_id)}" />
+		</p:column>
+		
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg.department}" />
+			</f:facet>
+			<h:outputText value="#{departmentF4Bean.getName(salary.department_id,'ru')}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.salary.beg_date']}" />
+			</f:facet>
+			<p:calendar value="#{salary.beg_date}" pattern="dd.MM.yyyy" disabled="true" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.salary.end_date']}" />
+			</f:facet>
+			<p:calendar value="#{salary.end_date}" pattern="dd.MM.yyyy" disabled="true" />
+		</p:column>
+
+		<p:column sortBy="#{salary.position_id}">
+			<f:facet name="header">
+				<h:outputText value="#{msg.position}" />
+			</f:facet>
+			<h:outputText value="#{positionF4Bean.getName(salary.position_id,userinfo.u_language)}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.staff.salary']}" />
+			</f:facet>
+			<h:outputText value="#{salary.amount}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg.currency}" />
+			</f:facet>
+			<h:outputText value="#{salary.waers}" />
+		</p:column>
+		
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.note']}" />
+			</f:facet>
+			<h:outputText value="#{salary.note}" />
+		</p:column>
+		
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.salary.date_of_issue']}" />
+			</f:facet>
+			<p:calendar value="#{salary.payroll_date}" pattern="dd.MM.yyyy" disabled="true" />
+		</p:column>
+
+		<p:column headerText="#{msg.actions}" rendered="#{canAll}">
+			<p:commandButton value="#{msg['hr.salary.dismiss']}"
+				actionListener="#{salaryBean.setSelectedForRemove(salary)}"
+				update="#{parentElementId}:SalaryRemoveDlg"
+				rendered="#{salary.isCurrentSalary()}"
+				oncomplete="PF('SalaryRemoveDialog').show()" />
+				
+			<p:commandButton value="#{msg['hr.salary.set_issue_date']}"
+				actionListener="#{salaryBean.setSelectedForChangePayrollDate(salary)}"
+				update="#{parentElementId}:SalaryPayrollDlg"
+				rendered="#{!salary.isCurrentSalary()}"
+				oncomplete="PF('SalaryPayrollDlg').show()" />
+		</p:column>
+
+	</p:dataTable>
+	
+	<p:panelGrid columns="1" rendered="#{!canView}">
+		<p:row>
+			<p:column>
+				<h3>Нет доступа</h3>
+			</p:column>
+		</p:row>
+	</p:panelGrid>
+
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+		<p:commandButton value="Yes" type="button"
+			styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		<p:commandButton value="No" type="button"
+			styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+	</p:confirmDialog>
+
+	<p:dialog id="SalaryRemoveDlg" widgetVar="SalaryRemoveDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="#{msg['hr.salary.dismiss']}">
+		<h:form>
+			<p:panelGrid columns="2">
+				<p:outputLabel value="#{msg['hr.date_of_dismiss']}" />
+				<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+					yearRange="2015:2100" value="#{salaryBean.removeDate}"
+					converterMessage="Wrong Date" navigator="true" />
+
+				<p:commandButton actionListener="#{hrSalaryBean.Remove()}"
+					value="#{msg.save}"
+					update="#{parentElementId}:salaryList,:messages" />
+				<p:commandButton
+					actionListener="#{salaryBean.setSelectedForRemove(null)}"
+					value="#{msg.cancel}" oncomplete="PF('SalaryRemoveDialog').hide()" />
+
+			</p:panelGrid>
+		</h:form>
+	</p:dialog>
+	
+	<p:dialog id="SalaryPayrollDlg" widgetVar="SalaryPayrollDlg"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Задание дату выдачи">
+		<h:form>
+			<p:panelGrid columns="2">
+				<p:outputLabel value="Дата выдачи" />
+				<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+					yearRange="2015:2100" value="#{salaryBean.payrollDate}"
+					converterMessage="Wrong Date" navigator="true" />
+
+				<p:commandButton actionListener="#{hrSalaryBean.ChangePayrollDate()}"
+					value="#{msg.save}"
+					update="#{parentElementId}:salaryList,:messages" />
+				<p:commandButton
+					actionListener="#{salaryBean.setSelectedForChangePayrollDate(null)}"
+					value="#{msg.cancel}" oncomplete="PF('SalaryPayrollDlg').hide()" />
+
+			</p:panelGrid>
+		</h:form>
+	</p:dialog>
+
+	<ui:include src="Create2.xhtml">
+		<ui:param name="salaryBean" value="#{salaryBean}"></ui:param>
+		<ui:param name="listTableId" value="#{parentElementId}:salaryList"></ui:param>
+	</ui:include>
+</ui:composition>
+</html>

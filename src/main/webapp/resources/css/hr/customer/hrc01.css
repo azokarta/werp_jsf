@@ -1,0 +1,29 @@
+body 
+{
+    background-color: #EBEBEB;
+    font-family: "Verdana,sans-serif" ;
+}
+#primaryInfo{
+	width:430px;
+	float:left;
+}
+#contactInfo{
+	width:500px;
+	float:left; 
+	margin-left:30px;
+}
+#passportInfo{  
+	width:430px;
+	
+	
+}
+
+.primaryInfoFieldSet{
+	width:400px;
+}
+.passportInfoFieldSet{
+	width:400px;
+}
+.contactInfoFieldSet{
+	width:450px;
+}

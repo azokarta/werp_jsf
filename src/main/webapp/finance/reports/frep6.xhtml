@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("form:sc_fiz_yur_input").value == 1) {
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+
+				document.getElementById("form:sc_name").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+			} else if (document.getElementById("form:sc_fiz_yur_input").value == 2) {
+				document.getElementById("form:sc_birthday_input").disabled = false;
+				document.getElementById("form:sc_passport_id").disabled = false;
+				document.getElementById("form:sc_firstname").disabled = false;
+				document.getElementById("form:sc_lastname").disabled = false;
+				document.getElementById("form:sc_middlename").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			} else {
+				document.getElementById("form:sc_iin_bin").value = null;
+				document.getElementById("form:sc_iin_bin").disabled = true;
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			}
+
+		}
+	</script>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<ui:include src="/template/sessionTimeOut.xhtml" />
+	<h:outputStylesheet library="css" name="reports/finance/kreditor/rfklist.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.frep6']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,frep6Bean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+							
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:tabView id = "tabView" cache="false" activeIndex="#{frep6Bean.tabindex}" >
+									<p:ajax event="tabChange"  update="bsegScrollPanel"/>
+							        <p:tab title="#{msg.search_options}">
+							        	<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" id="searchPanelGridId">
+							        		 <p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column colspan="3">
+							        		<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{frep6Bean.p_searchTable.bukrs}">
+							        			<p:ajax listener="#{frep6Bean.updateBranch}"/>
+							        			<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu>
+											</p:column>
+							        		</p:row>
+										    <p:row>
+        										<p:column><h:outputLabel value = "#{msg.branch}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectCheckboxMenu id="p_branch_id" value="#{frep6Bean.p_searchTable.selectedBranches}" label="#{msg.select}"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												            <f:selectItems value="#{frep6Bean.p_searchTable.l_branch}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+												        </p:selectCheckboxMenu>
+														
+														
+														
+												</p:column>
+											</p:row>
+											<p:row>
+        										<p:column><h:outputLabel value = "#{msg.cashbank}"/></p:column>
+												<p:column colspan="3">
+												<p:selectOneMenu value="#{frep6Bean.p_searchTable.hkontCashBank}">
+							        				<f:selectItem itemLabel="#{msg.all}" itemValue="0" />
+												    <f:selectItem itemLabel="#{msg.cash_office}" itemValue="1010" />
+												    <f:selectItem itemLabel="#{msg.bank_office}" itemValue="1030" />	
+												</p:selectOneMenu>
+											
+														
+														
+												</p:column>
+											</p:row>
+ 
+											<p:row>
+        										<p:column colspan="4" style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{frep6Bean.to_search}"/></p:column>
+        									</p:row>
+    									</p:panelGrid>
+							        
+							            
+							        </p:tab>
+							        <p:tab title="#{msg.result}" >
+							        
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel">
+										<p:toolbar styleclass="mp_toolbar">
+											<f:facet name="left">
+												<p:commandLink ajax="false" action="#{frep6Bean.downloadExcel()}">
+													<p:graphicImage name="xlsx_export_icon.png" library="img"
+														width="32" />
+												</p:commandLink>
+											</f:facet>
+										</p:toolbar>
+										
+										<p:dataTable value="#{frep6Bean.l_outputTable}" var="o" widgetVar="505"  id="l_outputTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											 
+											<p:columnGroup type="header">								
+										            <p:row>
+										                <p:column headerText="#{msg['dmsc.city']}" />
+										                <p:column headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column headerText="#{msg['bseg.hkont.long']}" />
+										                <p:column headerText="#{msg['name']}" />
+										                <p:column headerText="USD" />
+										                <p:column headerText="KZT" />
+										                <p:column headerText="UZS" />
+										                <p:column headerText="KGS" />
+										                <p:column headerText="AZN" />
+										                <p:column headerText="MYR" />
+										                <p:column headerText="#{msg['overallsum']} USD" />
+										            </p:row>
+										        </p:columnGroup>
+											
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.cityName}" style="#{o.hkontName==null ? 'font-weight:bold;color:#07E' : ''}"/>
+											</p:column>
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.waers}" style="#{o.hkontName==null ? 'font-weight:bold;color:#07E' : ''}"/>
+											</p:column>
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.hkont}" style="#{o.hkontName==null ? 'font-weight:bold;color:#07E' : ''}"/>
+											</p:column>
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.hkontName}" style="#{o.hkontName==null ? 'font-weight:bold;color:#07E' : ''}"/>
+											</p:column>
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.usd}" style="#{o.hkontName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD"  type="currency" /></h:outputText>
+											</p:column>
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.kzt}" style="#{o.hkontName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="KZT" type="currency"/></h:outputText>
+											</p:column>
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.uzs}" style="#{o.hkontName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="UZS" type="currency"/></h:outputText>
+											</p:column>
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.kgs}" style="#{o.hkontName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="KGS" type="currency"/></h:outputText>
+											</p:column>
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.azn}" style="#{o.hkontName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="AZN" type="currency"/></h:outputText>
+											</p:column>
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.myr}" style="#{o.hkontName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="MYR" type="currency"/></h:outputText>
+											</p:column>
+											<p:column style="#{o.hkontName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.total_usd}" style="#{o.hkontName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber currencyCode="USD" type="currency"/></h:outputText>
+											</p:column>
+											
+											
+											
+											
+											
+											
+											
+											
+											
+										</p:dataTable>
+										
+									</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							       
+							    </p:tabView>
+
+
+
+
+
+
+
+
+ 
+							
+
+
+
+								
+								
+							</h:form>
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

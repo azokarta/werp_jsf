@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh" content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml"/>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" /> 
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="finance/accounting/facur01.css" />
+	<h:outputScript library="js" name="money.js" />	
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b><h:outputLabel value="#{msg.menu}" /></b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.facur01']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,facur01Bean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+	
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<p:commandButton type="push" value="#{msg.save}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{facur01Bean.to_save}"  />
+										<p:commandButton type="push" value="Обновить F4"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{facur01Bean.updateF4}"  rendered="#{facur01Bean.userData.userid == 1}"/>
+										
+											
+									</f:facet>
+								</p:toolbar>
+								<div id="newExchangeRate">
+									<fieldset class="newExchangeRateFieldSet">
+										<legend>#{msg.new_ex_rate}</legend>
+										<table id="newExchangeRateTable">
+											<tr>
+												<td><h:outputLabel value="#{msg['bkpf.waers.long']}" /></td>
+												<td><h:outputLabel value="#{msg.USD_1}" /></td>
+											</tr>
+											<tr>
+												<td><p:selectOneMenu id="new_secondary_currency"
+														value="#{facur01Bean.p_er.secondary_currency}">
+														<f:selectItem itemLabel="#{msg.select_waers}" itemValue="0" />
+														<f:selectItems value="#{facur01Bean.l_cur}" var="wa_cur"
+															itemLabel="#{wa_cur.currency}"
+															itemValue="#{wa_cur.currency}" />
+													</p:selectOneMenu></td>
+												<td><h:inputText id="new_sc_value"
+														value="#{facur01Bean.p_er.sc_value}" size="12" onkeyup="formatMoney($(this))" onfocus="this.select();"
+														maxlength="12" styleClass="input1">
+														
+													<f:convertNumber pattern="#,###,##0.00" />
+												</h:inputText>
+														</td>
+												<td><p:selectOneMenu id="new_sc_type"
+														value="#{facur01Bean.p_er.type}">
+														<p:ajax update="new_sc_bukrs" />
+														<f:selectItem itemLabel="#{msg.ex_rate_nat}" itemValue="1" />
+														<f:selectItem itemLabel="#{msg.ex_rate_int}" itemValue="2" />
+													</p:selectOneMenu></td>
+												<td><p:selectOneMenu id="new_sc_bukrs"
+														value="#{facur01Bean.p_er.bukrs}" disabled="#{facur01Bean.p_er.type==1}">
+														<f:selectItem itemLabel="" itemValue="" />
+														<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="wa"
+															itemLabel="#{wa.name}"
+															itemValue="#{wa.bukrs}" />
+													</p:selectOneMenu></td>		
+											</tr>
+										</table>
+									</fieldset>
+								</div>
+								<div id="exchangeRateListDiv">
+									<fieldset class="exchangeRateListFieldSet">
+										<legend>#{msg.ex_rate_today}</legend>
+										<h:dataTable id="exchangeRateListTable"
+											value="#{facur01Bean.l_er}" var="er">
+											<h:column>
+												<f:facet name="header"><h:outputLabel value="#{msg['bkpf.waers.long']}" /></f:facet>    	 
+										         	#{er.secondary_currency}   
+										      	</h:column>
+											<h:column>
+												<f:facet name="header"><h:outputLabel value="#{msg.date_from}" /></f:facet>
+												<p:calendar id="exrate_date" styleClass="bldat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{er.exrate_date}" disabled="true">
+												</p:calendar>
+											</h:column>
+											<h:column>
+												<f:facet name="header"><h:outputLabel value="#{msg.USD_1}" /></f:facet>
+												<h:inputText id="sc_value" value="#{er.sc_value}" size="12"
+													maxlength="12" styleClass="input1" disabled="true">
+													<f:convertNumber pattern="#,###,##0.00" />
+												</h:inputText>
+											</h:column>
+											<h:column>
+												<f:facet name="header"><h:outputLabel value="#{msg.type}" /></f:facet>
+												<p:selectOneMenu value="#{er.type}" disabled = "true">
+														<f:selectItem itemLabel="#{msg.ex_rate_nat}" itemValue="1" />
+														<f:selectItem itemLabel="#{msg.ex_rate_int}" itemValue="2" />
+												</p:selectOneMenu>
+											</h:column>
+											<h:column>
+												<f:facet name="header"><h:outputLabel value="#{msg.company}" /></f:facet>
+												<p:selectOneMenu value="#{er.bukrs}" disabled = "true">
+														<f:selectItem itemLabel="" itemValue="" />
+														<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="wa"
+															itemLabel="#{wa.name}"
+															itemValue="#{wa.bukrs}" />
+												</p:selectOneMenu>
+											</h:column>
+										</h:dataTable>
+									</fieldset>
+								</div>
+								
+								<div id="searchER" style="width:800px;height:100%">
+									<fieldset >
+										<legend><h:outputLabel value="#{msg.archive}" /></legend>
+										<table id="searchParamTable">
+											<tr>
+												<td><h:outputLabel value="#{msg.date_from}" /></td>
+												<td><p:calendar id="s_date_from" styleClass="bldat"
+													pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+													value="#{facur01Bean.p_search.s_date_from}" >
+												</p:calendar></td>
+												<td> <h:outputLabel value="#{msg.to}" /> </td>
+												<td><p:calendar id="s_date_to" styleClass="bldat"
+													pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+													value="#{facur01Bean.p_search.s_date_to}" >
+												</p:calendar></td>
+												<td><p:selectOneMenu id="s_currency"
+														value="#{facur01Bean.p_search.currency}">
+														<f:selectItem itemLabel="#{msg.select_waers}" itemValue="0" />
+														<f:selectItems value="#{facur01Bean.l_cur}" var="wa_cur"
+															itemLabel="#{wa_cur.currency}"
+															itemValue="#{wa_cur.currency}" />
+													</p:selectOneMenu></td>
+												 <td><p:selectOneMenu id="s_type"
+														value="#{facur01Bean.p_search.type}">
+														<f:selectItem itemLabel="#{msg.all}" itemValue="0" />
+														<f:selectItem itemLabel="#{msg.ex_rate_nat}" itemValue="1" />
+														<f:selectItem itemLabel="#{msg.ex_rate_int}" itemValue="2" />
+													</p:selectOneMenu></td>
+												<td><p:commandButton type="push" value="#{msg.search}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{facur01Bean.to_search}"  /></td>		
+											</tr>
+										</table>
+										<p:dataTable id="erHistoryTable"
+											value="#{facur01Bean.l_er_history}" emptyMessage="#{msg.empty_rows}" var="er" rows="10" paginator="true">
+											<p:column>
+												<f:facet name="header"><h:outputLabel value="#{msg['bkpf.waers.long']}" /></f:facet>    	 
+										         	#{er.secondary_currency}   
+										    </p:column>
+											<p:column>
+												<f:facet name="header"><h:outputLabel value="#{msg.date_from}" /></f:facet>
+												<h:inputText value="#{er.exrate_date}" disabled = "true">
+									                <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+									            </h:inputText>
+											</p:column>
+											<p:column>
+												<f:facet name="header"><h:outputLabel value="#{msg.USD_1}" /></f:facet>
+												<h:inputText id="sc_value" value="#{er.sc_value}" size="12"
+													maxlength="12" styleClass="input1" disabled="true" >
+													<f:convertNumber pattern="#,###,##0.00" />
+												</h:inputText>
+											</p:column>
+											<p:column>
+												<f:facet name="header"><h:outputLabel value="#{msg.type}" /></f:facet>
+												<p:selectOneMenu value="#{er.type}" disabled = "true">
+														<f:selectItem itemLabel="#{msg.ex_rate_nat}" itemValue="1" />
+														<f:selectItem itemLabel="#{msg.ex_rate_int}" itemValue="2" />
+												</p:selectOneMenu>
+											</p:column>
+										</p:dataTable>
+									</fieldset>
+								</div>
+
+
+
+
+
+
+							</h:form>
+
+						</f:view>
+					</div> 
+
+		</div>
+	</div>
+
+</h:body>
+</html>

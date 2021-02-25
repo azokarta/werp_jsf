@@ -1,0 +1,64 @@
+.bukrs,  .waers
+{
+	width:40px;
+}
+
+.blart, .monat
+{
+	width:23px;
+}
+
+.searchPanelGrid.ui-panelgrid>*>tr,
+.searchPanelGrid.ui-panelgrid .ui-panelgrid-cell {
+    border: none;
+}
+
+.headerPanelGrid1.ui-panelgrid>*>tr,
+.headerPanelGrid1.ui-panelgrid .ui-panelgrid-cell {
+    border: none;
+}
+
+.headerPanelGrid2.ui-panelgrid>*>tr,
+.headerPanelGrid2.ui-panelgrid .ui-panelgrid-cell {
+    border: none;
+}
+
+.budat .ui-inputfield, .bldat .ui-inputfield{
+	font-size:12px;
+	width:75px;
+}
+.outputTable{   
+	border-collapse:collapse;
+	 
+}
+ 
+.outputTableHeader{
+	text-align:center;
+	background:none repeat scroll 0 0 #E5E5E5;
+	border-bottom:1px solid #BBBBBB;
+	padding:16px;
+}
+ 
+.outputTableOddRow{
+	text-align:center;
+	background:none repeat scroll 0 0 #FFFFFFF;
+	border-top:1px solid #BBBBBB;
+}
+ 
+.outputTableEvenRow{
+	text-align:center;
+	background:none repeat scroll 0 0 #F9F9F9;
+	border-top:1px solid #BBBBBB;
+}
+
+.wrapRTClass .ui-datatable table{
+	width: auto;
+}
+
+.wrapRTClass2 .ui-datatable table{
+	width: auto;
+}
+
+.searchPanelGrid .ui-datatable table{
+	width: auto;
+}

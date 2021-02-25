@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['logistics.matnr_list']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.matnrlist']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div class="ui-grid-row">
+				<div style="width: 95%; margin: auto;">
+					<h2>#{msg['logistics.rep.whouse_mat_status']}</h2>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-3">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel header="#{msg.advanced_search}">
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="#{mg['company']}"></p:outputLabel>
+								<p:selectOneMenu value="#{matnrListBean.searchModel.bukrs}"
+									rendered="#{userinfo.sys_admin or userinfo.main}">
+									<p:ajax update="searchForm:werks"></p:ajax>
+									<f:selectItem itemLabel="#{msg['select']}" itemValue=""></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+								<p:outputLabel
+									value="#{bukrsF4Bean.getNameByBukrs(matnrListBean.searchModel.bukrs)}"
+									rendered="#{!userinfo.sys_admin and !userinfo.main}"></p:outputLabel>
+
+								<p:outputLabel value="#{msg['logistics.storage']}"></p:outputLabel>
+								<p:selectManyMenu id="werks"
+									value="#{matnrListBean.searchModel.selectedWerksIds}"
+									rendered="#{userinfo.sys_admin or userinfo.main}">
+									<f:selectItems
+										value="#{werksF4Bean.getByBukrs(matnrListBean.searchModel.bukrs)}"
+										var="w" itemLabel="#{w.text45}" itemValue="#{w.werks}" />
+								</p:selectManyMenu>
+								<p:selectOneMenu value="#{matnrListBean.searchModel.werks}"
+									rendered="#{!userinfo.sys_admin and !userinfo.main}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems value="#{matnrListBean.userWerks}" var="w"
+										itemLabel="#{w.text45}" itemValue="#{w.werks}" />
+								</p:selectOneMenu>
+
+
+								<p:outputLabel rendered="false" value="#{msg['status']}"></p:outputLabel>
+								<p:selectOneMenu rendered="false"
+									value="#{matnrListBean.searchModel.status}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+									<f:selectItems
+										value="#{matnrListBean.searchModel.getStatuses().entrySet()}"
+										var="e" itemLabel="#{e.value}" itemValue="#{e.key}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel rendered="false" value="Matnr"></p:outputLabel>
+								<p:panelGrid rendered="false">
+									<p:outputLabel
+										value="#{matnrF4Bean.getName(matnrListBean.searchModel.matnr)}"></p:outputLabel>
+									<p:commandButton icon="ui-icon-newwin" type="push"
+										oncomplete="PF('MatnrListDialog').show();"
+										styleClass="f4button" />
+								</p:panelGrid>
+
+								<p:outputLabel>#{msg['logistics.matnr_name']}</p:outputLabel>
+								<p:inputText value="#{matnrListBean.matnrName}"></p:inputText>
+
+								<p:outputLabel>#{msg['logistics.matnr_code']}</p:outputLabel>
+								<p:inputText value="#{matnrListBean.matnrCode}"></p:inputText>
+
+								<p:outputLabel>#{msg['logistics.serial_number']}</p:outputLabel>
+								<p:inputText value="#{matnrListBean.barcode}"></p:inputText>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" update=":MatnrListForm:datalist"
+									actionListener="#{matnrListBean.Search}"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+
+
+				<div class="ui-grid-col-9">
+					<h:form id="MatnrListForm">
+						<p:panel header="#{msg['logistics.matnr_list']}">
+							<p:dataTable id="datalist" value="#{matnrListBean.outputTable}"
+								var="item" selectionMode="single"
+								selection="#{matnrListBean.selectedRow}" paginator="true"
+								paginatorPosition="bottom" rowKey="#{item.matnr}" rows="300">
+
+								<p:ajax event="rowSelect" update="viewButton" />
+								<p:ajax event="rowUnselect" update="viewButton" />
+
+								<f:facet name="header" id="tableHeader">
+									<h:commandLink id="xlsxExport"
+										style="float:right;margin-right:5px;">
+										<p:graphicImage name="xlsx_export_icon.png" library="img"
+											width="32" />
+										<p:dataExporter type="xls" target="datalist"
+											fileName="matnrList"
+											postProcessor="#{matnrListBean.exportXLS}" />
+									</h:commandLink>
+
+									<span class="ui-separator" style="float: right;"> <span
+										style="float: right;"
+										class="ui-icon ui-icon-grip-dotted-vertical" />
+									</span>
+									<p:commandButton icon="ui-icon-zoomin"
+										actionListener="#{matnrListBean.setMatnrListDetail()}"
+										update=":MatnrListInWerksDlg"
+										disabled="#{empty matnrListBean.selectedRow}" title="View"
+										id="viewButton" style="float:right;margin-right:5px;"
+										oncomplete="PF('MatnrListInWerksDialog').show();">
+									</p:commandButton>
+
+
+									<div style="clear: both;"></div>
+								</f:facet>
+
+								<p:column sortBy="#{item.matnrObject.code}">
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.matnr_code']}" />
+									</f:facet>
+									<h:outputText value="#{item.matnrObject.code}" />
+								</p:column>
+
+								<p:column rendered="#{userinfo.u_language == 'ru'}" sortBy="#{item.matnrObject.text45}">
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.matnr']}" />
+									</f:facet>
+									<h:outputText value="#{item.matnrObject.text45}" />
+								</p:column>
+								
+								<p:column rendered="#{userinfo.u_language == 'en'}" sortBy="#{item.matnrObject.name_en}">
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.matnr']}" />
+									</f:facet>
+									<h:outputText value="#{item.matnrObject.name_en}" />
+								</p:column>
+								
+								<p:column rendered="#{userinfo.u_language == 'tr'}" sortBy="#{item.matnrObject.name_tr}">
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.matnr']}" />
+									</f:facet>
+									<h:outputText value="#{item.matnrObject.name_tr}" />
+								</p:column>
+
+								<p:column style="" sortBy="#{item.inWerksMenge}">
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.in_whouse']}" />
+									</f:facet>
+									<h:outputText value="#{item.inWerksMenge}">
+										<f:convertNumber pattern="#0" />
+									</h:outputText>
+								</p:column>
+
+								<p:column style="" sortBy="#{item.reservedMenge}">
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.reserved_in_contract']}" />
+									</f:facet>
+									<h:outputText value="#{item.reservedMenge}">
+										<f:convertNumber pattern="#0" />
+									</h:outputText>
+								</p:column>
+								
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.reserved_in_min_con']}" />
+									</f:facet>
+									<h:outputText value="#{item.miniContractMenge}">
+										<f:convertNumber pattern="#0" />
+									</h:outputText>
+								</p:column>
+
+								<p:column style="" sortBy="#{item.inAccountMenge}">
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.on_hands']}" />
+									</f:facet>
+									<h:outputText value="#{item.inAccountMenge}">
+										<f:convertNumber pattern="#0" />
+									</h:outputText>
+								</p:column>
+
+								<p:column style="">
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.total']}" />
+									</f:facet>
+									<h:outputText value="#{item.totalMenge}">
+										<f:convertNumber pattern="#0" />
+									</h:outputText>
+								</p:column>
+
+								<p:column style="">
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.min_amount']}" />
+									</f:facet>
+									<h:outputText value="#{item.matnrObject.min_stock}">
+										<f:convertNumber pattern="#0" />
+									</h:outputText>
+								</p:column>
+								
+								<p:column rendered="#{!empty matnrListBean.barcode}">
+									<f:facet name="header">
+										<h:outputText value="#{msg['logistics.serial_number']}" />
+									</f:facet>
+									<h:outputText value="#{matnrListBean.barcode}">
+									</h:outputText>
+								</p:column>
+
+
+							</p:dataTable>
+						</p:panel>
+					</h:form>
+
+					<p:dialog id="MatnrListInWerksDlg"
+						widgetVar="MatnrListInWerksDialog" modal="true" resizable="false"
+						appendTo="@(body)" header="#{matnrListBean.mlDialogTitle}"
+						width="800" height="500">
+
+						<h:form id="MatnrListInWerksDlgForm">
+							<h:panelGroup>
+								<p:dataTable id="matnrListInWerksDlgTable" var="item"
+									rowKey="#{item.matnr_list_id}"
+									value="#{matnrListBean.matnrListDetail}"
+									emptyMessage="#{msg.no_records}" paginator="true" rows="30">
+									<f:facet name="header">
+										<span
+											style="display: block; float: left; color: blue; font-weight: bold;">
+											#{msg['total']}:#{fn:length(matnrListBean.matnrListDetail)} </span>
+										<h:commandLink id="xlsxExportDlg"
+											style="float:right;margin-right:5px;">
+											<p:graphicImage name="xlsx_export_icon.png" library="img"
+												width="32" />
+											<p:dataExporter type="xls" target="matnrListInWerksDlgTable"
+												fileName="matnrItems"
+												postProcessor="#{matnrListBean.exportMatnrItems}" />
+										</h:commandLink>
+									</f:facet>
+									<p:column headerText="#{msg['logistics.matnr_name']}">
+										<h:outputText value="#{item.matnrObject.text45}" />
+									</p:column>
+									<p:column headerText="#{msg['logistics.serial_number']}">
+										<h:outputText value="#{item.barcode}" />
+									</p:column>
+
+									<p:column headerText="#{msg['status']}" filterBy="#{item.status}">
+										<h:outputText value="#{item.status}" />
+									</p:column>
+
+									<p:column headerText="#{msg['logistics.responsible']}">
+										<h:outputText value="#{item.staff.getLF()}" />
+									</p:column>
+									<p:column exportable="false" headerText="#{msg['logistics.history']}"
+										style="width:100px;">
+										<p:button target="_blank" value="#{msg['view']}"
+											outcome="/logistics/werks/matnrHistory.xhtml">
+											<f:param name="matnrListId" value="#{item.matnr_list_id}"></f:param>
+										</p:button>
+									</p:column>
+
+								</p:dataTable>
+							</h:panelGroup>
+						</h:form>
+					</p:dialog>
+				</div>
+			</div>
+			<ui:include src="/reference/matnr/ListDialog.xhtml">
+				<ui:param name="formId" value=":MatnrListForm, :searchForm" />
+				<ui:param name="mainFormBean" value="#{matnrListBean}" />
+			</ui:include>
+		</div>
+	</div>
+</h:body>
+
+</html>

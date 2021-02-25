@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:comp="http://java.sun.com/jsf/composite">
+
+<comp:interface>
+	<comp:attribute name="value" required="true"></comp:attribute>
+	<comp:attribute name="companyValue" type="java.lang.String" required="true"></comp:attribute>
+	<comp:attribute name="elementId" required="true"></comp:attribute>
+	<comp:attribute name="onChangeUpdate"></comp:attribute>
+	<comp:attribute name="mode"></comp:attribute>
+</comp:interface>
+
+<comp:implementation>
+
+	<p:outputLabel rendered="#{cc.attrs.mode == 'view'}" value="#{branchF4Bean.getBranchNameByID(cc.attrs.value)}"></p:outputLabel>
+	
+	<p:selectOneMenu rendered="#{cc.attrs.mode == 'update'}"
+		value="#{cc.attrs.value}" id="#{cc.attrs.elementId}">
+		<p:ajax update="#{cc.attrs.onChangeUpdate}"></p:ajax>
+		<f:selectItem itemValue="0" itemLabel="#{msg.select}"></f:selectItem>
+		<f:selectItems value="#{branchBean.getUserBranches(cc.attrs.companyValue)}" var="br"
+			itemLabel="#{br.text45}" itemValue="#{br.branch_id}"></f:selectItems>
+	</p:selectOneMenu>
+	
+</comp:implementation>
+</html>

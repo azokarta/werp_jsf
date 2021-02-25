@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="MatnrCreateDlg" widgetVar="MatnrCreateDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Create Matnr">
+		<h:form id="MatnrCreateForm" rendered="#{!empty refMatnr.selected}">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2" styleClass="ppGrid">
+					<p:outputLabel rendered="false" value="#{msg.company}"></p:outputLabel>
+					<p:selectOneMenu rendered="false" id="bukrs" value="#{refMatnr.selected.bukrs}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+						<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="wa_bukrs"
+							itemLabel="#{wa_bukrs.name}" itemValue="#{wa_bukrs.bukrs}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['dmsc.yurname']}" />
+					<p:inputText value="#{refMatnr.selected.text45}"
+						title="Наименование" />
+
+					<p:outputLabel value="Тип товара" />
+					<p:selectOneMenu value="#{refMatnr.selected.type}">
+						<p:ajax update="matnr-fno, matnr-fno-lab"></p:ajax>
+						<f:selectItem itemLabel="#{msg.select}" itemValue="0"></f:selectItem>
+						<f:selectItems value="#{matnrTypeBean.items}" var="item"
+							itemLabel="#{item.name_long}" itemValue="#{item.id}"></f:selectItems>
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Категория "/>
+					<p:selectOneMenu id="cat" value="#{refMatnr.selected.category}">
+								<f:selectItem itemLabel="" itemValue="0" />
+								<f:selectItem itemLabel="Аксессуар" itemValue="3" />
+								<f:selectItem itemLabel="Очистительная система" itemValue="1" />
+								<f:selectItem itemLabel="Система очистки воды" itemValue="2" />																
+							</p:selectOneMenu> 
+					
+					
+					<p:outputLabel id="matnr-fno-lab" value="Порядковый № фильтра"
+						disabled="#{refMatnr.checkMatnrType(refMatnr.selected.type)}" />
+					<p:row>
+						<p:column>
+							<p:selectOneMenu id="fno" value="#{refMatnr.selected.fno}"
+								disabled="#{refMatnr.checkMatnrType(refMatnr.selected.type)}">
+								<f:selectItem itemLabel="0" itemValue="0" />
+								<f:selectItem itemLabel="1" itemValue="1" />
+								<f:selectItem itemLabel="2" itemValue="2" />
+								<f:selectItem itemLabel="3" itemValue="3" />
+								<f:selectItem itemLabel="4" itemValue="4" />
+								<f:selectItem itemLabel="5" itemValue="5" />
+							</p:selectOneMenu> 
+							<p:selectManyCheckbox id="matnr-fno" style="float: right;" 
+								value="#{refMatnr.selectedFno}"
+								disabled="#{refMatnr.checkMatnrType(refMatnr.selected.type)}">
+								<f:selectItems value="#{refMatnr.fnoItems}" var="fno"
+									itemLabel="#{fno.val}" itemValue="#{fno.key}" />
+							</p:selectManyCheckbox>
+										
+						</p:column>			
+					</p:row>
+
+					<p:outputLabel value="Код" />
+					<p:inputText value="#{refMatnr.selected.code}" title="Код" />
+
+					<p:outputLabel value="Примечание" />
+					<p:inputText value="#{refMatnr.selected.comment}"
+						title="Примечание" />
+
+					<p:outputLabel rendered="#{!empty refMatnr.oldMatnrWar}"
+						value="Дата гарант.(Текущий)"></p:outputLabel>
+					<p:calendar disabled="#{!refMatnr.oldMatnrEdit}"
+						rendered="#{!empty refMatnr.oldMatnrWar}" styleClass="bldat"
+						yearRange="2016:2025" pattern="dd.MM.yyyy" autocomplete="off"
+						navigator="true"
+						locale="#{systemLocale.currentLocale.getLanguage()}"
+						value="#{refMatnr.oldMatnrWar.from_date}"
+						converterMessage="Date is invalid." />
+
+					<p:outputLabel rendered="#{!empty refMatnr.oldMatnrWar}"
+						value="Месяц гарантии (Текущий)"></p:outputLabel>
+					<p:inputText disabled="#{!refMatnr.oldMatnrEdit}"
+						rendered="#{!empty refMatnr.oldMatnrWar}"
+						value="#{refMatnr.oldMatnrWar.war_months}"></p:inputText>
+
+					<p:outputLabel value="Дата (для гарант.)"></p:outputLabel>
+					<p:calendar styleClass="bldat" yearRange="2016:2025"
+						pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+						locale="#{systemLocale.currentLocale.getLanguage()}"
+						value="#{refMatnr.matnrWar.from_date}"
+						converterMessage="Date is invalid." />
+
+					<p:outputLabel value="Месяц гарантии"></p:outputLabel>
+					<p:inputText value="#{refMatnr.matnrWar.war_months}"></p:inputText>
+
+					<p:outputLabel>Применение </p:outputLabel>
+					<p:panel style="overflow-y:scroll;max-height:400px;">
+					<p:selectManyCheckbox
+						value="#{refMatnr.selectedCatIds}" layout="grid" columns="1">
+						<f:selectItems value="#{refMatnr.catItems}" var="cat"
+							itemLabel="#{cat.text45}" itemValue="#{cat.matnr}" />
+					</p:selectManyCheckbox>
+					</p:panel>
+					
+					<p:outputLabel value="Ограничение (количество)" />
+					<p:inputText value="#{refMatnr.selected.account_limit}"
+						title="Ограничение" />
+
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{refMatnr.Save}" value="Save"
+					update=":MatnrListForm:datalist,:messages" />
+				<p:commandButton actionListener="#{refMatnr.Reset}" value="Cancel"
+					onclick="PF('MatnrCreateDialog').hide()"
+					update="display,:MatnrListForm" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

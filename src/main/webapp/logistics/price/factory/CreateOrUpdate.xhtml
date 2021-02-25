@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<p:dialog id="MatnrPriceCreateDlg" widgetVar="MatnrPriceCreateDialog"
+		modal="true" appendTo="@(body)" header="Заводская Цена">
+
+		<h:form id="MatnrPriceCreateForm">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2" rendered="#{lpfListBean.selected != null}">
+
+					<p:outputLabel value="#{msg.company}" />
+					<p:selectOneMenu value="#{lpfListBean.selected.bukrs}"
+						disabled="#{!empty lpfListBean.selected.mp_id}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+						<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+							itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg.customer}"></p:outputLabel>
+					<p:selectOneMenu value="#{lpfListBean.selected.customer_id}"
+						disabled="#{!empty lpfListBean.selected.mp_id}">
+						<f:selectItems value="#{customerBean.yurItems}" var="item"
+							itemLabel="#{item.name}" itemValue="#{item.id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg.country}"></p:outputLabel>
+					<p:selectOneMenu value="#{lpfListBean.selected.country_id}"
+						disabled="#{!empty lpfListBean.selected.mp_id}">
+						<f:selectItem itemLabel="#{msg['hr.customer.select']}"
+							itemValue="0" />
+						<f:selectItems value="#{countryF4Bean.country_list}"
+							var="wa_country" itemLabel="#{wa_country.country}"
+							itemValue="#{wa_country.country_id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Материал"></p:outputLabel>
+
+					<p:column>
+						<h:inputText id="b_matnr"
+							rendered="#{!empty lpfListBean.selectedMatnr}"
+							value="#{lpfListBean.selectedMatnr.text45}" size="45"
+							maxlength="45" styleClass="input1" disabled="true" />
+						<p:commandButton icon="ui-icon-newwin" type="push"
+							rendered="#{empty lpfListBean.selected.mp_id}"
+							oncomplete="PF('MatnrListDialog').show();" styleClass="f4button">
+						</p:commandButton>
+					</p:column>
+
+					<p:outputLabel value="#{msg.currency}"></p:outputLabel>
+					<p:selectOneMenu value="#{lpfListBean.selected.waers}"
+						disabled="#{!empty lpfListBean.selected.mp_id}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+						<f:selectItems value="#{currencyF4Bean.currency_list}" var="c"
+							itemLabel="#{c.text20}" itemValue="#{c.currency}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Цена"></p:outputLabel>
+					<p:inputText value="#{lpfListBean.selected.price}"></p:inputText>
+
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{lpfListBean.Save}"
+					value="Сохранить" update=":PriceListForm:datalist,:messages">
+				</p:commandButton>
+				<p:commandButton actionListener="#{lpfListBean.Reset}"
+					value="Cancel" oncomplete="PF('MatnrPriceCreateDialog').hide()"
+					update=":PriceListForm" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+	<ui:include src="/reference/matnr/ListDialog.xhtml">
+		<ui:param name="formId" value=":MatnrPriceCreateForm" />
+		<ui:param name="mainFormBean" value="#{lpfListBean}" />
+	</ui:include>
+</ui:composition>
+</html>

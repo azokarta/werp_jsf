@@ -1,0 +1,142 @@
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(http://themes.googleusercontent.com/static/fonts/lato/v7/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff) format('woff');
+}
+
+body 
+{
+    background-color: #EBEBEB;
+    font-family: "Lato" ;
+}
+
+.bukrs{
+	font-size:14px;
+
+}
+.budat .ui-inputfield, .bldat .ui-inputfield{
+	font-size:14px;
+	width:75px;
+}
+.ui-datepicker{
+	width:250px;
+}
+.bukrs, .blart, .monat, .waers{
+	width:35px;
+}
+.kursf{
+	width:50px;
+}
+.xblnr, .bktxt, .bvorg{
+	width:200px;
+}
+.blart_button, .bschl_button, .hkont_button, .lifnr_button, .kunnr_button, .matnr_button, .werks_button, .meins_button, .waers_button, .bukrs_button{
+	width:29px;
+	height:29px;
+	vertical-align: bottom;
+	float: right;
+	display:inline-block;
+}
+
+.input {
+	display:inline-block;
+	float: left;
+	width: 30px;
+	text-align: center;
+}
+
+.input1 {
+	display:inline-block;
+	float: left;
+	width: 110px;
+	text-align: center;
+}
+
+.input3 {
+	display:inline-block;
+	float: left;
+	width: 40px;
+	text-align: center;
+}
+
+.input45 {
+	display:inline-block;
+	float: left;
+	width: 465px;
+	text-align: center;
+}
+
+.input18 {
+	display:inline-block;
+	float: left;
+	width: 195px;
+	text-align: center;
+}
+
+.input50 {
+	display:inline-block;
+	float: left;
+	width: 515px;
+	text-align: center;
+}
+
+thead {
+	font-family: "Lato";
+	font-size: 15px;
+}
+
+ 
+input, span {
+    height: 25px;
+    width: 275px;
+    border: solid 1px #E5E5E5;
+    outline: 0;
+    background: #FFFFFF url('bg_form.png') left top repeat-x;
+    background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
+    background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+    box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+}
+
+input:focus {
+    border-color: #C9C9C9;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.15) 0 0 8px;
+}   
+
+.add_button{
+	height: 25px;
+	width: 80px;
+	font-size: 12px;
+	text-align: left;
+}
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled{
+	opacity:.70 !important;
+}
+
+
+#primaryInfo{
+	width:430px;
+	float:left;
+}
+#contactInfo{
+	width:500px;
+	float:left; 
+	margin-left:30px;
+}
+#passportInfo{  
+	width:430px;
+	
+	
+}
+
+.primaryInfoFieldSet{
+	width:400px;
+}
+.passportInfoFieldSet{
+	width:400px;
+}
+.contactInfoFieldSet{
+	width:450px;
+}

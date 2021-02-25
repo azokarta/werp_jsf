@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+	<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+	<p:dialog id="PromotionDlg" widgetVar="PromotionDlg" modal="true"
+		resizable="false" appendTo="@(body)" header="#{msg['dmsc.promo_camp']}">
+
+		<h:form id="PromotionListForm">
+
+			<p:dataTable id="datalist" value="#{sourceList}"
+				var="item" selectionMode="#{selectMode}"
+				selection="#{selectedTarget}" paginator="true"
+				rowKey="#{item.promo.id}" rows="10"
+				rowsPerPageTemplate="10,20,30,40,50" resizableColumns="true"
+				liveResize="true">
+
+				<p:ajax event="rowSelect" update="selectPromoButton" />
+				<p:ajax event="rowUnselect"
+					update="selectPromoButton" />
+
+				<f:facet name="header">
+					<p:outputPanel>
+						<p:commandButton id="selectPromoButton" icon="ui-icon-plus"
+							value="Select" update=":form:promoName" 
+							rendered="#{renderSelectButton}"
+							actionListener="#{dmsc01Bean.assignSelectedPromos}"/>
+						<p:commandButton id="toggler" type="button" value="#{msg['dmsc.columns']}"
+							style="float:right" icon="ui-icon-calculator" />
+						<p:columnToggler datasource="datalist" trigger="toggler" />
+					</p:outputPanel>
+				</f:facet>
+				
+				<p:column width="10">
+					<f:facet name="header">
+						<h:outputText value="#" />
+					</f:facet>
+					<h:outputText value="#{item.index}" />
+				</p:column>
+				<p:column width="150">
+					<f:facet name="header">
+						<h:outputText value="#{msg['dmsc.scope']}" />
+					</f:facet>
+					<p:selectOneMenu id="pm_scope" value="#{item.promo.pm_scope}"
+						disabled="true">
+						<f:selectItem itemLabel="#{msg['dmsc.scopeINT']}" itemValue="INT" />
+						<f:selectItem itemLabel="#{msg['dmsc.scopeREG']}" itemValue="REG" />
+						<f:selectItem itemLabel="#{msg['dmsc.scopeGEN']}" itemValue="GEN" />
+						<f:selectItem itemLabel="#{msg['dmsc.scopeCOM']}" itemValue="COM" />
+					</p:selectOneMenu>
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="#{msg['dmsc.hint_title']}" />
+					</f:facet>
+					<h:outputText value="#{item.promo.name}" />
+				</p:column>
+				<p:column rendered="#{renderStart}">
+					<f:facet name="header">
+						<h:outputText value="#{msg['dmsc.hint_start']}" />
+					</f:facet>
+					<h:outputText value="#{item.promo.date_start}">
+						<f:convertDateTime pattern="dd.MM.yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column rendered="#{renderEnd}">
+					<f:facet name="header">
+						<h:outputText value="#{msg['dmsc.hint_end']}" />
+					</f:facet>
+					<h:outputText value="#{item.promo.date_end}">
+						<f:convertDateTime pattern="dd.MM.yyyy" />
+					</h:outputText>
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="#{msg['dmsc.type']}" />
+					</f:facet>
+					<p:selectOneMenu id="pm_type" value="#{item.promo.pm_type}"
+						disabled="true">
+						<f:selectItem itemLabel="#{msg['dmsc.ptGift']}" itemValue="1" />
+						<f:selectItem itemLabel="#{msg['dmsc.ptDiscount']}" itemValue="2" />
+						<f:selectItem itemLabel="#{msg['dmsc.ptBonus']}" itemValue="3" />
+					</p:selectOneMenu>
+				</p:column>
+				<p:column width="200">
+					<f:facet name="header">
+						<h:outputText value="#{msg['dmsc.matnr']}" />
+					</f:facet>
+					<h:outputText value="#{item.matnr.text45}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="#{msg['dmsc.ptDiscount']}" />
+					</f:facet>
+					<h:outputText value="#{item.promo.discount}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="#{msg['dmsc.ptBonus']}" />
+					</f:facet>
+					<h:outputText value="#{item.promo.bonus}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="#{msg['dmsc.hint_fromDealer']}" />
+					</f:facet>
+					<h:outputText value="#{item.promo.from_dealer}" />
+					<h:outputText value="#{item.promo.fd_currency}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="#{msg['dmsc.info']}" />
+					</f:facet>
+					<h:outputText value="#{item.promo.info}" />
+				</p:column>
+				
+			</p:dataTable>
+			<p:outputLabel styleClass="notetext" style="font-size:0.8em">#{msg['dmsc.hint_select']}</p:outputLabel>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

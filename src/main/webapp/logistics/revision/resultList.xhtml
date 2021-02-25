@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<p:dataTable var="result"
+		value="#{logRevCrudBean.getCurrentResultList()}">
+		<f:facet name="header">
+            Текущий результат
+        </f:facet>
+        
+        <p:columnGroup type="header">
+            <p:row>
+                <p:column headerText="Код" />
+                <p:column headerText="Материал" />
+                <p:column headerText="Кол. в базе" />
+                <p:column headerText="Факт. кол" />
+                <p:column headerText="Излишка" />
+                <p:column headerText="Недостача" />
+                <p:column headerText="Недостача (сумма)" />
+            </p:row>
+        </p:columnGroup>
+
+		<p:subTable var="item" value="#{result.value}">
+			<f:facet name="header">
+				<h:outputText value="#{result.key.title}" />
+			</f:facet>
+			<p:column>
+				<h:outputText value="#{item.matnrObject.code}" />
+			</p:column>
+			<p:column>
+				<h:outputText value="#{item.matnrObject.text45}" />
+			</p:column>
+			<p:column>
+				<h:outputText value="#{item.dbQuantity}" />
+			</p:column>
+			<p:column>
+				<h:outputText value="#{item.factQuantity}" />
+			</p:column>
+			<p:column>
+				<h:outputText value="#{item.overQuantity}" />
+			</p:column>
+
+			<p:column>
+				<h:outputText value="#{item.deficitQuantity}" />
+			</p:column>
+
+			<p:column>
+				<h:outputText value="#{item.deficitAmount}">
+					<f:convertNumber currencySymbol="" type="currency"></f:convertNumber>
+				</h:outputText>
+				<h:outputText value=" #{logRevCrudBean.revision.currency}"></h:outputText>
+			</p:column>
+
+			<p:columnGroup type="footer" rendered="false">
+				<p:row>
+					<p:column footerText="Totals: " style="text-align:right" />
+					<p:column footerText="0" />
+					<p:column footerText="0" />
+				</p:row>
+			</p:columnGroup>
+		</p:subTable>
+	</p:dataTable>
+</ui:composition>
+</html>

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['logistics.purchase_order']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<style>
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+</style>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.log']} > #{msg['logistics.purchase_order']}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{msg['logistics.purchase_order']}" />
+			</ui:include>
+
+			<div class="ui-grid-row" style="margin-top: 10px;">
+				<div class="ui-grid-col-3">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel header="#{msg.advanced_search}">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="#{msg['country']}"></p:outputLabel>
+								<p:selectOneMenu
+									value="#{logOrderListBean.searchModel.country_id}">
+									<f:selectItem itemLabel="#{msg['country']}" itemValue="0"></f:selectItem>
+									<f:selectItems value="#{countryF4Bean.country_list}"
+										itemLabel="#{c.country}" itemValue="#{c.country_id}" var="c"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg['logistics.receiver']}"></p:outputLabel>
+								<p:selectOneMenu value="#{logOrderListBean.searchModel.bukrs}">
+									<f:selectItem itemLabel="#{msg['company']}" itemValue=""></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" var="b"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg['logistics.provider']}"></p:outputLabel>
+								<p:panel>
+									<h:outputText id="customer_id"
+									value="#{logOrderListBean.searchModel.customer.name}"></h:outputText>
+									<p:commandButton
+										icon="ui-icon-newwin" type="push"
+										oncomplete="PF('CustomerListDialog').show();"
+										styleClass="f4button" />
+									<p:commandButton
+										icon="ui-icon-close" type="push"
+										actionListener="#{logOrderListBean.removeCustomer()}"
+										update="customer_id" styleClass="f4button" />
+								</p:panel>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" actionListener="#{logOrderListBean.loadOList()}"
+									update=":ListForm:datalist,:messages"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+
+
+				<div class="ui-grid-col-9">
+					<h:form id="ListForm">
+						<p:dataTable id="datalist" value="#{logOrderListBean.oList}"
+							var="item" rowKey="#{item.id}" rows="200"
+							tableStyleClass="logItemsTable">
+
+							<f:facet name="header">
+								<p:button title="Create" outcome="/logistics/order/Create.xhtml"
+									value="#{msg['add']}" style="float:right;margin-right:5px;" />
+								<div style="clear: both;"></div>
+							</f:facet>
+							<p:column style="width:25px;" sortBy="#{item.id}">
+								<f:facet name="header">
+									<h:outputText value="№" />
+								</f:facet>
+								<h:outputText value="#{item.id}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.provider']}" />
+								</f:facet>
+								<h:outputText value="#{item.customer.name}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['country']}" />
+								</f:facet>
+								<h:outputText value="#{countryF4Bean.getName(item.country_id)}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.receiver']}" />
+								</f:facet>
+								<h:outputText value="#{bukrsF4Bean.getNameByBukrs(item.bukrs)}">
+								</h:outputText>
+							</p:column>
+
+							<p:column style="width:80px;" sortBy="#{item.total_amount}">
+								<f:facet name="header">
+									<h:outputText value="#{msg['summ']}" />
+								</f:facet>
+								<h:outputText value="#{item.total_amount}">
+								</h:outputText>
+							</p:column>
+
+							<p:column style="width:60px;" sortBy="#{item.total_amount}">
+								<f:facet name="header">
+									<h:outputText value="#{msg['currency']}" />
+								</f:facet>
+								<h:outputText value="#{item.currency}">
+								</h:outputText>
+							</p:column>
+
+							<p:column sortBy="#{item.total_amount}">
+								<f:facet name="header">
+									<h:outputText value="#{msg['status']}" />
+								</f:facet>
+								<h:outputText value="#{item.getStatusName()}">
+								</h:outputText>
+							</p:column>
+							
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.description']}" />
+								</f:facet>
+								<h:outputText value="#{item.note}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.created_at']}" />
+								</f:facet>
+								<h:outputText value="#{item.created_at}">
+									<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.creator']}" />
+								</f:facet>
+								<h:outputText value="#{item.creator.getLF()}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="" />
+								</f:facet>
+								<p:button target="_blank" outcome="/logistics/order/View.xhtml" title="#{msg['view']}"
+									icon="ui-icon-search">
+									<f:param name="id" value="#{item.id}" />
+								</p:button>
+
+								<p:button target="_blank" outcome="/logistics/order/Update.xhtml"
+									title="#{msg['edit']}" icon="ui-icon-pencil"
+									rendered="#{item.status_id == 1}">
+									<f:param name="id" value="#{item.id}" />
+								</p:button>
+
+							</p:column>
+
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</h:body>
+
+<ui:include src="/hr/customer/ListDialog2.xhtml">
+	<ui:param name="mainFormBean" value="#{logOrderListBean}" />
+	<ui:param name="customerModel"
+		value="#{logOrderListBean.customerModel}" />
+</ui:include>
+
+</html>

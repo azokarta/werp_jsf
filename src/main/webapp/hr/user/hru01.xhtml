@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>ERP Systems</title>
+	<meta http-equiv="Pragma" content="no-cache" /> 
+    <meta http-equiv="Expires" content="-1" /> 
+    <meta http-equiv="cache-control" content="no-store" /> 
+</h:head>
+<h:body>
+	<f:view>
+		<h:form id="form">
+		<p:growl id="messages"  sticky="false" showDetail = "true"/>
+	<p:toolbar styleclass = "mp_toolbar">
+
+        <f:facet name="right">
+        	<p:commandButton type="push" value="Logout" icon="ui-icon ui-icon-check" action = "#{userinfo.logout}"/>
+         </f:facet>   
+ 
+        <f:facet name="left">
+            <p:commandButton type="push" value="Main page" icon="ui-icon-home" action = "#{hrc01Bean.toMainPage}" ajax="false"/>
+        </f:facet>         
+    </p:toolbar>
+    <p:toolbar styleclass = "mp_toolbar">
+        <f:facet name="left">
+            <p:commandButton type="push" value="Save" icon="ui-icon ui-icon-check" actionListener = "#{hru01Bean.to_save}" ajax="false"/>
+        </f:facet>         
+    </p:toolbar>
+    <fieldset style="height: 500px;">
+    <legend>Пользователь</legend>
+    <div style="display: inline-block;">
+    <div style="width: 50%; float: left;">
+    	<table>
+    		<tr>
+    			<td>
+    				<h:outputLabel value="Имя пользователя"/>
+    			</td>
+    			<td>
+    				<h:inputText id="username" maxlength="20" autocomplete="off" value="#{hru01Bean.p_user.username}"/>
+    			</td>
+    		</tr>
+    		<tr>
+    			<td>
+    				<h:outputLabel value="Пароль"/>
+    			</td>
+    			<td>
+    				<h:inputText id="password" maxlength="40" autocomplete="off" value="#{hru01Bean.p_user.password}"/>
+    			</td>
+    		</tr>
+    		<tr>
+    			<td>
+    				<h:outputLabel value="Email"/>
+    			</td>
+    			<td>
+    				<h:inputText id="email" maxlength="40" autocomplete="off" value="#{hru01Bean.p_user.email}"/>
+    			</td>
+    		</tr>
+    	</table>
+    	<table>
+    		<tr>
+    			<td>
+	    			<h:outputLabel value = "Компания" />
+	    		</td> 
+	    		<td>
+	    			<h:outputLabel value = "Филиал" />
+	    		</td>
+	    		<td>
+    				<h:outputLabel value="Должность"/>
+    			</td>
+    		</tr>
+    		<tr>
+	    	<td> 
+		        <p:selectOneMenu styleClass = "bukrs" id = "bukrs" value="#{hru01Bean.p_user.bukrs}" >
+				    <p:ajax listener="#{hru01Bean.loadBranchAndRole}" />
+				    <f:selectItem itemLabel="Выберите компанию" itemValue ="0"/>
+				    <f:selectItems value="#{hru01Bean.bukrs_list}" var="wa_bukrs" 
+		                itemLabel="#{wa_bukrs.name}" itemValue ="#{wa_bukrs.bukrs}" />
+				</p:selectOneMenu>
+	    	</td> 
+	    	<td>
+	    		<p:selectOneMenu styleClass = "branch" id="branch"  value="#{hru01Bean.p_user.branch_id}">
+	    			<f:selectItem itemLabel="Выберите филиал" itemValue ="0"/>
+		            <f:selectItems value="#{hru01Bean.branch_list}" var="wa_branch" 
+		                itemLabel="#{wa_branch.text45}" itemValue ="#{wa_branch.branch_id}" />
+		        </p:selectOneMenu> 
+	    	</td>
+	    	<td>
+    			<p:selectOneMenu styleClass="role" id="role" value="#{hru01Bean.role_id}">
+    			<f:selectItem itemLabel="Выберите должность" itemValue="0"/>
+    			<f:selectItems value="#{hru01Bean.role_list}" var="wa_role"
+    				itemLabel="#{wa_role.text45}" itemValue="#{wa_role.role_id}"/>
+    			</p:selectOneMenu>
+    		</td>
+    	</tr>
+    	</table>
+    </div>
+    <div style="width: 40%; float: right;">
+    	<p:scrollPanel style="width:100%; height:450px;" easing="easeOutElastic" id = "accessScrollPanel">
+    	<p:dataTable value="#{hru01Bean.pra_list}" var="t" id="table">
+    		<p:column headerText="ID" style="width:80px;">
+    			<h:outputText value="#{t.transaction_id}"/>
+    		</p:column>
+    		<p:column headerText="Transaction type" style="width:200px;">
+    			<h:outputText value="#{t.text45}"/>
+    		</p:column>
+    		<p:column headerText="Access type">
+    			<p:selectOneMenu styleClass="role" id="role" value="#{t.action_id}">
+    			<f:selectItem itemLabel="no" itemValue="0"/>
+    			<f:selectItems value="#{hru01Bean.at_list}" var="a"
+    				itemLabel="#{a.text10}" itemValue="#{a.action_id}"/>
+    			</p:selectOneMenu>
+    		</p:column>
+    	</p:dataTable>
+    </p:scrollPanel>
+    </div>
+    </div>
+    </fieldset>
+    
+		</h:form>
+	</f:view>
+</h:body>
+	
+</html>

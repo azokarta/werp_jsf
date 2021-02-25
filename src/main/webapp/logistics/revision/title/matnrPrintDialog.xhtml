@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+<style>
+	
+</style>
+
+	<p:dialog widgetVar="matnrActDialog" id="matnrActDialog" modal="true"
+		resizable="false" appendTo="@(body)" header="Акт материала"
+		width="800" height="500">
+		<p:commandButton id="actPrintBtn" value="Print" type="button"
+			icon="ui-icon-print" style="display:block;float:left;">
+			<p:printer target="actForm" />
+		</p:commandButton>
+		<h:form id="actForm">
+			<table class="actFormTable">
+				<tr>
+					<td class="tdKey"><span>Документ ревизии</span></td>
+					<td class="tdVal"><h:link
+							outcome="/logistics/revision/View.xhtml"
+							value="№#{logRevTitleCrudBean.revision.id}">
+							<f:param name="id" value="#{logRevTitleCrudBean.revision.id}"></f:param>
+						</h:link></td>
+				</tr>
+				<tr>
+					<td class="tdKey"><span>Компания</span></td>
+					<td class="tdVal"><h:outputText
+							value="#{bukrsF4Bean.getNameByBukrs(logRevTitleCrudBean.revision.bukrs)}"></h:outputText>
+					</td>
+				</tr>
+
+				<tr>
+					<td class="tdKey"><span>Филиал</span></td>
+					<td class="tdVal"><h:outputText
+							value="#{branchF4Bean.getName(logRevTitleCrudBean.revision.branchId)}"></h:outputText>
+					</td>
+				</tr>
+
+				<tr>
+					<td class="tdKey"><span>Склад</span></td>
+					<td class="tdVal"><h:outputText
+							value="#{werksF4Bean.getName(logRevTitleCrudBean.revision.werks)}"></h:outputText>
+					</td>
+				</tr>
+
+				<tr>
+					<td class="tdKey"><span>Название</span></td>
+					<td class="tdVal"><p:outputLabel
+							value="#{logRevTitleCrudBean.revItemTitle.title}"></p:outputLabel>
+					</td>
+				</tr>
+
+			</table>
+			<p:dataTable styleClass="matnrPrintDataTable" var="act" id="matnrActItemTable"
+				value="#{logRevTitleCrudBean.actItems}" sortBy="#{act.sortId}">
+
+				<f:facet name="header">
+					<p:outputLabel value="Акт материала"></p:outputLabel>
+					<div style="clear: both;"></div>
+				</f:facet>
+
+				<p:column headerText="Модель">
+					<p:outputLabel value="#{act.matnrName}"></p:outputLabel>
+				</p:column>
+
+				<p:column headerText="Фактическое количество на складе">
+					<p:outputLabel value="#{act.factQty}"></p:outputLabel>
+				</p:column>
+
+				<p:column headerText="В отличном состоянии (готов к продажам)">
+					<p:outputLabel value="#{act.goodStateQty}"></p:outputLabel>
+				</p:column>
+
+				<p:column headerText="Подлежит ремонту (обновлению)">
+					<p:outputLabel value="#{act.toRepairtyQty}"></p:outputLabel>
+				</p:column>
+
+				<p:column
+					headerText="Подлежит списанию(на запчасти и на утилизацию)">
+					<p:outputLabel value="#{act.toWriteoffQty}"></p:outputLabel>
+				</p:column>
+
+				<p:summaryRow>
+					<p:column style="text-align:right">
+						<p:outputLabel value="ИТОГО:"></p:outputLabel>
+					</p:column>
+					<p:column>
+						<p:outputLabel value="#{logRevTitleCrudBean.totalQty.factQty}"></p:outputLabel>
+					</p:column>
+
+					<p:column>
+						<p:outputLabel
+							value="#{logRevTitleCrudBean.totalQty.goodStateQty}"></p:outputLabel>
+					</p:column>
+
+					<p:column>
+						<p:outputLabel
+							value="#{logRevTitleCrudBean.totalQty.toRepairtyQty}"></p:outputLabel>
+					</p:column>
+
+					<p:column>
+						<p:outputLabel
+							value="#{logRevTitleCrudBean.totalQty.toWriteoffQty}"></p:outputLabel>
+					</p:column>
+				</p:summaryRow>
+			</p:dataTable>
+
+			<ui:include src="responsiblesList.xhtml"></ui:include>
+		</h:form>
+	</p:dialog>
+</ui:composition>
+</html>

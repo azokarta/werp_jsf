@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Просмотр транзакцию</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" />
+			</ui:insert>
+
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<div id="search">
+							<table>
+								<tr>
+									<td>Code</td>
+									<td><p:inputText maxlength="14" autocomplete="off"
+											value="#{ditTransaction03Bean.transactionCode}" /></td>
+									<td><p:commandButton type="push" value="Search"
+											actionListener="#{ditTransaction03Bean.toSearch}" update="form, :messages" /></td>
+								</tr>
+							</table>
+						</div>
+						<div class="ui-grid-row">
+
+							<div id="user-data" class="ui-grid-col-4">
+								<fieldset>
+									<legend>Транзакция</legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="Код" /></td>
+											<td><p:inputText autocomplete="off" disabled="true"
+													value="#{ditTransaction03Bean.transaction.transaction_code}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Название (Ru)" /></td>
+											<td><p:inputText autocomplete="off" disabled="true"
+													value="#{ditTransaction03Bean.transaction.name_ru}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Название (En)" /></td>
+											<td><p:inputText autocomplete="off" disabled="true"
+													value="#{ditTransaction03Bean.transaction.name_en}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Название (Tr)" /></td>
+											<td><p:inputText autocomplete="off" disabled="true"
+													value="#{ditTransaction03Bean.transaction.name_tr}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Url" /></td>
+											<td><p:inputText autocomplete="off" disabled="true"
+													value="#{ditTransaction03Bean.transaction.url}" /></td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+						</div>
+					</h:form>
+				</f:view>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<fieldset class="contractFieldSet">
+		<legend>#{msg['logistics.matnr_list']}</legend>
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<p:commandButton rendered="false"
+					type="push" value="#{msg['logistics.add_matnr']}" align="right"
+					actionListener="#{invoiceBean.addMatnrsRow()}"
+					update=":messages,itemsListTable">
+				</p:commandButton>
+
+				<p:commandButton rendered="false" type="push" value="#{msg['logistics.generate']}"
+					align="right"
+					actionListener="#{invoiceBean.generateMatnrFromRequest()}"
+					update=":messages,itemsListTable">
+				</p:commandButton>
+
+			</f:facet>
+		</p:toolbar>
+
+		<p:dataTable id="itemsListTable" value="#{invoiceBean.invoiceItems}"
+			var="item" emptyMessage="#{msg.no_records}"
+			rowClasses="employeeTableOddRow,employeeTableEvenRow">
+			<p:column>
+				<f:facet name="header">#{msg['logistics.matnr_code']}</f:facet>
+				<h:outputText value="#{item.matnrObject.code}"></h:outputText>
+			</p:column>
+			<p:column style="width: 25%;">
+				<f:facet name="header">#{msg['logistics.material']}</f:facet>
+				<h:outputText rendered="#{userinfo.u_language == 'ru'}" value="#{item.matnrObject.text45}"></h:outputText>
+				<h:outputText rendered="#{userinfo.u_language == 'en'}" value="#{item.matnrObject.name_en}"></h:outputText>
+				<h:outputText rendered="#{userinfo.u_language == 'tr'}" value="#{item.matnrObject.name_tr}"></h:outputText>
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">#{msg['quantity']}</f:facet>
+				<h:outputText value="#{item.quantity}" />
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">#{msg['logistics.ser_num']}</f:facet>
+
+				<p:fileUpload
+					rendered="#{invoiceBean.mode != 'view' and item.matnrObject.type == 1}"
+					fileUploadListener="#{invoiceBean.handleFileUpload}"
+					mode="advanced" auto="true" dragDropSupport="false"
+					update=":messages,itemsListTable" sizeLimit="100000" fileLimit="5"
+					fileLimitMessage="#{msg['hr.file.many_attempts']}"
+					allowTypes="/(\.|\/)(txt)$/">
+					<f:attribute name="currentItem" value="#{item}"></f:attribute>
+				</p:fileUpload>
+
+				<p:commandButton value="#{msg['view']}" rendered="#{item.hasBarcode()}"
+					actionListener="#{invoiceBean.setBarcodeItem(item)}"
+					update=":form:barcodeWidget"
+					oncomplete="PF('barcodeWidget').show();"></p:commandButton>
+			</p:column>
+
+			<p:column style="width:60px;"
+				rendered="#{invoiceBean.mode != 'view'}">
+				<p:commandButton icon="ui-icon-close">
+					<p:ajax listener="#{invoiceBean.deleteMatnrsRow(item)}"
+						update="itemsListTable"></p:ajax>
+				</p:commandButton>
+			</p:column>
+		</p:dataTable>
+	</fieldset>
+
+	<p:dialog header="#{invoiceBean.barcodeItem.matnrObject.text45}"
+		widgetVar="barcodeWidget" id="barcodeWidget" minHeight="40"
+		width="300">
+		<p:dataTable value="#{invoiceBean.barcodeItem.barcodesList}" var="b"
+			rowIndexVar="rowIndex" style="height:450px;" id="barcodeList">
+			<f:facet name="header">
+				<h:commandLink id="xlsxExport" style="float:right;margin-right:5px;">
+					<p:graphicImage name="xlsx_export_icon.png" library="img"
+						width="32" />
+					<p:dataExporter type="xls" target="barcodeList"
+						fileName="Zavodskie nomera" />
+				</h:commandLink>
+				<div style="clear: both;"></div>
+			</f:facet>
+			<p:column style="width:30px;">
+				<f:facet name="header">№</f:facet>
+				<h:outputText value="#{rowIndex+1}"></h:outputText>
+			</p:column>
+			<p:column>
+				<f:facet name="header">#{msg['logistics.serial_number']}</f:facet>
+				<h:outputText value="#{b}"></h:outputText>
+			</p:column>
+		</p:dataTable>
+		<br />
+	</p:dialog>
+</ui:composition>
+</html>

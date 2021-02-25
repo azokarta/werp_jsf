@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" />
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+				<f:view>
+					<h:form id="form">
+						<div class="ui-grid-row">
+							<div class=" ui-grid-col-5">
+								<fieldset>
+									<legend>Параметры поиска</legend>
+									<div style="float: left;">
+										<table>
+											<tr>
+												<td><h:outputLabel value="Номер" /></td>
+												<td><p:inputText id="search-sn"
+														value="#{faf03Bean.searchSn}">
+													</p:inputText></td>
+												<td><p:commandButton type="push" value="Поиск"
+														icon="ui-icon ui-icon-search"
+														actionListener="#{faf03Bean.search}" update="form">
+													</p:commandButton></td>
+
+
+											</tr>
+										</table>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-5" style="display: block; float: left;">
+								<fieldset class="contractFieldSet" style="height: 500px;">
+									<legend>Основные средства</legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="Компания" /></td>
+											<td><p:selectOneMenu id="bukrs"
+													value="#{faf03Bean.bukrs}" disabled="true">
+													<p:ajax listener="#{faf03Bean.loadBranch}" update="branch" />
+													<f:selectItem itemLabel="Выберите компанию" itemValue="" />
+													<f:selectItems value="#{faf03Bean.bukrsList}"
+														var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+														itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Филиал" /></td>
+											<td><p:selectOneMenu id="branch"
+													value="#{faf03Bean.fixedAsset.branch_id}" disabled="true">
+													<f:selectItem itemLabel="Выберите филиал" itemValue="0" />
+													<f:selectItems value="#{faf03Bean.branchList}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Ответственный сотрудник" /></td>
+											<td><p:inputText id="staff_fio" size="35"
+													autocomplete="off" value="#{faf03Bean.staffFio}"
+													disabled="true" /> <p:commandButton icon="ui-icon-newwin"
+													type="push" oncomplete="PF('staffWidget').show();"
+													styleClass="f4button">
+												</p:commandButton></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Наименование" /></td>
+											<td><p:inputText id="fa_name" size="45"
+													autocomplete="off" value="#{faf03Bean.fixedAsset.fa_name}"
+													disabled="true">
+												</p:inputText></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Первоначальная стоимость" /></td>
+											<td><p:inputText id="init_amount" size="10"
+													autocomplete="off"
+													value="#{faf03Bean.fixedAsset.init_amount}" disabled="true">
+												</p:inputText></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Ликвидационная стоимость" /></td>
+											<td><p:inputText id="left_amount" size="10"
+													autocomplete="off"
+													value="#{faf03Bean.fixedAsset.left_amount}" disabled="true">
+												</p:inputText></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Группа учета ОС" /></td>
+											<td><p:selectOneMenu id="asset_catalog_id"
+													value="#{faf03Bean.fixedAsset.asset_catalog_id}"
+													disabled="true">
+													<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+													<f:selectItems value="#{faf03Bean.assetCatalogList}"
+														var="ac" itemLabel="#{ac.asset_name}"
+														itemValue="#{ac.asset_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel
+													value="Срок полезного использования (в месяцах)" /></td>
+											<td><p:inputText id="asset_life" size="10"
+													autocomplete="off"
+													value="#{faf03Bean.fixedAsset.asset_life}" disabled="true">
+												</p:inputText></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Дата эксплуатации" /></td>
+											<td><p:calendar id="operation_date"
+													styleClass="dateField"
+													value="#{faf03Bean.fixedAsset.operation_date}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true"
+													disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Коментарии" /></td>
+											<td><p:inputTextarea
+													value="#{faf03Bean.fixedAsset.comment}" disabled="true"></p:inputTextarea>
+											</td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+
+							<div class="ui-grid-col-5">
+								<fieldset>
+									<legend>Таблица амортизации ОС</legend>
+									<p:dataTable
+										emptyMessage="Нет записей"
+										var="d" rowKey="#{d.year}"
+										value="#{faf03Bean.depList}"
+										rendered="#{not empty faf03Bean.fixedAsset.fa_id}">
+
+										<p:column headerText="Год">
+											<p:outputLabel value="#{d.year}"></p:outputLabel>
+										</p:column>
+
+										<p:column headerText="Амортизация">
+											<p:outputLabel value="#{d.dep}"></p:outputLabel>
+										</p:column>
+
+										<p:column headerText="Накопленная амортизация">
+										<p:outputLabel value="#{d.acDep}"></p:outputLabel>
+										</p:column>
+
+										<p:column headerText="Остаточная стоимость">
+											<p:outputLabel value="#{d.resVal}"></p:outputLabel>
+										</p:column>
+									</p:dataTable>
+								</fieldset>
+							</div>
+						</div>
+					</h:form>
+				</f:view>
+			</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

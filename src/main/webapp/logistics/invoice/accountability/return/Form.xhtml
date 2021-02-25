@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+
+				<ui:repeat var="button" value="#{crudBean.actionBean.buttonList}">
+					<p:commandButton type="push" value="#{button.label}"
+						actionListener="#{button.doAction()}" update=":messages,:form">
+					</p:commandButton>
+				</ui:repeat>
+
+				<p:commandButton rendered="#{crudBean.mode != 'view'}" type="push"
+					value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check" actionListener="#{crudBean.Save()}"
+					update=":messages">
+				</p:commandButton>
+			</f:facet>
+		</p:toolbar>
+		<br />
+
+		<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+			<div class="ui-grid-col-5" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>#{msg['logistics.doc_info']}</legend>
+					<table>
+						<tr>
+							<td>№</td>
+							<td><h:outputText
+									value="№#{crudBean.invoice.getFormattedRegNumber()}"></h:outputText>
+							</td>
+						</tr>
+						<tr>
+							<td>#{msg['logistics.invoice.type']}</td>
+							<td><h:outputText value="#{crudBean.invoice.getTypeName()}"></h:outputText>
+							</td>
+						</tr>
+						<tr>
+							<td>#{msg['logistics.fired_employee']}</td>
+							<td><p:selectBooleanCheckbox
+									rendered="#{crudBean.mode != 'view' and (userinfo.main or userinfo.sys_admin)}"
+									value="#{crudBean.dismissedStaff}">
+									<p:ajax update="responsibleStaffPanel, :form:itemsListTable"
+										listener="#{crudBean.onChangeDismissedFlag}" />
+								</p:selectBooleanCheckbox></td>
+						</tr>
+						<tr>
+							<td>#{msg['logistics.embez_worker']}</td>
+							<td class="tdVal"><p:panel id="responsibleStaffPanel">
+									<h:outputText rendered="#{!empty crudBean.invoice.responsible}"
+										value="#{crudBean.invoice.responsible.getLF()}"></h:outputText>
+
+									<p:commandButton rendered="#{crudBean.mode != 'view' and !crudBean.dismissedStaff}"
+										icon="ui-icon-newwin" type="push" update=":messages"
+										oncomplete="PF('SalaryListDialog').show();"
+										styleClass="f4button" />
+										
+									<p:commandButton rendered="#{crudBean.mode != 'view' and crudBean.dismissedStaff}"
+										icon="ui-icon-newwin" type="push" update=":messages"
+										oncomplete="PF('staffWidget').show();"
+										styleClass="f4button" />
+								</p:panel></td>
+						</tr>
+						<tr>
+							<td>#{msg['company']}</td>
+							<td><werp:companySelect elementId="companyId"
+									mode="#{crudBean.mode == 'view' ? 'view':'update'}"
+									value="#{crudBean.invoice.bukrs}"
+									onChangeUpdate=":form:branchSelect:branchId,:form:fromWerksSelect:toWerks">
+								</werp:companySelect></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['branch']}</td>
+							<td><werp:branchSelect id="branchSelect"
+									elementId="branchId" companyValue="#{crudBean.invoice.bukrs}"
+									value="#{crudBean.invoice.branch_id}"
+									mode="#{crudBean.mode == 'view' ? 'view':'update'}">
+								</werp:branchSelect></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.receiver_whouse']}</td>
+							<td><werp:werksSelect id="fromWerksSelect"
+									elementId="toWerks" companyValue="#{crudBean.invoice.bukrs}"
+									value="#{crudBean.invoice.to_werks}"
+									mode="#{crudBean.mode == 'view' ? 'view':'update'}">
+								</werp:werksSelect></td>
+						</tr>
+						<tr>
+							<td>#{msg['logistics.return_date']}</td>
+							<td><h:outputText rendered="#{crudBean.mode == 'view'}"
+									value="#{crudBean.invoice.invoice_date}">
+									<f:convertDateTime pattern="dd.MM.YYYY"></f:convertDateTime>
+								</h:outputText> <p:calendar rendered="#{crudBean.mode != 'view'}"
+									pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{crudBean.invoice.invoice_date}"
+									converterMessage="Wrong Date" navigator="true">
+								</p:calendar></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['department']}</td>
+							<td><h:outputText
+									value="#{departmentF4Bean.getName(crudBean.invoice.department_id,userinfo.u_language)}"></h:outputText>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.description']}</td>
+							<td><p:inputTextarea value="#{crudBean.invoice.note}"
+									rendered="#{crudBean.mode != 'view'}"></p:inputTextarea> <p:panel
+									rendered="#{crudBean.mode == 'view'}">
+									#{crudBean.invoice.note}
+								</p:panel></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.creator']}</td>
+							<td><h:outputText
+									rendered="#{crudBean.mode == 'create' and !empty crudBean.userData.staff.staff_id}"
+									value="#{crudBean.userData.staff.getLF()}"></h:outputText> <h:outputText
+									rendered="#{crudBean.mode != 'create'}"
+									value="#{crudBean.invoice.creator.getLF()}"></h:outputText></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.created_at']}</td>
+							<td><h:outputText value="#{crudBean.invoice.created_at}">
+									<f:convertDateTime pattern="dd.MM.YYYY kk:mm"></f:convertDateTime>
+								</h:outputText></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.status']}</td>
+							<td><h:outputText
+									value="#{crudBean.invoice.getStatusName()}">
+								</h:outputText></td>
+						</tr>
+
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+
+						<tr>
+							<td colspan="2"></td>
+						</tr>
+
+					</table>
+				</fieldset>
+			</div>
+
+
+			<div class="ui-grid-col-7" style="display: block; float: left;">
+				<ui:include src="matnrList.xhtml">
+					<ui:param name="invoiceBean" value="#{crudBean}" />
+				</ui:include>
+			</div>
+		</div>
+	</h:form>
+
+	<p:dialog header="#{msg['employees_list']}" widgetVar="staffWidget"
+		minHeight="40" width="700" modal="true" appendTo="@(body)">
+		<h:form id="staffListForm">
+			<p:dataTable value="#{crudBean.staffList}"
+				var="stf" id="staffList" rowKey="#{stf.staff_id}"
+				selectionMode="single" paginator="true" paginatorPosition="bottom"
+				rows="30">
+				<p:ajax event="rowDblselect"
+					listener="#{crudBean.onSelectStaff}"
+					update=":form :messages" global="false" />
+
+				<p:column filterBy="#{stf.lastname}">
+					<f:facet name="header">#{msg['hr.staff.lastname']}</f:facet>
+					<h:outputText value="#{stf.lastname}"></h:outputText>
+				</p:column>
+
+				<p:column filterBy="#{stf.firstname}">
+					<f:facet name="header">#{msg['hr.staff.firstname']}</f:facet>
+					<h:outputText value="#{stf.firstname}"></h:outputText>
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">#{msg['hr.staff.middlename']}</f:facet>
+					<h:outputText value="#{stf.middlename}"></h:outputText>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</p:dialog>
+</ui:composition>
+</html>

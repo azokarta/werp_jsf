@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['hr.customer.customer_list']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.hrclist']}" />
+				</ui:include>
+			</ui:insert>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel id="searchPanel" header="#{msg.advanced_search}"
+							toggleable="true" toggleOrientation="vertical" collapsed="false">
+							<h:panelGrid columns="4" cellpadding="10">
+
+								<p:outputLabel value="#{msg['hr.customer.customer_type']}"></p:outputLabel>
+								<p:selectOneMenu value="#{hrcListBean.customerModel.searchModel.fiz_yur}">
+									<p:ajax update="search-name"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItem itemLabel="#{msg['fiz_lico']}"
+										itemValue="2" />
+									<f:selectItem itemLabel="#{msg['yur_lico']}"
+										itemValue="1" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg['hr.customer.iin_bin']}"></p:outputLabel>
+								<p:inputText value="#{hrcListBean.customerModel.searchModel.iin_bin}"></p:inputText>
+
+								<p:outputLabel value="#{msg['hr.customer.name']}"></p:outputLabel>
+								<p:inputText id="search-name"
+									value="#{hrcListBean.customerModel.searchModel.name}"
+									disabled="#{hrcListBean.customerModel.searchModel.fiz_yur == 2}"></p:inputText>
+
+								<p:outputLabel value="#{msg['hr.customer.firstname']}"></p:outputLabel>
+								<p:inputText value="#{hrcListBean.customerModel.searchModel.firstname}"></p:inputText>
+
+								<p:outputLabel value="#{msg['hr.customer.lastname']}"></p:outputLabel>
+								<p:inputText value="#{hrcListBean.customerModel.searchModel.lastname}"></p:inputText>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" update=":CustomerListForm:datalist"
+									actionListener="#{hrcListBean.Search}"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<h:form id="CustomerListForm">
+					<p:dataTable id="datalist" value="#{hrcListBean.customerModel}" var="item"
+						selectionMode="single" selection="#{hrcListBean.selected}"
+						paginator="true" paginatorPosition="bottom" 
+						rowKey="#{item.id}"
+						rows="50" lazy="true">
+
+						<p:ajax event="rowSelect"
+							update="createButton viewButton updateButton actionButton" />
+						<p:ajax event="rowUnselect"
+							update="createButton viewButton updateButton actionButton" />
+
+						<f:facet name="header" id="tableHeader">
+							<span style="float:left;"><h:outputText value="#{msg['dmsc.foundTotal']}: " /></span>
+							<h:commandLink rendered="false" id="xlsxExport"
+								style="float:right;margin-right:5px;">
+								<p:graphicImage name="xlsx_export_icon.png" library="img"
+									width="32" />
+								<p:dataExporter type="xls" target="datalist"
+									fileName="staffList" postProcessor="#{hrcListBean.exportXLS}" />
+							</h:commandLink>
+
+							<span class="ui-separator" style="float: right;"> <span
+								style="float: right;"
+								class="ui-icon ui-icon-grip-dotted-vertical" />
+							</span>
+							
+							<p:button  target="_blank" outcome="/accounting/other/fcus01.xhtml"
+								value="#{msg['actions']}" title="#{msg['actions']}" id="actionButton"
+								style="float:right;margin-right:5px;"
+								disabled="#{empty hrcListBean.selected}">
+								<f:param name="customerId" value="#{hrcListBean.selected.id}" />
+							</p:button>
+							
+							<span class="ui-separator" style="float: right;"> <span
+								style="float: right;"
+								class="ui-icon ui-icon-grip-dotted-vertical" />
+							</span>
+
+							<p:button id="updateButton" outcome="/hr/customer/hrc02.xhtml"
+								icon="ui-icon-pencil" title="Update"
+								style="float:right;margin-right:5px;"
+								disabled="#{empty hrcListBean.selected}">
+								<f:param name="customerId" value="#{hrcListBean.selected.id}" />
+							</p:button>
+
+							<p:button outcome="/hr/customer/hrc03.xhtml"
+								icon="ui-icon-zoomin" title="View" id="viewButton"
+								style="float:right;margin-right:5px;"
+								disabled="#{empty hrcListBean.selected}">
+								<f:param name="customerId" value="#{hrcListBean.selected.id}" />
+							</p:button>
+
+							<p:button id="createButton" outcome="/hr/customer/hrc01.xhtml"
+								icon="ui-icon-plus" title="Create"
+								style="float:right;margin-right:5px;">
+							</p:button>
+
+							<div style="clear: both;"></div>
+						</f:facet>
+						<p:column style="width:30px;" sortBy="#{item.id}">
+							<f:facet name="header">
+								<h:outputText value="ID" />
+							</f:facet>
+							<h:outputText value="#{item.id}" />
+						</p:column>
+
+						<p:column rendered="#{hrcListBean.customerModel.searchModel.fiz_yur != 2}">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.customer.name']}" />
+							</f:facet>
+							<h:outputText value="#{item.name}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.customer.firstname']}" />
+							</f:facet>
+							<h:outputText value="#{item.firstname}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.customer.middlename']}" />
+							</f:facet>
+							<h:outputText value="#{item.middlename}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.customer.lastname']}" />
+							</f:facet>
+							<h:outputText value="#{item.lastname}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.customer.iin_bin']}" />
+							</f:facet>
+							<h:outputText value="#{item.iin_bin}" />
+						</p:column>
+
+					</p:dataTable>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

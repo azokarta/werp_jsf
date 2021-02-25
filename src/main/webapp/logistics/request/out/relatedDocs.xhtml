@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<p:panel id="horizontal" header="Внутренние заявки" toggleable="true"
+		toggleOrientation="vertical" collapsed="false">
+		<h:panelGrid columns="1" cellpadding="0">
+			<p:toolbar styleclass="mp_toolbar">
+				<f:facet name="left">
+					<p:commandButton disabled="#{empty reqBean.request.bukrs}"
+						rendered="#{reqBean.mode != 'view'}" type="push" value="Добавить"
+						align="right" icon="ui-icon ui-icon-check"
+						oncomplete="PF('MdDocsDialog').show()"
+						actionListener="#{reqBean.loadAllParentDocs()}"
+						update=":messages,selectedMdTable,:MdDocsDlgForm" id="add_rel_doc_btn">
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+			<p:dataTable id="selectedMdTable" value="#{reqBean.parentDocs}"
+				var="pd">
+				<p:column style="width: 20px;">
+					<f:facet name="header">№</f:facet>
+					<h:outputText value="#{pd.id}"></h:outputText>
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">Филиал заявитель</f:facet>
+					<h:outputText
+						value="#{branchF4Bean.getBranchNameByID(pd.branch_id)}"></h:outputText>
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">Автор</f:facet>
+					<h:outputText value="#{pd.creator.getLF()}"></h:outputText>
+				</p:column>
+
+				<p:column style="width: 20px;">
+					<p:commandButton rendered="#{reqBean.mode != 'view'}"
+						icon="ui-icon-close">
+						<p:ajax listener="#{reqBean.deleteParentDocRow(pd)}"
+							update="selectedMdTable"></p:ajax>
+					</p:commandButton>
+
+					<p:button rendered="#{reqBean.mode == 'view'}" target="_blank"
+						outcome="/request/View.xhtml" title="Просмотр"
+						icon="ui-icon-search">
+						<f:param name="id" value="#{pd.id}" />
+					</p:button>
+
+				</p:column>
+
+
+			</p:dataTable>
+		</h:panelGrid>
+	</p:panel>
+
+
+
+</ui:composition>
+</html>

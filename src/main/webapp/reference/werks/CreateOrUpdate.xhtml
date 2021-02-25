@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="WerksCreateDlg" widgetVar="WerksCreateDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Добавить/Редактировать склада">
+		<h:form id="WerksCreateForm" rendered="#{!empty refWerksBean.selected}">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2">
+
+					<p:outputLabel value="Компания" />
+					<p:selectOneMenu value="#{refWerksBean.selected.bukrs}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+						<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+							itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+					</p:selectOneMenu>
+
+					<p:outputLabel value="Название" />
+					<p:inputText value="#{refWerksBean.selected.text45}" title="Название" />
+					
+					
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{refWerksBean.Save}"
+					value="Save" update=":DataListForm:datalist,:messages" />
+				<p:commandButton actionListener="#{refWerksBean.Reset}"
+					value="Cancel" onclick="PF('WerksCreateDialog').hide()"
+					update="display,:DataListForm" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

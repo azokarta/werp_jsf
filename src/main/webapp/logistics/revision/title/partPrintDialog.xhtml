@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<style>
+table td.tdKey {
+	border: 0px red solid;
+	width: 150px;
+	padding: 3px;
+	font-style: italic;
+	font-size: 14px;
+}
+
+table td.tdVal {
+	padding: 3px;
+	font-style: normal;
+	font-size: 14px;
+}
+
+table td.tdKey span {
+	float: right;
+	font-weight: 500;
+	margin-right: 3px;
+}
+</style>
+
+	<p:dialog widgetVar="partActDialog" id="partActDialog" modal="true"
+		resizable="true" appendTo="@(body)" header="Акт материала"
+		width="1000" height="500">
+		<p:commandButton id="partActPrintBtn" value="Print" type="button"
+			icon="ui-icon-print" style="display:block;float:left;">
+			<p:printer target="partActForm" />
+		</p:commandButton>
+		<h:form id="partActForm">
+			<table class="partActFormTable">
+				<tr>
+					<td class="tdKey"><span>Документ ревизии</span></td>
+					<td class="tdVal"><h:link
+							outcome="/logistics/revision/View.xhtml"
+							value="№#{logRevTitleCrudBean.revision.id}">
+							<f:param name="id" value="#{logRevTitleCrudBean.revision.id}"></f:param>
+						</h:link></td>
+				</tr>
+				<tr>
+					<td class="tdKey"><span>Компания</span></td>
+					<td class="tdVal"><h:outputText
+							value="#{bukrsF4Bean.getNameByBukrs(logRevTitleCrudBean.revision.bukrs)}"></h:outputText>
+					</td>
+				</tr>
+
+				<tr>
+					<td class="tdKey"><span>Филиал</span></td>
+					<td class="tdVal"><h:outputText
+							value="#{branchF4Bean.getName(logRevTitleCrudBean.revision.branchId)}"></h:outputText>
+					</td>
+				</tr>
+
+				<tr>
+					<td class="tdKey"><span>Склад</span></td>
+					<td class="tdVal"><h:outputText
+							value="#{werksF4Bean.getName(logRevTitleCrudBean.revision.werks)}"></h:outputText>
+					</td>
+				</tr>
+
+				<tr>
+					<td class="tdKey"><span>Название</span></td>
+					<td class="tdVal"><p:outputLabel
+							value="#{logRevTitleCrudBean.revItemTitle.title}"></p:outputLabel>
+					</td>
+				</tr>
+
+			</table>
+			<p:dataTable var="item" value="#{logRevTitleCrudBean.items}"
+				rowIndexVar="rowIndex" styleClass="itemsTable"
+				rendered="#{logRevTitleCrudBean.revItemTitle.typeId!=1 and logRevTitleCrudBean.revItemTitle.typeId!=2}">
+
+				<p:column headerText="№" style="width:25px;text-align:center;">
+					<h:outputText value="#{rowIndex+1}" />
+				</p:column>
+
+				<p:column headerText="Код">
+					<h:outputText value="#{item.matnrObject.code}" />
+				</p:column>
+
+				<p:column headerText="Наименование">
+					<h:outputText value="#{item.matnrObject.text45}" />
+				</p:column>
+
+				<p:column headerText="Цена за ед.">
+					<h:outputText value="#{item.unitPrice}" />
+				</p:column>
+
+				<p:column headerText="Количество по Базе" style="text-align:center;">
+					<p:outputLabel value="#{item.dbQuantity}"></p:outputLabel>
+				</p:column>
+
+				<p:column headerText="Недостача" style="text-align:center;">
+					<p:outputLabel value="#{item.deficitQuantity}"></p:outputLabel>
+				</p:column>
+
+				<p:column headerText="Излишка" style="text-align:center;">
+					<p:outputLabel value="#{item.overQuantity}"></p:outputLabel>
+				</p:column>
+
+				<p:column headerText="Факт. кол. на складе"
+					style="text-align:center;">
+					<p:outputLabel rendered="#{logRevTitleCrudBean.mode == 'view'}"
+						value="#{item.factQuantity}"></p:outputLabel>
+					<p:inputText style="width:60px;"
+						rendered="#{logRevTitleCrudBean.mode != 'view'}"
+						value="#{item.factQuantity}"></p:inputText>
+				</p:column>
+
+				<p:column headerText="Количество непригодных"
+					style="text-align:center;">
+					<p:outputLabel value="#{item.unusableQuantity}"></p:outputLabel>
+				</p:column>
+
+				<p:column headerText="Количество пригодных"
+					style="text-align:center;">
+					<p:outputLabel value="0"></p:outputLabel>
+				</p:column>
+
+				<p:column headerText="Излишка (сумма)" style="text-align:center;">
+					<p:outputLabel value="#{item.overAmount}"></p:outputLabel>
+				</p:column>
+
+				<p:column headerText="Недостача (сумма)" style="text-align:center;">
+					<p:outputLabel value="#{item.deficitAmount}"></p:outputLabel>
+				</p:column>
+			</p:dataTable>
+
+			<ui:include src="responsiblesList.xhtml"></ui:include>
+		</h:form>
+	</p:dialog>
+
+
+</ui:composition>
+</html>

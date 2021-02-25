@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<f:metadata>
+	<f:viewParam name="invoiceId" value="#{lifc01Bean.invoiceId}" />
+	<f:event type="preRenderView" listener="#{lifc01Bean.init}" />
+</f:metadata>
+<h:head>
+	<title>#{msg['logistics.new_invoice']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.lifc01']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<div class="ui-grid-row" style="padding-bottom: 10px;">
+							<fieldset style="border: 1px solid #ddd;">
+								<legend>#{msg['logistics.new_invoice']}</legend>
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg.country}" /></td>
+											<td><p:selectOneMenu
+													value="#{lifc01Bean.invoice.country_id}">
+													<f:selectItems value="#{countryF4Bean.country_list}"
+														var="country" itemLabel="#{country.country}"
+														itemValue="#{country.country_id}" />
+												</p:selectOneMenu></td>
+											<td></td>
+											<td></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.company}" /></td>
+											<td><p:selectOneMenu id="bukrs"
+													value="#{lifc01Bean.invoice.bukrs}">
+													<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+														var="bukrs" itemLabel="#{bukrs.name}"
+														itemValue="#{bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+
+											<td>#{msg.currency}</td>
+											<td><p:selectOneMenu
+													value="#{lifc01Bean.invoice.currency}">
+													<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+													<f:selectItems value="#{currencyF4Bean.currency_list}"
+														var="c" itemLabel="#{c.text20}" itemValue="#{c.currency}" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg.customer}" /></td>
+											<td><p:autoComplete id="customer"
+													value="#{lifc01Bean.selectedCustomer}"
+													completeMethod="#{lifc01Bean.completeCustomer}"
+													var="customer" itemLabel="#{customer.name}"
+													itemValue="#{customer}" converter="#{lifc01Bean.customerConverter}">
+													<p:ajax event="itemSelect"
+														listener="#{lifc01Bean.onCustomerSelect}" />
+													<h:outputText value="#{customer.name}"></h:outputText>
+												</p:autoComplete></td>
+
+											<td>Заказ</td>
+											<td><h:inputText id="orderOut"
+													rendered="#{!empty lifc01Bean.selectedOrder}"
+													value="№ #{lifc01Bean.selectedOrder.id}" size="45"
+													maxlength="45" styleClass="input1" disabled="true" /> <p:commandButton
+													icon="ui-icon-newwin" type="push"
+													actionListener="#{orderOutBean.searchModel.setCustomer_id(lifc01Bean.invoice.customer_id)}"
+													oncomplete="PF('orderWidget').show();" update=":orderList"
+													styleClass="f4button">
+												</p:commandButton></td>
+										</tr>
+										<tr>
+											<td>#{msg['logistics.invoice.invoice_date']}</td>
+											<td><p:calendar yearRange="1940:2020"
+													pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+													locale="#{systemLocale.currentLocale.getLanguage()}"
+													value="#{lifc01Bean.invoice.invoice_date}"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+											<td>#{msg['logistics.invoice.factory_number']}</td>
+											<td><p:inputText
+													value="#{lifc01Bean.invoice.factory_number}"></p:inputText>
+											</td>
+										</tr>
+
+										<tr>
+											<td>#{msg['logistics.invoice.delivery_term']}</td>
+											<td><p:selectOneMenu
+													value="#{lifc01Bean.invoice.delivery_term}">
+													<f:selectItem itemLabel="#{msg.select}" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{lifc01Bean.invoiceDeliveryTerm}"
+														var="item"
+														itemLabel="#{item.getName(userinfo.u_language)}"
+														itemValue="#{item.idt_id}" />
+												</p:selectOneMenu></td>
+
+											<td>#{msg['logistics.invoice.payment_term']}</td>
+											<td><p:selectOneMenu
+													value="#{lifc01Bean.invoice.payment_term}">
+													<f:selectItem itemLabel="#{msg.select}" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{lifc01Bean.invoicePaymentTerms}"
+														var="item"
+														itemLabel="#{item.getName(userinfo.u_language)}"
+														itemValue="#{item.ipt_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td>#{msg['logistics.invoice.total_discount']}</td>
+											<td><p:inputText
+													value="#{lifc01Bean.invoice.total_discount}"></p:inputText>
+											</td>
+
+											<td>#{msg['logistics.invoice.comment']}</td>
+											<td><p:inputTextarea
+													value="#{lifc01Bean.invoice.comment}"></p:inputTextarea></td>
+										</tr>
+
+										<tr>
+											<td>#{msg['logistics.invoice.summ']}</td>
+											<td><p:inputText id="total_summ" style="color:blue;"
+													value="#{lifc01Bean.invoice.summ}" disabled="true"></p:inputText>
+											</td>
+
+											<td></td>
+											<td></td>
+										</tr>
+
+									</table>
+								</div>
+							</fieldset>
+						</div>
+
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton rendered="#{empty lifc01Bean.invoice.id}"
+									type="push" value="#{msg.save}" id="save_button" align="right"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{lifc01Bean.Save}" update=":messages">
+								</p:commandButton>
+
+								<p:commandButton rendered="#{!empty lifc01Bean.invoice.id}"
+									type="push" value="#{msg.save}" id="update_button"
+									align="right" icon="ui-icon ui-icon-check"
+									actionListener="#{lifc01Bean.Update()}" update=":messages">
+								</p:commandButton>
+
+								<p:commandButton type="push" value="Добавить материал"
+									align="right" icon="ui-icon ui-icon-check"
+									actionListener="#{lifc01Bean.addRow}"
+									update=":messages,itemsListTable">
+								</p:commandButton>
+
+								<p:commandButton type="push" value="Расчитать" align="right"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{lifc01Bean.doCount}" update=":messages,form">
+								</p:commandButton>
+
+							</f:facet>
+
+						</p:toolbar>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+							align="center">
+							<p:commandButton value="Да" type="button" align="center"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Нет" type="button" align="center"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+
+						<div class="ui-grid-row" style="padding-bottom: 10px;">
+							<div class="wrapRTClass">
+								<p:dataTable id="itemsListTable"
+									value="#{lifc01Bean.invoiceItems}" var="item"
+									widgetVar="dataTableWidgetVar" emptyMessage="#{msg.no_records}"
+									styleClass="employeeTable" headerClass="employeeTableHeader"
+									rowClasses="employeeTableOddRow,employeeTableEvenRow">
+
+									<p:column style="width: 35%;">
+										<f:facet name="header">Материал</f:facet>
+										<h:outputText value="#{item.matnrObject.text45}"></h:outputText>
+										<p:commandButton icon="ui-icon-newwin" type="push"
+											actionListener="#{lifc01Bean.setCurrentInvoiceItem(item)}"
+											oncomplete="PF('MatnrListDialog').show();"
+											styleClass="f4button">
+										</p:commandButton>
+									</p:column>
+
+									<p:column id="quantity_td">
+										<f:facet name="header">Количество</f:facet>
+										<h:inputText id="qunatity" value="#{item.quantity}" size="8"
+											maxlength="10" styleClass="input1">
+										</h:inputText>
+									</p:column>
+
+									<p:column id="unit_price_td">
+										<f:facet name="header">Unit price</f:facet>
+										<h:inputText id="unit_price" value="#{item.unit_price}"
+											size="8" maxlength="10" styleClass="input1" disabled="true">
+										</h:inputText>
+									</p:column>
+
+									<p:column id="summ_td">
+										<f:facet name="header">Сумма</f:facet>
+										<h:inputText value="#{item.summ}" id="summ" size="8"
+											maxlength="10" styleClass="input1">
+										</h:inputText>
+									</p:column>
+									<p:column style="width:60px;">
+										<p:commandButton icon="ui-icon-close">
+											<p:ajax listener="#{lifc01Bean.deleteRow(item)}"
+												update="itemsListTable"></p:ajax>
+										</p:commandButton>
+									</p:column>
+								</p:dataTable>
+							</div>
+						</div>
+					</h:form>
+
+					<p:dialog header="#{msg['logistics.order_list']}"
+						widgetVar="orderWidget" dynamic="true" width="500" height="500"
+						id="orderTableWidget">
+						<h:form id="orderList">
+							<p:dataTable scrollable="true" scrollHeight="400" var="order"
+								rowKey="#{order.id}" value="#{orderOutBean.getNullItems()}"
+								selectionMode="single" selection="#{orderOutBean.selected}">
+								<f:facet name="header">
+									<p:commandButton
+										actionListener="#{lifc01Bean.assignOrder(orderOutBean.selected)}"
+										update=":form" onclick="PF('orderWidget').hide();"
+										value="#{msg.select}" />
+								</f:facet>
+
+
+								<p:column headerText="Номер" footerText="Номер">
+									<h:outputText value="№ #{order.id}" />
+								</p:column>
+								<p:column headerText="Customer" footerText="Customer">
+									<p:selectOneMenu value="#{order.customer_id}" disabled="true">
+										<f:selectItems value="#{customerBean.yurItems}" var="item"
+											itemLabel="#{item.name}" itemValue="#{item.id}" />
+									</p:selectOneMenu>
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</p:dialog>
+
+					<ui:include src="/reference/matnr/ListDialog2.xhtml">
+						<ui:param name="formId" value=":form" />
+						<ui:param name="mainFormBean" value="#{lifc01Bean}" />
+						<ui:param name="matnrModel" value="#{lifc01Bean.matnrModel}" />
+					</ui:include>
+				</f:view>
+			</div>
+
+		</div>
+	</div>
+
+	<script>
+		function countSumm(oTr) {
+			var sTableDivId = "form\\:itemsListTable";
+			var oTrs = $('#' + sTableDivId).find('table').find('tbody')
+					.children('tr');
+			var totalSumm = 0;
+			var counter = 0;
+			oTrs.each(function() {
+				var quantity = $(this).find(
+						"input#form\\:itemsListTable\\:" + counter
+								+ "\\:qunatity").val() * 1;
+				var summ = $(this).find(
+						"input#form\\:itemsListTable\\:" + counter + "\\:summ")
+						.val() * 1;
+				if (oTr.data('ri') == $(this).data('ri')) {
+					var unitPrice = parseInt((summ / quantity) * 100) / 100; //Math.round(summ/quantity * 100)/100;
+					$(this).find(
+							"input#form\\:itemsListTable\\:" + counter
+									+ "\\:unit_price").val(unitPrice);
+				}
+				counter++;
+				totalSumm += summ;
+			});
+			$("#form\\:total_summ").val(parseInt(totalSumm * 100) / 100);
+		}
+
+		function removeRow(el) {
+			$(el).closest('tr').remove();
+		}
+	</script>
+
+</h:body>
+</html>

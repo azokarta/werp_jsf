@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh" content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml"/>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	
+	<h:outputStylesheet library="css" name="reports/finance/kreditor/rfklist.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.fosa']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,fosaBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+								
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:tabView id = "tabView" cache="false" activeIndex="#{fosaBean.tabindex}" >
+									<p:ajax event="tabChange"  update="searchPanelGridId bsegScrollPanel"/>
+							        <p:tab title="#{msg.search_options}">
+							        	<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" id="searchPanelGridId">
+							        		 <p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column colspan="3">
+							        		<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{fosaBean.p_searchTable.bukrs}">
+							        			<p:ajax update="p_branch_id" />
+							        			<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu>
+											</p:column>
+							        		</p:row>
+										    <p:row>
+        										<p:column><h:outputLabel value = "#{msg.branch}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectOneMenu id="p_branch_id"
+														value="#{fosaBean.p_searchTable.branch_id}">
+														<f:selectItem itemLabel="" itemValue="0" />
+														
+														<f:selectItems value="#{branchF4Bean.getByBukrsOrBusinessArea(fosaBean.p_searchTable.bukrs,userinfo.bukrs,'','', 0,userinfo.branch_id)}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}">
+														</f:selectItems>
+													</p:selectOneMenu>
+												</p:column>
+											</p:row>
+ 
+											<p:row>
+        										<p:column colspan="4" style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{fosaBean.to_search}"/></p:column>
+        									</p:row>
+    									</p:panelGrid>
+							        
+							            
+							        </p:tab>
+							        <p:tab title="#{msg.result}">
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel"
+										>
+										<p:toolbar styleclass="mp_toolbar">
+								<f:facet name="left">
+									<p:commandButton type="push" value="#{msg.save}" id="saveButton"
+										icon="ui-icon ui-icon-check"
+										actionListener="#{fosaBean.to_save}" />
+								</f:facet>
+							</p:toolbar>
+										<p:dataTable value="#{fosaBean.l_outputTable}" var="o" paginator="true" rows="30" widgetVar="50"  id="bsegTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											
+											<p:columnGroup type="header">
+										            <p:row>
+										             	<p:column sortBy="#{o.staff_id}" headerText="ID" />	
+										                <p:column sortBy="#{o.bukrs}" headerText="#{msg['bkpf.bukrs.long']}" />
+										                <p:column sortBy="#{o.branch_name}" headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column sortBy="#{o.fio}" headerText="#{msg.fio}" />										                
+										                <p:column sortBy="#{o.amount2}"  headerText="#{msg.accrued_prem_bon}" />
+										                <p:column sortBy="#{o.amount4}"  headerText="#{msg.accrued}" />
+										                <p:column sortBy="#{o.amount3}"  headerText="#{msg.deducted}" />
+										                <p:column sortBy="#{o.amount}"  headerText="#{msg['logistics.total_summ']}" />
+										                <p:column sortBy="#{o.waers}" headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column sortBy="#{o.approve}" headerText="#{msg['approve']}" />
+										                <p:column sortBy="#{o.text}" headerText="#{msg['bkpf.bktxt.long']}" />
+										                <p:column headerText="#{msg['detail']}" />
+										                <p:column headerText="#{msg['actions']}" />
+										            </p:row>
+										        </p:columnGroup>
+											<p:column>
+												<h:outputText value="#{o.staff_id}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.bukrs}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.branch_name}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.fio}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.amount2}" ><f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.amount4}" ><f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.amount3}" ><f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.amount}" ><f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											<p:column>
+											
+												<p:selectOneMenu value="#{o.approve}"  rendered="#{o.editable}" >
+													<f:selectItem itemLabel="#{msg.correct}" itemValue="0" />
+													<f:selectItem itemLabel="#{msg.incorrect}" itemValue="1" />
+												</p:selectOneMenu>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.text}" />
+											</p:column>
+											
+											<p:column>
+												<p:commandButton value = "Детали" type="push"  actionListener="#{fosaBean.findDetails(o.staff_id)}" oncomplete="PF('viewDetailed').show();"/>
+											</p:column>
+											<p:column>
+									<p:button target="_blank" outcome="/hr/staff/View.xhtml?staffId=#{o.staff_id}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton1" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+								</p:column>
+											
+										</p:dataTable>
+
+									</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							        <p:tab title="#{msg.fosa_unconfirmed_branches}">
+							            <div class="wrapRTClass">
+									<p:dataTable value="#{fosaBean.l_bb}" var="o" paginator="true" rows="30" widgetVar="150"  id="l_bb"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											
+											<p:columnGroup type="header">
+										            <p:row>
+										                <p:column sortBy="#{o.branch_name}" headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column sortBy="#{o.amount_not_approved}" headerText="#{msg['fosa_unconfirmed_numbers']}" />
+										            </p:row>
+										        </p:columnGroup>
+											
+											<p:column>
+												<h:outputText value="#{o.branch_name}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.amount_not_approved}" />
+											</p:column>
+											
+											
+											
+										</p:dataTable>
+
+								</div>
+							        </p:tab>
+							    </p:tabView>
+
+
+
+
+							<p:dialog header="Детали" widgetVar="viewDetailed"
+							dynamic="true" width="900" height="500">
+								<div id="viewDet" class="wrapRTClass">
+									<p:dataTable value="#{fosaBean.l_outputTableDetailed}" var="o" rows="50"
+                         					paginator="true"
+											id="outputTableDetailed"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+
+
+											<p:column sortBy="#{o.staff_name}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.fio}" /></f:facet>
+												<h:outputText value="#{o.staff_name}" />
+											</p:column>
+											<p:column sortBy="#{o.branch_name}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.branch}" /></f:facet>
+												<h:outputText value="#{o.branch_name}" />
+											</p:column>
+											<p:column sortBy="#{positionF4Bean.getName(o.position_id)}">
+												<f:facet name="header"><h:outputLabel value = "Position" /></f:facet>
+												<h:outputText id = "position" value="#{positionF4Bean.getName(o.position_id,systemLocale.currentLocale)}" />
+											</p:column>
+											<p:column sortBy="#{o.amount}"> 
+												<f:facet name="header"><h:outputLabel value = "#{msg.amount}" /></f:facet>
+												<h:inputText value="#{o.amount}" size="15" id = "amount1" autocomplete="off"
+														maxlength="10" styleClass="input1" converterMessage="Please enter digits only." disabled="true"> 
+														<f:convertNumber pattern="#,###,##0.00" /> 
+														</h:inputText>
+													
+														
+											</p:column>
+											<p:column sortBy="#{o.waers}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.currency}" /></f:facet>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											
+											<p:column sortBy="#{bonusTypeF4Bean.getBonusTypeNameString(o.type,systemLocale.currentLocale)}">
+												<f:facet name="header"><h:outputLabel value = "#{msg.type}" /></f:facet>
+												<h:outputText value="#{bonusTypeF4Bean.getBonusTypeNameString(o.type)}" />
+											</p:column>
+											
+											<p:column sortBy="#{matnrF4Bean.getName(o.matnr)}">
+												<f:facet name="header"><h:outputLabel value = "#{msg['bseg.matnr.long']}" /></f:facet>
+												<h:outputText id = "matnr" value="#{matnrF4Bean.getName(o.matnr)}" />
+											</p:column>
+											<p:column sortBy="#{o.matnr_count}">
+												<f:facet name="header"><h:outputLabel value = "#{msg['bseg.menge.long']}" /></f:facet>
+												<h:outputText id = "matnr_count" value="#{o.matnr_count}" />
+											</p:column>
+											<p:column sortBy="#{o.contract_number}">
+												<f:facet name="header"><h:outputLabel value = "#{msg['dmsc.contractNo']}" /></f:facet>
+												<h:outputText id = "plan_amount" value="#{o.contract_number}" />
+												<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{o.contract_number}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton1" 
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+											</p:column>
+											<p:column sortBy="#{o.bldat}">
+												<f:facet name="header"><h:outputLabel value = "#{msg['fosa_date_accrual']}" /></f:facet>
+												<p:calendar id="exrate_date" styleClass="bldat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{o.bldat}" disabled="true">
+												</p:calendar>
+											</p:column>
+											
+											
+										</p:dataTable>
+								</div> 							
+							</p:dialog>
+
+ 
+								
+
+
+
+								
+
+
+
+								
+								
+							</h:form>
+
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

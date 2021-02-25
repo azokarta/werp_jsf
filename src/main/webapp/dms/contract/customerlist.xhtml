@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+	
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("CustomerListForm:sc_fiz_yur_input").value == 1) {
+				document.getElementById("CustomerListForm:sc_birthday_input").value = null;
+				document.getElementById("CustomerListForm:sc_birthday_input").disabled = true;
+				document.getElementById("CustomerListForm:sc_passport_id").value = null;
+				document.getElementById("CustomerListForm:sc_passport_id").disabled = true;
+				document.getElementById("CustomerListForm:sc_firstname").value = null;
+				document.getElementById("CustomerListForm:sc_firstname").disabled = true;
+				document.getElementById("CustomerListForm:sc_lastname").value = null;
+				document.getElementById("CustomerListForm:sc_lastname").disabled = true;
+				document.getElementById("CustomerListForm:sc_middlename").value = null;
+				document.getElementById("CustomerListForm:sc_middlename").disabled = true;
+				document.getElementById("CustomerListForm:sc_name").disabled = false;
+				document.getElementById("CustomerListForm:sc_iin_bin").disabled = false;
+			} else if (document.getElementById("CustomerListForm:sc_fiz_yur_input").value == 2) {
+				document.getElementById("CustomerListForm:sc_birthday_input").disabled = false;
+				document.getElementById("CustomerListForm:sc_passport_id").disabled = false;
+				document.getElementById("CustomerListForm:sc_firstname").disabled = false;
+				document.getElementById("CustomerListForm:sc_lastname").disabled = false;
+				document.getElementById("CustomerListForm:sc_middlename").disabled = false;
+				document.getElementById("CustomerListForm:sc_iin_bin").disabled = false;
+
+				document.getElementById("CustomerListForm:sc_name").value = null;
+				document.getElementById("CustomerListForm:sc_name").disabled = true;
+			} else {
+				document.getElementById("CustomerListForm:sc_iin_bin").value = null;
+				document.getElementById("CustomerListForm:sc_iin_bin").disabled = true;
+				document.getElementById("CustomerListForm:sc_birthday_input").value = null;
+				document.getElementById("CustomerListForm:sc_birthday_input").disabled = true;
+				document.getElementById("CustomerListForm:sc_passport_id").value = null;
+				document.getElementById("CustomerListForm:sc_passport_id").disabled = true;
+				document.getElementById("CustomerListForm:sc_firstname").value = null;
+				document.getElementById("CustomerListForm:sc_firstname").disabled = true;
+				document.getElementById("CustomerListForm:sc_lastname").value = null;
+				document.getElementById("CustomerListForm:sc_lastname").disabled = true;
+				document.getElementById("CustomerListForm:sc_middlename").value = null;
+				document.getElementById("CustomerListForm:sc_middlename").disabled = true;
+				document.getElementById("CustomerListForm:sc_name").value = null;
+				document.getElementById("CustomerListForm:sc_name").disabled = true;
+			}
+		}
+	</script>
+	
+	<p:dialog header="#{msg['dmsc.customer']}" modal="true"
+		appendTo="@(body)" widgetVar="customerWidget" dynamic="true"
+		width="900" height="500" resizable="false">
+
+		<h:form id="CustomerListForm">
+
+			<div id="sc_div">
+				<fieldset class="sc_FieldSet">
+					<legend>#{msg['dmsc.search']}</legend>
+					<table>
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.fizyur']}" /></td>
+							<td><p:selectOneMenu id="sc_fiz_yur"
+									value="#{formBean.searchCustomer.fiz_yur}"
+									onchange="birthdayDisable()">
+									<f:selectItem itemLabel="#{msg['dmsc.plselect']}" itemValue="0" />
+									<f:selectItem itemLabel="#{msg['dmsc.fiz']}" itemValue="2" />
+									<f:selectItem itemLabel="#{msg['dmsc.yur']}" itemValue="1" />
+								</p:selectOneMenu></td>
+							<td><h:outputLabel value="#{msg['dmsc.name']}" /></td>
+							<td><h:inputText id="sc_firstname" maxlength="45"
+									autocomplete="off"
+									value="#{formBean.searchCustomer.firstname}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.IINBIN']}" /></td>
+							<td><h:inputText id="sc_iin_bin" maxlength="45"
+									autocomplete="off" value="#{formBean.searchCustomer.iin_bin}" /></td>
+							<td><h:outputLabel value="#{msg['dmsc.lastname']}" /></td>
+							<td><h:inputText id="sc_lastname" maxlength="45"
+									autocomplete="off"
+									value="#{formBean.searchCustomer.lastname}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.yurname']}" /></td>
+							<td><h:inputText id="sc_name" maxlength="45"
+									autocomplete="off" value="#{formBean.searchCustomer.name}" /></td>
+							<td><h:outputLabel value="#{msg['dmsc.midname']}" /></td>
+							<td><h:inputText id="sc_middlename" maxlength="45"
+									autocomplete="off"
+									value="#{formBean.searchCustomer.middlename}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.country']}" /></td>
+							<td><p:selectOneMenu id="sc_country"
+									value="#{formBean.searchCustomer.country_id}">
+									<f:selectItem itemLabel="" itemValue="0" />
+									<f:selectItems value="#{countryF4Bean.country_list}"
+										var="wa_country" itemLabel="#{wa_country.country}"
+										itemValue="#{wa_country.country_id}" />
+								</p:selectOneMenu></td>
+							<td><h:outputLabel value="#{msg['dmsc.bdate']}" /></td>
+							<td><p:calendar id="sc_birthday" styleClass="bldat"
+									pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{formBean.searchCustomer.birthday}"
+									converterMessage="Date is invalid.">
+								</p:calendar></td>
+						</tr>
+
+						<tr>
+							<td><p:commandButton
+									actionListener="#{formBean.to_search_customer}"
+									value="#{msg['dmsc.search']}" update=":messages" /></td>
+							<td><p:commandButton icon="ui-icon-newwin" type="push"
+									oncomplete="PF('newCustomerWidget').show();"
+									rendered="#{!formBean.ref}"
+									value="#{msg['dmsc.addcustomer']}" update=":messages" /></td>
+							<td><h:outputLabel value="#{msg['dmsc.passportNo']}" /></td>
+							<td><h:inputText id="sc_passport_id" maxlength="45"
+									autocomplete="off"
+									value="#{formBean.searchCustomer.passport_id}" /></td>
+						</tr>
+					</table>
+
+				</fieldset>
+			</div>
+			<br />
+
+
+			<p:dataTable id="customerTable" var="cus" rowKey="#{cus.id}"
+				value="#{formBean.p_customer_list}" scrollable="true" scrollHeight="212"
+				emptyMessage="#{msg['dmsc.emptyRec']}" selectionMode="single"
+				selection="#{formBean.selectedCustomer}">
+				<f:facet name="header">
+
+					<p:commandButton process="customerTable"
+						actionListener="#{formBean.assignFoundCustomer}"
+						onclick="PF('customerWidget').hide();"
+						value="#{msg['dmsc.select']}" />
+				</f:facet>
+
+				<p:column headerText="#{msg['dmsc.fizyur']}">
+					<p:selectOneMenu id="fiz_yur" value="#{cus.fiz_yur}"
+						disabled="true">
+						<f:selectItem itemLabel="#{msg['dmsc.fiz']}" itemValue="2" />
+						<f:selectItem itemLabel="#{msg['dmsc.yur']}" itemValue="1" />
+					</p:selectOneMenu>
+				</p:column>
+				<p:column headerText="#{msg['dmsc.IINBIN']}">
+					<h:outputText value="#{cus.iin_bin}" />
+				</p:column>
+				<p:column headerText="#{msg['dmsc.yurname']}">
+					<h:outputText value="#{cus.name}" />
+				</p:column>
+				<p:column headerText="#{msg['dmsc.name']}">
+					<h:outputText value="#{cus.firstname}" />
+				</p:column>
+				<p:column headerText="#{msg['dmsc.lastname']}">
+					<h:outputText value="#{cus.lastname}" />
+				</p:column>
+				<p:column headerText="#{msg['dmsc.midname']}">
+					<h:outputText value="#{cus.middlename}" />
+				</p:column>
+				<p:column headerText="#{msg['dmsc.bdate']}">
+					<p:calendar id="birthday" styleClass="bldat" pattern="dd.MM.yyyy"
+						mask="true" autocomplete="off" value="#{cus.birthday}"
+						converterMessage="Date is invalid." disabled="true">
+					</p:calendar>
+				</p:column>
+				<p:column headerText="#{msg['dmsc.passportNo']}">
+					<h:outputText value="#{cus.passport_id}" />
+					<h:link outcome="/hr/customer/hrc03.xhtml" target="_blank"
+						styleClass="urlLinks">
+						<f:param name="customerId" value="#{cus.id}" />
+						<h:graphicImage value="/img/link.png"
+							style="float:right; width:15px; height:15px;" />
+					</h:link>
+				</p:column>
+			</p:dataTable>
+
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

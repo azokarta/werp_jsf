@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="CustomerListDlg" widgetVar="CustomerListDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="#{msg['hr.customer.customer_list']}" width="800" height="500">
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-12">
+				<h:form id="CustomerDlgSearchForm"
+					onkeypress="if(event.keyCode == 13){document.getElementById('CustomerDlgSearchForm:CustomerDlgSearchBtn').click();return false;}">
+					<h:panelGrid columns="4" cellpadding="10">
+						<p:outputLabel value="#{msg['name']}"></p:outputLabel>
+						<p:inputText value="#{customerModel.searchModel.name}"></p:inputText>
+
+						<p:outputLabel></p:outputLabel>
+						<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+							id="CustomerDlgSearchBtn"
+							update=":CustomerListDlgForm:CustomerListDlgTable"></p:commandButton>
+					</h:panelGrid>
+				</h:form>
+			</div>
+		</div>
+
+		<h:form id="CustomerListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="CustomerListDlgTable" var="item"
+					rowKey="#{item.id}" value="#{mainFormBean.customerModel}"
+					emptyMessage="#{msg.no_records}" selectionMode="single" paginator="true"
+					rows="30" lazy="true">
+					<p:ajax event="rowDblselect"
+						listener="#{mainFormBean.onSelectCustomer}" />
+					
+					<p:column headerText="ID" sortBy="#{item.id}">
+						<h:outputText value="#{item.id}" />
+					</p:column>
+					
+					<p:column headerText="#{msg['name']}">
+						<h:outputText value="#{item.name}" />
+					</p:column>
+					
+				</p:dataTable>
+			</h:panelGroup>
+		</h:form>
+		
+	</p:dialog>
+
+</ui:composition>
+</html>

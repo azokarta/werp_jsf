@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+	<p:dialog id="AddressListDlg" widgetVar="AddressListDlg" modal="true"
+		resizable="false" appendTo="@(body)" header="#{msg['address_list']}"
+		width="900px">
+
+		<h:form id="AddressListForm">
+
+			<p:dataTable id="addrListTable" var="item" selectionMode="single"
+				rowKey="#{item.addr_id}" value="#{formBean.addrList}"
+				selection="#{formBean.selectedAddr}"
+				emptyMessage="#{msg.no_records}" paginator="true" rows="10">
+
+				<f:facet name="header">
+					<p:outputPanel>
+						<p:commandButton id="selectAddrBtn" icon="ui-icon-check"
+							value="Select" update=":messages"
+							actionListener="#{formBean.assignSelectedAddr}"
+							oncomplete="PF('AddressListDlg').hide()" />
+						<p:commandButton id="toggler" type="button"
+							style="float:right"
+							icon="ui-icon-calculator" />
+						<p:commandButton icon="ui-icon-plus" type="push" 
+							value="#{msg['new_address']}" style="float:right" update=":messages"
+							actionListener="#{formBean.prepareNewAddress}">
+							<f:setPropertyActionListener
+								target="#{formBean.p_search_position_id}" value="11" />
+						</p:commandButton>
+						
+						<p:columnToggler datasource="addrListTable" trigger="toggler" />
+					</p:outputPanel>
+				</f:facet>
+				<p:ajax event="rowSelect" update="selectAddrBtn" />
+				<p:ajax event="rowUnselect" update="selectAddrBtn" />
+
+				<p:column headerText="#{msg['dmsc.address_type']}">
+					<p:selectOneMenu id="servBranch" update="messages"
+						value="#{item.addrType}" disabled="true">
+						<f:selectItem itemLabel="#{msg['not_found']}" itemValue="0" />
+						<f:selectItems value="#{formBean.addrType_list}" var="wa_at"
+							itemLabel="#{wa_at.getName(systemLocale.currentLocale)}" itemValue="#{wa_at.id}" />
+					</p:selectOneMenu>
+				</p:column>
+				<p:column headerText="#{msg['dmsc.address']}" width="30%">
+					<h:outputText value="#{item.address}" />
+				</p:column>
+				<p:column headerText="#{msg['hr.customer.telephone']}">
+					<h:outputText value="#{item.telDom}" />
+				</p:column>
+				<p:column headerText="#{msg['hr.customer.mobile']}">
+					<h:outputText value="#{item.telMob1}" />
+				</p:column>
+				<p:column headerText="#{msg['dmsc.mob_add']}">
+					<h:outputText value="#{item.telMob2}" />
+				</p:column>
+				<f:facet name="footer">
+					<span>#{msg['dmsc.foundTotal']}: #{formBean.addrList.size()}</span>
+				</f:facet>
+
+			</p:dataTable>
+
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

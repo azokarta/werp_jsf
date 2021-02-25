@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<f:metadata>
+	<f:viewParam name="service_number"
+		value="#{service03Bean.service_number}" />
+	<f:event type="preRenderView" listener="#{service03Bean.init}" />
+</f:metadata>
+
+<h:head>
+	<title>Просмотр сервиса</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Сервис > Просмотр сервиса" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Просмотр сервиса" />
+				</ui:include>
+			</ui:insert>
+			<div id="content" class="container">
+				<f:view>
+
+					<h:form id="form">
+
+						<p:growl id="messages" sticky="false" showDetail="true" />
+
+						<div class="ui-grid-row" style="padding-bottom: 10px;">
+
+							<fieldset style="border: 1px solid #ddd;">
+								<legend>Заголовок сервиса</legend>
+
+								<div style="display: inline; float: left; padding-right: 25px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="Компания" /></td>
+											<td><p:selectOneMenu id="bukrs" disabled="true"
+													value="#{service03Bean.p_service.bukrs}">
+													<f:selectItem itemLabel="Выберите компанию" itemValue="0" />
+													<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+														var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+														itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Сервис-филиал " /></td>
+											<td><p:selectOneMenu id="branch" disabled="true"
+													value="#{service03Bean.p_service.branch_id}">
+													<f:selectItem itemLabel="Выберите филиал" itemValue="0" />
+													<f:selectItems value="#{branchF4Bean.branch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Категория " /></td>
+											<td><p:selectOneMenu id="category" disabled="true"
+													value="#{service03Bean.p_service.category}">
+													<f:selectItem itemLabel="Выберите категорию" itemValue="0" />
+													<f:selectItem itemLabel="Уборочная система"
+														itemValue="1" />
+													<f:selectItem itemLabel="Система очистки воды"
+														itemValue="2" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><p:outputLabel value="Дата" /></td>
+											<td><p:calendar id="contract_date"
+													styleClass="dateField" disabled="true"
+													value="#{service03Bean.p_service.date_open}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+										</tr>
+
+										<tr>
+											<td><p:outputLabel value="Статус " /></td>
+											<td><p:selectOneMenu id="order_status_id"
+													value="#{service03Bean.p_service.serv_status}"
+													disabled="true">
+													<f:selectItem itemLabel="Новый" itemValue="1" />
+													<f:selectItem itemLabel="В обработке" itemValue="2" />
+													<f:selectItem itemLabel="Обработан" itemValue="3" />
+													<f:selectItem itemLabel="Выполнен" itemValue="4" />
+													<f:selectItem itemLabel="Возврат" itemValue="5" />
+													<f:selectItem itemLabel="Отменен" itemValue="6" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Номер сервиса " /></td>
+											<td><h:inputText id="service-num" size="12"
+													autocomplete="off"
+													value="#{service03Bean.p_service_search.serv_num}"
+													disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Вид сервиса" /></td>
+											<td><p:selectOneMenu id="serv_type"
+													value="#{service03Bean.p_service.serv_type}"
+													disabled="true">
+													<f:selectItem itemLabel="Выберите вид сервиса"
+														itemValue="0" />
+													<f:selectItem itemLabel="Замена фильтров" itemValue="1" />
+													<f:selectItem itemLabel="Установка" itemValue="2" />
+													<f:selectItem itemLabel="Сервисное обслуживание"
+														itemValue="3" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Мастер " /></td>
+											<td><p:inputText id="stuff_master" size="30"
+													autocomplete="off"
+													value="#{service03Bean.p_master.fullFIO}" disabled="true" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Оператор " /></td>
+											<td><p:inputText id="stuff_oper" size="30"
+													autocomplete="off" value="#{service03Bean.p_oper.fullFIO}"
+													disabled="true" /></td>
+										</tr>
+
+									</table>
+								</div>
+
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+
+										<tr>
+											<td><h:outputLabel value="Заявка " for="application" /></td>
+											<td><p:inputText id="application" size="30"
+													disabled="true"
+													value="#{service03Bean.p_service.serv_app_num}"
+													title="Заявка" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Договор" for="contract" /></td>
+											<td><p:inputText id="contract" size="30" disabled="true"
+													value="#{service03Bean.p_service.contract_info}"
+													title="Договор" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Товар " /></td>
+											<td><p:inputText id="tovar" size="30" disabled="true"
+													value="#{service03Bean.p_tovar_name}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Серийный №" /></td>
+											<td><p:inputText id="tovar_sn" size="30" disabled="true"
+													value="#{service03Bean.p_service.tovar_sn}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Ф.И.О. клиента " /></td>
+											<td><p:inputText id="cusLastName" size="50"
+													disabled="true" value="#{service03Bean.p_service.customer_firstname}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Адрес" /></td>
+											<td><p:inputText id="cusAddr" size="50" disabled="true"
+													value="#{service03Bean.p_service.addr}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Тел.:" /></td>
+											<td><p:inputText id="cusTel" size="30" disabled="true"
+													value="#{service03Bean.p_service.tel}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Примечание &nbsp;" /></td>
+											<td><p:inputText id="info" size="50" autocomplete="off"
+													value="#{service03Bean.p_service.info}" disabled="true" />
+												<h:outputLabel id="mainCurRateToLocalCurrency"
+													rendered="false"
+													value=" &nbsp; #{service03Bean.p_mcRatetext}"
+													style="margin-bottom:10px;" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Сервис пакет &nbsp;"
+													rendered="#{!service03Bean.disServPacket}" /></td>
+											<td><p:selectOneMenu id="ServicePacket" disabled="true"
+													rendered="#{!service03Bean.disServPacket}"
+													value="#{service03Bean.p_service.serv_packet_id}">
+													<f:selectItem itemLabel="Выберите пакет" itemValue="0" />
+													<f:selectItems value="#{service03Bean.spList}" var="wa_sp"
+														itemLabel="#{wa_sp.name}" itemValue="#{wa_sp.id}" />
+												</p:selectOneMenu></td>
+										</tr>
+									</table>
+								</div>
+
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="Дата покупки " /></td>
+											<td><p:calendar id="conDate" styleClass="dateField"
+													disabled="true"
+													value="#{service03Bean.p_contract.contract_date}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Дата выдачи " /></td>
+											<td><p:calendar id="conDateIssue" styleClass="dateField"
+													disabled="true"
+													value="#{service03Bean.p_contract.matnr_release_date}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Срок гарантии " /></td>
+											<td><p:inputText id="conWarMon" size="5" disabled="true"
+													value="#{service03Bean.p_contract.warranty}" /> <p:outputLabel
+													value=" months" /></td>
+										</tr>
+									</table>
+								</div>
+							</fieldset>
+						</div>
+
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="Редактировать"
+									id="save_button" align="right" icon="ui-icon ui-icon-pencil"
+									actionListener="#{service03Bean.toEditPage}" update="messages">
+								</p:commandButton>
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+								<p:commandButton type="push" value="Принять оплату"
+									id="callPayment" align="right"
+									icon="ui-icon ui-icon-transferthick-e-w"
+									disabled="#{service03Bean.disPayBtn}"
+									actionListener="#{service03Bean.toPaymentPage}"
+									update="messages">
+								</p:commandButton>
+								<p:button target="_blank" value="Открыть фин.док."
+									outcome="/accounting/reports/fa03?belnr=#{service03Bean.belnr}&#38;gjahr=#{service03Bean.gjahr}&#38;bukrs=#{service03Bean.p_service.bukrs}"
+									icon="ui-icon-zoomin" title="View" id="viewButton4"
+									style="float:right;margin-left:2px;margin-right:2px;"
+									disabled="#{service03Bean.disFinBtn}">
+								</p:button>
+							</f:facet>
+
+							<f:facet name="right">
+								<p:outputLabel>Сервис №: </p:outputLabel>
+								<p:inputText value="#{service03Bean.p_service_search.serv_num}" />
+								<p:commandButton style="margin-left: 5px"
+									actionListener="#{service03Bean.to_search}" value=" Найти"
+									styleClass="add_button" icon="ui-icon-search"
+									updates="messages" />
+							</f:facet>
+						</p:toolbar>
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<div class="wrapRTClass">
+								<p:scrollPanel style="width: 100%; height:100%"
+									easing="easeOutElastic" id="olScrollPanel">
+
+									<p:dataTable value="#{service03Bean.servPosListTable}" var="o"
+										widgetVar="dataTableWidgetVar" id="olTable"
+										emptyMessage="Нет записей" styleClass="employeeTable"
+										headerClass="employeeTableHeader" sortBy="#{o.group}"
+										rowClasses="employeeTableOddRow,employeeTableEvenRow"
+										update="messages">
+
+										<p:column style="width: 5%;">
+											<f:facet name="header">#</f:facet>
+											<h:outputText id="b_index" value="#{o.index}"
+												styleClass="index" disabled="true" />
+										</p:column>
+
+										<p:column style="width: 15%;">
+											<f:facet name="header">Операция</f:facet>
+											<p:selectOneMenu id="serv_oper"
+												value="#{o.servPos.operation}" disabled="true">
+												<f:selectItem itemLabel="ПРОДАЖА_ЗАП" itemValue="1" />
+												<f:selectItem itemLabel="УСЛУГА" itemValue="2" />
+											</p:selectOneMenu>
+										</p:column>
+
+										<p:column style="width: 35%;">
+											<f:facet name="header">Материал</f:facet>
+											<h:inputText id="b_matnr" value="#{o.matnr.text45}" size="35"
+												maxlength="45" styleClass="input1" disabled="true" />
+											<p:commandButton icon="ui-icon-newwin" type="push" id="mat"
+												onclick="PF('matnrWidget').show();" styleClass="f4button"
+												disabled="#{o.dis_mat}">
+												<f:setPropertyActionListener
+													target="#{service03Bean.p_spTableRow}" value="#{o}" />
+											</p:commandButton>
+										</p:column>
+										
+										<p:column>
+											<f:facet name="header">FNo</f:facet>
+											<p:selectOneMenu id="fno" value="#{o.servPos.fno}"
+												disabled="true">
+												<f:selectItem itemLabel="0" itemValue="0" />
+												<f:selectItem itemLabel="1" itemValue="1" />
+												<f:selectItem itemLabel="2" itemValue="2" />
+												<f:selectItem itemLabel="3" itemValue="3" />
+												<f:selectItem itemLabel="4" itemValue="4" />
+												<f:selectItem itemLabel="5" itemValue="5" />
+											</p:selectOneMenu>
+										</p:column>
+
+										<p:column style="width: 20%;">
+											<f:facet name="header">Описание</f:facet>
+											<h:inputText value="#{o.servPos.info2}" size="35"
+												disabled="true" maxlength="145" styleClass="input50"
+												id="infoText" />
+										</p:column>
+
+										<p:column style="width: 15%;" rendered="false">
+											<f:facet name="header">В гарантии</f:facet>
+											<p:selectOneMenu id="warranty" value="#{o.servPos.warranty}"
+												disabled="true">
+												<f:selectItem itemLabel="Вне гарантии" itemValue="0" />
+												<f:selectItem itemLabel="В гарантии" itemValue="1" />
+											</p:selectOneMenu>
+										</p:column>
+
+										<p:column style="width: 5%;">
+											<f:facet name="header">Гар.</f:facet>
+											<p:selectBooleanCheckbox id="warrantyCheckBox"
+												value="#{o.warranty}" disabled="true">
+											</p:selectBooleanCheckbox>
+										</p:column>
+
+										<p:column style="width: 10%;">
+											<f:facet name="header">Цена <h:outputLabel
+													value=" #{service03Bean.p_main_currency}" />
+											</f:facet>
+											<h:inputText id="unitPrice" value="#{o.servPos.matnr_price}"
+												size="10" maxlength="10" styleClass="input1" disabled="true">
+												<f:convertNumber pattern="#0.00" />
+											</h:inputText>
+										</p:column>
+
+										<p:column style="width: 10%;">
+											<f:facet name="header">Количество</f:facet>
+											<h:inputText id="b_menge" value="#{o.servPos.quantity}"
+												size="8" maxlength="10" styleClass="input1" disabled="true">
+
+												<f:convertNumber pattern="#0" />
+											</h:inputText>
+											<h:outputLabel> шт.</h:outputLabel>
+										</p:column>
+
+										<p:column style="width: 10%;" rendered="true">
+											<f:facet name="header">Сумма в <h:outputText
+													id="bkpf_waers2" styleClass="waers"
+													value="#{service03Bean.p_service.currency}" />
+											</f:facet>
+											<h:inputText id="b_wrbtr" value="#{o.sum_sc}" size="15"
+												maxlength="15" styleClass="input1" disabled="true">
+												<f:convertNumber pattern="#0.00" />
+											</h:inputText>
+										</p:column>
+
+										<p:column style="width: 20%;" rendered="false">
+											<f:facet name="header">Примечание</f:facet>
+
+											<h:inputText value="#{o.servPos.info2}" size="35"
+												maxlength="35" styleClass="input50" id="infoText2" />
+										</p:column>
+
+										<p:summaryRow id="summaryRow">
+											<p:column colspan="7" style="text-align:right">
+												<h:outputText value="Итоги:" />
+											</p:column>
+											<p:column colspan="1" flow="right">
+												<h:outputText value="#{service03Bean.p_service.currency} "
+													id="summarySCurrency" />
+												<h:outputText value="#{service03Bean.sum_wrbtr}"
+													id="summarySC">
+												</h:outputText>
+											</p:column>
+
+										</p:summaryRow>
+									</p:dataTable>
+								</p:scrollPanel>
+							</div>
+						</div>
+
+
+						<p:outputPanel rendered="#{!service03Bean.disServPacket}">
+							<h4>Список запчастей к которым присваиваются гарантии</h4>
+						</p:outputPanel>
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<div class="wrapRTClass">
+								<p:scrollPanel style="height:100%" easing="easeOutElastic"
+									id="spWarScrollPanel"
+									rendered="#{!service03Bean.disServPacket}">
+
+									<p:dataTable value="#{service03Bean.spWarL}" var="o"
+										widgetVar="warTableWidgetVar" id="spWarTable"
+										emptyMessage="Нет записей" styleClass="employeeTable"
+										headerClass="employeeTableHeader" sortBy="#{o.group}"
+										rowClasses="employeeTableOddRow,employeeTableEvenRow"
+										update="messages">
+
+										<p:column>
+											<f:facet name="header">#</f:facet>
+											<h:outputText id="b_index" value="#{o.index}"
+												styleClass="index" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Описание</f:facet>
+											<h:inputText id="infoText" value="#{o.matnr.text45}"
+												size="50" maxlength="145" styleClass="input1"
+												disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Гарантия<br />(в мес.)</f:facet>
+											<h:inputText value="#{o.scMW.war_months}" size="5"
+												maxlength="5" id="war_mon" disabled="true" />
+										</p:column>
+
+									</p:dataTable>
+								</p:scrollPanel>
+
+							</div>
+						</div>
+
+
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<fieldset style="border: 1px solid #ddd;">
+								<legend>Подзаголовок сервиса</legend>
+
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="Сумма:" /></td>
+											<td><p:inputText id="summTotal" size="15"
+													disabled="true"
+													value="#{service03Bean.p_service.summTotal}" /> <p:outputLabel
+													id="totalCurrency"
+													value=" #{service03Bean.p_service.currency}" /></td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel value="Скидка:" /></td>
+											<td><p:inputText id="discountTotal" size="15"
+													disabled="true"
+													value="#{service03Bean.p_service.discount}" /> <p:outputLabel
+													id="discCurrency"
+													value=" #{service03Bean.p_service.currency}" /></td>
+										</tr>
+									
+										<tr>
+											<td><h:outputLabel value="Сумма к оплате:" /></td>
+											<td><p:inputText id="paymentDue" size="15"
+													disabled="true"
+													value="#{service03Bean.p_service.payment_due}" /> <p:outputLabel
+													id="paymnetCurrency"
+													value=" #{service03Bean.p_service.currency}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Оплачено " /></td>
+											<td><p:inputText id="paid" size="15" disabled="true"
+													value="#{service03Bean.p_service.paid}" /> <p:outputLabel
+													id="paidCurrency"
+													value=" #{service03Bean.p_service.currency}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Премия мастера " /></td>
+											<td><p:inputText id="masterPremi" size="15"
+													disabled="true"
+													value="#{service03Bean.p_service.master_premi}" /> <p:outputLabel
+													id="masterCurrency"
+													value=" #{service03Bean.p_service.master_currency}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Премия оператора " /></td>
+											<td><p:inputText id="operPremi" size="15"
+													disabled="true"
+													value="#{service03Bean.p_service.oper_premi}" /> <p:outputLabel
+													id="operCurrency"
+													value=" #{service03Bean.p_service.oper_currency}" /></td>
+										</tr>
+
+									</table>
+								</div>
+
+							</fieldset>
+						</div>
+
+						<p:dialog header="Материал" widgetVar="matnrWidget" dynamic="true"
+							width="500" height="500" id="matnrTableWidget">
+
+							<p:dataTable scrollable="true" scrollHeight="400"
+								id="singleMatnr" var="matnr" rowKey="#{matnr.matnr}"
+								value="#{service03Bean.p_matnr_list}" selectionMode="single"
+								selection="#{service03Bean.selectedMatnr}">
+								<f:facet name="header">
+
+									<p:commandButton
+										actionListener="#{service03Bean.assignSelectedMatnr}"
+										onclick="PF('matnrWidget').hide();" value="Выбрать" />
+								</f:facet>
+
+								<p:column headerText="ID" footerText="ID" style="width:10px">
+									<h:outputText value="#{matnr.matnr.matnr}" />
+								</p:column>
+								<p:column headerText="Название" footerText="Название"
+									style="width:200px">
+									<h:outputText value="#{matnr.matnr.text45}" />
+								</p:column>
+								<p:column headerText="Цена" footerText="Цена" style="width:50px">
+									<h:outputText value="#{matnr.price}" />
+								</p:column>
+								<p:column headerText="Валюта" footerText="Валюта"
+									style="width:50px">
+									<h:outputText value="#{matnr.currency}" />
+								</p:column>
+
+							</p:dataTable>
+						</p:dialog>
+
+					</h:form>
+				</f:view>
+
+			</div>
+		</div>
+	</div>
+
+</h:body>
+</html>

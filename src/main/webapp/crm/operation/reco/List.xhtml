@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>Список рекомендации</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{crmRecoListBean.breadcrumb}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{crmRecoListBean.pageHeader}" />
+			</ui:include>
+
+			<h:form id="form">
+				<p:tabView dynamic="true" cache="true" id="tab"
+					rendered="#{!crmRecoListBean.showItemsCreateForm}">
+					<p:ajax event="tabChange" listener="#{crmRecoListBean.onTabChange}"
+						update=":messages" />
+					<p:tab title="Для демо секретаря"
+						id="#{crmRecoListBean.getTabForDemosecId()}">
+						<div class="ui-grid ui-grid-responsive">
+							<p:panel
+								rendered="#{crmRecoListBean.currTabId == crmRecoListBean.getTabForDemosecId()}">
+								<div class="ui-grid-row">
+									<ui:include src="ListSearchForm.xhtml">
+										<ui:param name="prefix" value="demosec"></ui:param>
+									</ui:include>
+									<!--  -->
+									<ui:include src="ListItemsTable.xhtml">
+										<ui:param name="prefix" value="demosec"></ui:param>
+									</ui:include>
+								</div>
+							</p:panel>
+						</div>
+					</p:tab>
+					<p:tab title="Для дилеров"
+						id="#{crmRecoListBean.getTabForDealerId()}">
+						<p:panel
+							rendered="#{crmRecoListBean.currTabId == crmRecoListBean.getTabForDealerId()}">
+							<div class="ui-grid-row">
+								<ui:include src="ListSearchForm.xhtml">
+									<ui:param name="prefix" value="dealer"></ui:param>
+								</ui:include>
+								<!--  -->
+								<ui:include src="ListItemsTable.xhtml">
+									<ui:param name="prefix" value="dealer"></ui:param>
+								</ui:include>
+							</div>
+						</p:panel>
+					</p:tab>
+				</p:tabView>
+			</h:form>
+
+			<ui:include src="CreateUpdateDialog.xhtml"></ui:include>
+			<ui:include src="CallDialog.xhtml"></ui:include>
+			<p:panel id="CreateItemsPanel">
+				<ui:fragment rendered="#{crmRecoListBean.showItemsCreateForm}">
+					<ui:include src="CreateItemsForm.xhtml">
+						<ui:param name="showCancelButton" value="true"></ui:param>
+						<ui:param name="cancelActionBean" value="#{crmRecoListBean}"></ui:param>
+						<ui:param name="cancelAction" value="hideItemsCreateForm"></ui:param>
+						<ui:param name="showSaveBtn" value="false"></ui:param>
+						<ui:param name="showCustomSaveBtn" value="true"></ui:param>
+						<ui:param name="saveActionBean" value="#{crmRecoListBean}"></ui:param>
+						<ui:param name="saveAction" value="saveItems"></ui:param>
+					</ui:include>
+				</ui:fragment>
+			</p:panel>
+
+			<ui:include src="/crm/operation/call/CreateUpdateDialog.xhtml"></ui:include>
+		</div>
+	</div>
+
+</h:body>
+</html>

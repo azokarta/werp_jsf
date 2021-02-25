@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<ui:include src="/template/sessionTimeOut.xhtml" />
+	 <div class="ui-grid ui-grid-responsive">
+        <div class="ui-grid"  id="menubar">
+        	
+            <ui:insert name="header">
+				<ui:include src="/template/header2.xhtml">
+					<ui:param name="pageTitle"
+						value="#{msg['breadcrumb.serrep1']}" />
+				</ui:include>
+			</ui:insert>
+        </div>
+        <div class="ui-grid">  
+        
+        	<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,serrep1Bean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+            <div class="ui-grid">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+						
+							
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:tabView id = "tabView" cache="false" activeIndex="#{serrep1Bean.tabindex}" >
+									<p:ajax event="tabChange"  update="bsegScrollPanel"/>
+							        <p:tab title="#{msg.search_options}">
+							        	<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" id="searchPanelGridId">
+							        		 <p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column colspan="3">
+							        		<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{serrep1Bean.p_searchTable.bukrs}">
+							        			<p:ajax listener="#{serrep1Bean.updateBranch}"/>
+							        			<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu>
+											</p:column>
+							        		</p:row>
+										    <p:row>
+        										<p:column><h:outputLabel value = "#{msg.branch}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectCheckboxMenu id="p_branch_id" value="#{serrep1Bean.p_searchTable.selectedBranches}" label="Выберите"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												            <f:selectItems value="#{serrep1Bean.p_searchTable.l_branch}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+												        </p:selectCheckboxMenu>
+														
+														
+														
+												</p:column>
+											</p:row>
+											<p:row>
+        										<p:column><h:outputLabel value = "Дата заявки с "/></p:column>
+												<p:column>
+														
+														<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{serrep1Bean.p_searchTable.budat_from}" />	
+														
+												</p:column>
+												<p:column><h:outputLabel value = " по "/></p:column>
+												<p:column>
+														
+														<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{serrep1Bean.p_searchTable.budat_to}" />	
+														
+												</p:column>			
+											</p:row>
+ 
+											<p:row>
+        										<p:column colspan="4" style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{serrep1Bean.to_search}"/></p:column>
+        									</p:row>
+    									</p:panelGrid>
+							        
+							            
+							        </p:tab>
+							        <p:tab title="#{msg.result}" >
+							        
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel">
+										
+										
+										<p:dataTable value="#{serrep1Bean.l_outputTable}" var="o" widgetVar="505"  id="l_outputTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader" rows="100" paginator="true"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											 
+											<p:columnGroup type="header">												
+										            <p:row>
+										            	<p:column sortBy="#{o.fio}" headerText="Филиал" />
+										            	<p:column sortBy="#{o.app_type}" headerText="Вид заявки" />
+										                <p:column sortBy="#{o.app_status}" headerText="Статус" />
+										                <p:column sortBy="#{o.kol}" headerText="Количество" />
+										            </p:row>
+										        </p:columnGroup>
+																			
+											<p:column>
+												<h:outputText value="#{o.fio}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.app_type}" />	
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.app_status}" />
+												<f:facet name="footer">
+													<h:outputText value="Итого"  />
+												</f:facet>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.kol}" />
+												<f:facet name="footer">
+													<h:outputText value="#{serrep1Bean.totalKol}"  />
+												</f:facet>
+											</p:column>
+											
+											
+										</p:dataTable>
+										
+									</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							        
+							    </p:tabView>
+
+
+
+
+
+
+
+
+ 
+							
+
+
+
+								
+								
+							</h:form>
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

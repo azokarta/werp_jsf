@@ -1,0 +1,766 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+	<h:form id="form" enctype="multipart/form-data">
+		<p:toolbar>
+			<f:facet name="left">
+				<p:commandButton type="push" value="#{msg.save}"
+					icon="ui-icon ui-icon-check" actionListener="#{hrStaffBean.Save}"
+					update=":form,:messages" />
+			</f:facet>
+		</p:toolbar>
+		<br />
+
+		<div class="ui-grid-row">
+			<p:fieldset legend="#{msg['hr.staff.staff_data']}"
+				class="ui-grid-col-5">
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12">
+							<p:panelGrid style="width:90%;" styleClass="staffTable">
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.lastname']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											disabled="#{hrStaffBean.disableLmf()}"
+											value="#{hrStaffBean.staff.lastname}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.firstname']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											disabled="#{hrStaffBean.disableLmf()}"
+											value="#{hrStaffBean.staff.firstname}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.middlename']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											disabled="#{hrStaffBean.disableLmf()}"
+											value="#{hrStaffBean.staff.middlename}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.iin_bin']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.iin_bin}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.birthdate']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:calendar styleClass="bldat" yearRange="1940:2015"
+											pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+											locale="#{systemLocale.currentLocale.getLanguage()}"
+											value="#{hrStaffBean.staff.birthday}"
+											converterMessage="Date is invalid.">
+
+										</p:calendar>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.gender']}" />
+									</p:column>
+									<p:column>
+										<p:selectOneMenu value="#{hrStaffBean.staff.gender}">
+											<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+											<f:selectItem itemLabel="#{msg['hr.staff.female']}"
+												itemValue="female" />
+											<f:selectItem itemLabel="#{msg['hr.staff.male']}"
+												itemValue="male" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.ts']}" />
+									</p:column>
+									<p:column>
+										<h:panelGrid columns="3" id="pyr-ins-obj">
+											<p:inputText id="staff-fio" size="35" autocomplete="off"
+												value="#{hrStaffBean.scout.getLF()}"
+												disabled="true" />
+											<p:commandButton icon="ui-icon-newwin" type="push"
+												id="scout-staff-id" oncomplete="PF('StaffListDialog').show();">
+											</p:commandButton>
+											<p:commandButton icon="ui-icon-closethick" type="push"
+												action="#{hrStaffBean.removeSelectedScout()}"
+												update=":form">
+											</p:commandButton>
+										</h:panelGrid>
+									</p:column>
+								</p:row>
+
+
+								<p:row>
+									<p:column colspan="2">
+										<h3>#{msg['hr.staff.identity_card']}</h3>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.passport_number']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText maxlength="45" autocomplete="off"
+											value="#{hrStaffBean.staff.passport_id}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.passport_given_by']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.passport_given_by}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.passport_given_date']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:calendar yearRange="1940:2015" styleClass="bldat"
+											pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+											value="#{hrStaffBean.staff.passport_given_date}"
+											converterMessage="Date is invalid."
+											locale="#{systemLocale.currentLocale.getLanguage()}">
+
+										</p:calendar>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.passport_validity']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:calendar yearRange="1995:2080" styleClass="bldat"
+											pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+											value="#{hrStaffBean.staff.passport_validity}"
+											converterMessage="Date is invalid."
+											locale="#{systemLocale.currentLocale.getLanguage()}">
+
+										</p:calendar>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column colspan="2">
+										<h3>#{msg['hr.staff.passport']}</h3>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.passport_id2']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.passport_id2}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.passport_given_by2']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.passport_given_by2}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.passport_given_date2']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:calendar yearRange="1940:2015" styleClass="bldat"
+											pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+											value="#{hrStaffBean.staff.passport_given_date2}"
+											converterMessage="Date is invalid."
+											locale="#{systemLocale.currentLocale.getLanguage()}">
+
+										</p:calendar>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.passport_validity2']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:calendar yearRange="1995:2080" styleClass="bldat"
+											pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+											value="#{hrStaffBean.staff.passport_validity2}"
+											converterMessage="Date is invalid."
+											locale="#{systemLocale.currentLocale.getLanguage()}">
+
+										</p:calendar>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column colspan="2">
+										<h3>#{msg['hr.staff.contact']}</h3>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.homephone']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.homephone}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.workphone']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.workphone}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.mobile']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.mobile}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.mobile1']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.mobile1}" />
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.mobile2']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.mobile2}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.corp_email']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.corp_email}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.email']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.email}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.email2']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.staff.email2}" />
+									</p:column>
+								</p:row>
+
+							</p:panelGrid>
+						</div>
+					</div>
+				</div>
+			</p:fieldset>
+
+			<p:fieldset legend="#{msg['hr.staff.address_data_and_salary']}"
+				class="ui-grid-col-6">
+				<div class="ui-grid ui-grid-responsive">
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-12">
+							<p:panelGrid style="width:90%;" styleClass="staffTable">
+								<p:row>
+									<p:column colspan="2">
+										<h3>#{msg['hr.staff.registration_address']}</h3>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.country_id']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:selectOneMenu
+											value="#{hrStaffBean.residenceAddress.countryId}">
+											<p:ajax update="state_id"></p:ajax>
+											<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+											<f:selectItems value="#{countryF4Bean.country_list}"
+												var="wa_country" itemLabel="#{wa_country.country}"
+												itemValue="#{wa_country.country_id}" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.state_id']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:selectOneMenu id="state_id"
+											value="#{hrStaffBean.residenceAddress.stateId}">
+											<p:ajax update="city_id"></p:ajax>
+											<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+											<f:selectItems
+												value="#{refState.getItemsByCountryId(hrStaffBean.residenceAddress.countryId)}"
+												var="state" itemLabel="#{state.statename}"
+												itemValue="#{state.idstate}" />
+
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.city_id']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:selectOneMenu id="city_id"
+											value="#{hrStaffBean.residenceAddress.cityId}">
+											<p:ajax update="region_id"></p:ajax>
+											<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+											<f:selectItems
+												value="#{refCity.getItemsByStateId(hrStaffBean.residenceAddress.stateId)}"
+												var="city" itemLabel="#{city.name}"
+												itemValue="#{city.idcity}" />
+
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="Район" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:selectOneMenu id="region_id"
+											value="#{hrStaffBean.residenceAddress.regId}">
+											<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+											<f:selectItems
+												value="#{cityregF4Bean.getByCityId(hrStaffBean.residenceAddress.cityId)}"
+												var="region" itemLabel="#{region.regname}"
+												itemValue="#{region.idcityreg}" />
+
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.postcode']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText
+											value="#{hrStaffBean.residenceAddress.postalCode}"></p:inputText>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.mkr_district']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText
+											value="#{hrStaffBean.residenceAddress.microdistrict}"></p:inputText>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.village']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText value="#{hrStaffBean.residenceAddress.village}"></p:inputText>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.avenue']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText value="#{hrStaffBean.residenceAddress.avenue}"></p:inputText>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.street']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText value="#{hrStaffBean.residenceAddress.street}"></p:inputText>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.house']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText maxlength="5" style="width:3em;"
+											autocomplete="off"
+											value="#{hrStaffBean.residenceAddress.ap_number}" />
+										<h:outputLabel value=" / " />
+										<p:inputText maxlength="5" autocomplete="off"
+											style="width:3em;"
+											value="#{hrStaffBean.residenceAddress.ap_drob}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.apartment']} №" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText id="addr_dom_fn" maxlength="5" style="width:3em;"
+											autocomplete="off"
+											value="#{hrStaffBean.residenceAddress.flat_number}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.mob_tel']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.residenceAddress.telMob1}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column colspan="2">
+										<h3>#{msg['hr.staff.living_place']}</h3>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.country_id']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:selectOneMenu
+											value="#{hrStaffBean.livingAddress.countryId}">
+											<p:ajax update="state_id2"></p:ajax>
+											<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+											<f:selectItems value="#{countryF4Bean.country_list}"
+												var="wa_country" itemLabel="#{wa_country.country}"
+												itemValue="#{wa_country.country_id}" />
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.state_id']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:selectOneMenu id="state_id2"
+											value="#{hrStaffBean.livingAddress.stateId}">
+											<p:ajax update="city_id2"></p:ajax>
+											<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+											<f:selectItems
+												value="#{refState.getItemsByCountryId(hrStaffBean.livingAddress.countryId)}"
+												var="state" itemLabel="#{state.statename}"
+												itemValue="#{state.idstate}" />
+
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.staff.city_id']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:selectOneMenu id="city_id2"
+											value="#{hrStaffBean.livingAddress.cityId}">
+											<p:ajax update="region_id2"></p:ajax>
+											<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+											<f:selectItems
+												value="#{refCity.getItemsByStateId(hrStaffBean.livingAddress.stateId)}"
+												var="city" itemLabel="#{city.name}"
+												itemValue="#{city.idcity}" />
+
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="Район" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:selectOneMenu id="region_id2"
+											value="#{hrStaffBean.livingAddress.regId}">
+											<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+											<f:selectItems
+												value="#{cityregF4Bean.getByCityId(hrStaffBean.livingAddress.cityId)}"
+												var="region" itemLabel="#{region.regname}"
+												itemValue="#{region.idcityreg}" />
+
+										</p:selectOneMenu>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.postcode']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText value="#{hrStaffBean.livingAddress.postalCode}"></p:inputText>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.mkr_district']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText
+											value="#{hrStaffBean.livingAddress.microdistrict}"></p:inputText>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.village']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText value="#{hrStaffBean.livingAddress.village}"></p:inputText>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.avenue']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText value="#{hrStaffBean.livingAddress.avenue}"></p:inputText>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.street']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText value="#{hrStaffBean.livingAddress.street}"></p:inputText>
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.house']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText maxlength="5" style="width:3em;"
+											autocomplete="off"
+											value="#{hrStaffBean.livingAddress.ap_number}" />
+										<h:outputLabel value=" / " />
+										<p:inputText maxlength="5" autocomplete="off"
+											style="width:3em;"
+											value="#{hrStaffBean.livingAddress.ap_drob}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.apartment']} №" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText maxlength="5" style="width:3em;"
+											autocomplete="off"
+											value="#{hrStaffBean.livingAddress.flat_number}" />
+									</p:column>
+								</p:row>
+
+								<p:row>
+									<p:column styleClass="key">
+										<p:outputLabel value="#{msg['hr.mob_tel']}" />
+									</p:column>
+									<p:column styleClass="value">
+										<p:inputText autocomplete="off"
+											value="#{hrStaffBean.livingAddress.telMob1}" />
+									</p:column>
+								</p:row>
+							</p:panelGrid>
+						</div>
+					</div>
+				</div>
+			</p:fieldset>
+		</div>
+	</h:form>
+	
+	<p:dialog id="StaffListDlg" widgetVar="StaffListDialog" modal="true"
+		resizable="false" appendTo="@(body)" header="#{msg['hr.emp_list_title']}"
+		width="800" height="500">
+		<div class="ui-grid-row">
+			<div class="ui-grid-col-12">
+				<h:form id="StaffDlgSearchForm"
+					onkeypress="if(event.keyCode == 13){document.getElementById('StaffDlgSearchForm:StaffDlgSearchBtn').click();return false;}">
+					<h:panelGrid columns="4" cellpadding="10">
+						<p:outputLabel value="#{msg.company}"></p:outputLabel>
+						<p:selectOneMenu value="#{hrSalaryBean.searchModel.bukrs}">
+							<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+							<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+								itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+							<p:ajax update="branch_id"></p:ajax>
+						</p:selectOneMenu>
+
+						<p:outputLabel value="#{msg.branch}"></p:outputLabel>
+						<p:selectOneMenu id="branch_id"
+							value="#{hrSalaryBean.searchModel.branch_id}">
+							<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+							<f:selectItems
+								value="#{branchBean.getItemsByBukrs(hrSalaryBean.searchModel.bukrs)}"
+								var="branch" itemLabel="#{branch.text45}"
+								itemValue="#{branch.branch_id}" />
+						</p:selectOneMenu>
+
+						<p:outputLabel value="#{msg['hr.staff.firstname']}"></p:outputLabel>
+						<p:inputText value="#{hrSalaryBean.searchModel.firstname}"></p:inputText>
+
+						<p:outputLabel value="#{msg['hr.staff.lastname']}"></p:outputLabel>
+						<p:inputText value="#{hrSalaryBean.searchModel.lastname}"></p:inputText>
+
+						<p:outputLabel value="#{msg['position']}"></p:outputLabel>
+						<p:selectOneMenu value="#{hrSalaryBean.searchModel.position_id}">
+							<f:selectItem itemValue="0" itemLabel="#{msg.select}"></f:selectItem>
+							<f:selectItems value="#{positionF4Bean.position_list}" var="p"
+								itemLabel="#{positionF4Bean.getName(p.position_id,userinfo.u_language)}" itemValue="#{p.position_id}"></f:selectItems>
+						</p:selectOneMenu>
+
+						<p:outputLabel></p:outputLabel>
+						<p:commandButton value="#{msg['search']}" icon="ui-icon-search"
+							id="StaffDlgSearchBtn"
+							update=":StaffListDlgForm:staffListDlgTable"
+							actionListener="#{hrSalaryBean.loadItems()}"></p:commandButton>
+					</h:panelGrid>
+				</h:form>
+			</div>
+		</div>
+
+		<h:form id="StaffListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="staffListDlgTable" value="#{hrSalaryBean.items}"
+					var="item" selectionMode="single"
+					selection="#{hrStaffBean.scoutSalary}" paginator="true"
+					rowKey="#{item.salary_id}" rows="50" lazy="false">
+					<f:facet name="header" id="tableHeader">
+						<span class="ui-separator" style="float: right;"> <span
+							style="float: right;"
+							class="ui-icon ui-icon-grip-dotted-vertical" />
+						</span>
+						<div style="clear: both;"></div>
+					</f:facet>
+
+					<p:column style="width:70px;text-align:center;"
+						sortBy="#{item.staff_id}">
+						<f:facet name="header">
+							<h:outputText value="STAFF ID" />
+						</f:facet>
+						<h:outputText value="#{item.staff_id}" />
+					</p:column>
+
+					<p:column sortBy="#{item.p_staff.lastname}">
+						<f:facet name="header">
+							<h:outputText value="#{msg['hr.staff.lastname']}" />
+						</f:facet>
+						<h:outputText value="#{item.p_staff.lastname}" />
+					</p:column>
+
+					<p:column sortBy="#{item.p_staff.firstname}">
+						<f:facet name="header">
+							<h:outputText value="#{msg['hr.staff.firstname']}" />
+						</f:facet>
+						<h:outputText value="#{item.p_staff.firstname}" />
+					</p:column>
+
+					<p:column sortBy="#{item.p_staff.middlename}">
+						<f:facet name="header">
+							<h:outputText value="#{msg['hr.staff.middlename']}" />
+						</f:facet>
+						<h:outputText value="#{item.p_staff.middlename}" />
+					</p:column>
+
+					<p:column sortBy="#{item.position_id}">
+						<f:facet name="header">
+							<h:outputText value="#{msg['hr.staff.position_id']}" />
+						</f:facet>
+						<h:outputText value="#{positionF4Bean.getName(item.position_id,userinfo.u_language)}" />
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg['branch']}" />
+						</f:facet>
+						<h:outputText
+							value="#{branchF4Bean.getBranchNameByID(item.branch_id)}" />
+					</p:column>
+				</p:dataTable>
+				<p:commandButton actionListener="#{hrStaffBean.assignScoutSalary()}"
+					value="Ok" update=":form,:messages"
+					oncomplete="PF('StaffListDialog').hide()">
+				</p:commandButton>
+				<p:commandButton actionListener="#{hrStaffBean.resetScoutSalary}" value="Отмена"
+					oncomplete="PF('StaffListDialog').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

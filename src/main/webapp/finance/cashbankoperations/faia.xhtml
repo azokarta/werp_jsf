@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh" content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml"/>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("form:sc_fiz_yur_input").value == 1) {
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+
+				document.getElementById("form:sc_name").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+			} else if (document.getElementById("form:sc_fiz_yur_input").value == 2) {
+				document.getElementById("form:sc_birthday_input").disabled = false;
+				document.getElementById("form:sc_passport_id").disabled = false;
+				document.getElementById("form:sc_firstname").disabled = false;
+				document.getElementById("form:sc_lastname").disabled = false;
+				document.getElementById("form:sc_middlename").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			} else {
+				document.getElementById("form:sc_iin_bin").value = null;
+				document.getElementById("form:sc_iin_bin").disabled = true;
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			}
+
+		}
+	</script>
+</h:head>
+
+<h:body>
+	<h:outputScript library="js" name="money.js" />
+	<h:outputStylesheet library="css" name="finance/accounting/fa02.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b><h:outputLabel value="#{msg.menu}" /></b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.faia']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,faiaBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+	
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg.save}" id="saveButton"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{faiaBean.to_save}" disabled = "#{faiaBean.saveDisable}"/>
+								<p:commandButton type="push" value="#{msg.edit}"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{faiaBean.to_edit}"/>	
+								<p:commandButton type="push" value="#{msg.check}"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{faiaBean.to_check}" />	
+											
+								<p:commandButton type="push" value="#{msg.emp_on_account}"
+											icon="ui-icon ui-icon-check"
+											onclick = "PF('accountStaffWidget').show();"/>				
+								<p:commandButton type="push" value="#{msg['balance']} #{msg['cashbank']}"
+											icon="ui-icon ui-icon-check"
+											onclick="PF('bracnhCashWidget').show();" />				
+							</f:facet>
+						</p:toolbar>
+
+						<p:growl id="messages" sticky="false" showDetail="true" />
+						<fieldset>
+							<legend><h:outputLabel value="#{msg.header}" /></legend>
+							<p:panelGrid styleClass="searchPanelGrid" >
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.company}" /></p:column>
+        							<p:column>
+										<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{faiaBean.p_bkpf.bukrs}" >
+											<p:ajax listener="#{faiaBean.changeBukrs}" />
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu>
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.waers.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_waers" styleClass="waers"
+											value="#{faiaBean.p_bkpf.waers}" disabled="true" />
+										<p:commandButton icon="ui-icon-newwin"
+													onclick="PF('erTypeWidget').show();" type="push"
+													styleClass="f4button" />	
+									</p:column>
+								</p:row>	
+								<p:row>
+									<p:column><h:outputLabel value="#{msg['bkpf.blart.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_blart" styleClass="waers" style="color: #{faiaBean.p_bkpf.blart=='ST' ? 'red' : 'black'}"
+											maxlength="2" autocomplete="off" 
+											value="#{faiaBean.p_bkpf.blart}" disabled="true" /> <p:commandButton
+											icon="ui-icon-newwin" onclick="PF('docTypeWidget').show();"
+											type="push" styleClass="f4button" />
+									</p:column>
+									<p:column><h:outputLabel value="#{msg.ex_rate}" /></p:column>
+									<p:column>
+										<h:inputText
+											id="bkpf_kursf" styleClass="kursf"
+											value="#{faiaBean.p_bkpf.kursf}" disabled="true" />
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg['bkpf.budat.long']}" /></p:column>
+        							<p:column><p:calendar id="bkpf_budat" styleClass="budat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{faiaBean.p_bkpf.budat}"  disabled="true"/></p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.bktxt.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_bktxt"
+											value="#{faiaBean.p_bkpf.bktxt}" />
+									</p:column>
+									
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg['bkpf.bldat.long']}" /></p:column>										
+									<p:column>
+										<p:calendar id="bkpf_bldat" styleClass="bldat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{faiaBean.p_bkpf.bldat}"/>																			
+									</p:column>
+									<p:column><h:outputLabel value="#{msg.calc_in_USD}" /></p:column>
+									<p:column>
+											<p:commandButton type="push"
+													icon="ui-icon-arrowrefresh-1-s"
+													actionListener="#{faiaBean.refreshUSD}" />
+											
+									</p:column>
+									
+								</p:row>
+								
+									
+									
+        							
+        							
+								
+							    <p:row>
+        							
+									
+									
+									<p:column><h:outputLabel value="#{msg['bkpf.monat.long']}" /></p:column>
+									<p:column>
+										<p:selectOneMenu styleClass="monat" id="bkpf_monat"	value="#{faiaBean.p_bkpf.monat}" disabled="true">  
+													<f:selectItem  itemLabel="" itemValue="0" />
+													<f:selectItem  itemLabel="1" itemValue="1" />
+													<f:selectItem  itemLabel="2" itemValue="2" />
+													<f:selectItem  itemLabel="3" itemValue="3" />
+													<f:selectItem  itemLabel="4" itemValue="4" />
+													<f:selectItem  itemLabel="5" itemValue="5" />
+													<f:selectItem  itemLabel="6" itemValue="6" />
+													<f:selectItem  itemLabel="7" itemValue="7" />
+													<f:selectItem  itemLabel="8" itemValue="8" />
+													<f:selectItem  itemLabel="9" itemValue="9" />
+													<f:selectItem  itemLabel="10" itemValue="10" />
+													<f:selectItem  itemLabel="11" itemValue="11" />
+													<f:selectItem  itemLabel="12" itemValue="12" />
+												</p:selectOneMenu>
+									</p:column>
+        							<p:column><h:outputLabel value="#{msg.customer}" /></p:column>
+									<p:column>
+											<h:outputLabel id="customer_id">
+											<h:inputText  value="#{customerF4Bean.getNameById(faiaBean.p_bkpf.customer_id)}" disabled="true" />
+											<p:commandButton icon="ui-icon-newwin" type="push"
+													onclick="PF('employeeWidget').show();"
+													styleClass="f4button" />
+											
+												<p:button target="_blank" outcome="/hr/customer/hrc03.xhtml?customerId=#{faiaBean.p_bkpf.customer_id}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton1" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+											</h:outputLabel>
+									</p:column>
+        							
+								</p:row>
+								<p:row>
+        							
+									
+									
+									<p:column><h:outputLabel value="#{msg.branch}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="branch"
+													value="#{faiaBean.p_bkpf.brnch}" >
+													<p:ajax listener="#{faiaBean.changeBranch}" update="form" />
+													<f:selectItem itemLabel="" itemValue="0" />	
+													<f:selectItems
+														value="#{branchF4Bean.getByBukrsOrBusinessArea(faiaBean.p_bkpf.bukrs,userinfo.bukrs,'','', faiaBean.p_bkpf.brnch,userinfo.branch_id)}"
+														var="branch" itemLabel="#{branch.text45}"
+														itemValue="#{branch.branch_id}" /> 
+												</p:selectOneMenu>
+									</p:column>
+        							<p:column></p:column>
+									<p:column>
+									</p:column>
+        							
+								</p:row>
+								
+								
+								
+							</p:panelGrid>
+							
+
+						</fieldset>
+						<div class="wrapBTClass">
+							<p:scrollPanel style="width:100%;height:300px"
+								easing="easeOutElastic" id="bsegScrollPanel">
+								<p:dataTable value="#{faiaBean.l_bseg}" var="o"
+									widgetVar="dataTableWidgetVar" id="bsegTable"
+									styleClass="employeeTable" headerClass="employeeTableHeader"
+									rowClasses="employeeTableOddRow,employeeTableEvenRow"
+									emptyMessage="#{msg.empty_rows}">
+
+									<p:column style="width: 10px;">
+										<f:facet name="header"><h:outputLabel value="#{msg['bseg.buzei.long']}" style="font-size:12px;" /></f:facet>    	 
+									       <h:outputLabel value="#{o.p_bseg.buzei}" style="font-size:12px;" />
+									</p:column>
+									<p:column>
+										<f:facet name="header"><h:outputLabel value="#{msg['bseg.hkont.long']}" style="font-size:12px;" /></f:facet>
+
+										<h:inputText value="#{hkontF4Bean.getNameByBukrsHkont(faiaBean.p_bkpf.bukrs,o.p_bseg.hkont,systemLocale.currentLocale)}" id = "hkont" styleClass="input1"
+											disabled="true" size="15" />
+										<p:commandButton icon="ui-icon-newwin"
+											onclick="PF('hkontTypeWidget').show();" type="push"
+											styleClass="f4button" >
+													<f:setPropertyActionListener target="#{faiaBean.p_bseg}"
+														value="#{o}" />
+												</p:commandButton>
+									</p:column>
+									<p:column>
+										<f:facet name="header"><h:outputLabel value="#{msg['bseg.dmbtr.long']}" style="font-size:12px;" /></f:facet>
+										<h:inputText id = "dmbtr" value="#{o.p_bseg.dmbtr}" size="15" disabled = "#{o.dmbtrDisable}" onkeyup="formatMoney($(this))" onfocus="this.select();">
+											<f:convertNumber pattern="#,###,##0.00" />
+										</h:inputText>
+
+									</p:column>
+									<p:column>
+										<f:facet name="header"><h:outputLabel value="#{msg['bseg.wrbtr.long']}" style="font-size:12px;" /></f:facet>
+										<h:inputText id = "wrbtr" value="#{o.p_bseg.wrbtr}" size="15" disabled = "#{o.wrbtrDisable}" onkeyup="formatMoney($(this))" onfocus="this.select();">
+											<f:convertNumber pattern="#,###,##0.00" />
+										</h:inputText>
+
+									</p:column>
+									<p:column>
+										<f:facet name="header"><h:outputLabel value="#{msg['bseg.shkzg.long']}" style="font-size:12px;" /></f:facet>
+										<p:selectOneMenu  value="#{o.p_bseg.shkzg}" id = "shkzg" disabled = "#{o.shkzgDisable}">
+											<f:selectItem itemLabel="H" itemValue="H" />
+											<f:selectItem itemLabel="S" itemValue="S" />
+										</p:selectOneMenu>
+									</p:column>
+
+
+								</p:dataTable>
+
+							</p:scrollPanel>
+
+						</div>
+
+						
+						<p:dialog header="#{msg.ex_rate}" widgetVar="erTypeWidget"
+							dynamic="true" width="500" height="500">
+
+							<p:dataTable scrollable="true" scrollHeight="400"
+								id="singleCurrency" var="er" rowKey="#{er.exrate_id}"
+								value="#{faiaBean.l_er}" selectionMode="single"
+								selection="#{faiaBean.selectedExchangeRate}">
+								<f:facet name="header">
+
+									<p:commandButton
+										actionListener="#{faiaBean.assignSelectedExchangeRate}"
+										onclick="PF('erTypeWidget').hide();" value="#{msg.select}" />
+										<p:commandButton
+										actionListener="#{faiaBean.assignSelectedExchangeRateUSD}"
+										onclick="PF('erTypeWidget').hide();" value="USD"/>
+								</f:facet>
+								<p:column headerText="#{msg['bkpf.waers.long']}" 
+									style="font-size:12px;width:1.5em">
+									<h:outputText value="#{er.secondary_currency}" />
+								</p:column>
+								<p:column headerText="#{msg.amount}" 
+									style="font-size:12px;width:3em">
+									<h:outputText value="#{er.sc_value}" />
+								</p:column>
+								<p:column headerText="#{msg.type}" 
+									style="font-size:12px;width:7em">
+									<p:selectOneMenu id="new_sc_type"
+														value="#{er.type}" disabled = "true">
+														<f:selectItem itemLabel="#{msg.ex_rate_nat}" itemValue="1" />
+														<f:selectItem itemLabel="#{msg.ex_rate_int}" itemValue="2" />
+													</p:selectOneMenu>
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+
+						<p:dialog header="#{msg['bseg.hkont.long']}" widgetVar="hkontTypeWidget"
+							dynamic="true" width="500" height="500">
+							<p:dataTable scrollable="true" scrollHeight="400"
+								id="singleHkont" var="hkont" rowKey="#{hkont.hkont}"
+								value="#{faiaBean.l_hkont}" selectionMode="single" emptyMessage = "#{msg.empty_rows}"
+								selection="#{faiaBean.selectedHkont}">
+								<f:facet name="header">
+
+									<p:commandButton
+										actionListener="#{faiaBean.assignSelectedHkont}"
+										onclick="PF('hkontTypeWidget').hide();" value="#{msg.select}" />
+								</f:facet>
+								<p:column headerText="Code"  style="font-size:12px;width:10px">
+									<h:outputText value="#{hkont.hkont}" />
+								</p:column>
+								<p:column headerText="#{msg.name}" 
+									style="font-size:12px;width:100px">
+									<h:outputText value="#{hkont.text45}" />
+								</p:column>
+								<p:column headerText="#{msg['bkpf.waers.long']}" 
+									style="font-size:12px;width:30px">
+									<h:outputText value="#{hkont.waers}" />
+								</p:column>
+							</p:dataTable>
+
+						</p:dialog>
+						
+						<p:dialog header="Сотрудники" widgetVar="employeeWidget"
+							dynamic="true" width="900" height="500">
+							<div id="se_div">
+								<fieldset class="se_FieldSet">
+									<legend><h:outputLabel value="#{msg.search_options}" style="font-size:12px;" /></legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg.first_name}" /></td>
+											<td><h:inputText id="se_firstname" maxlength="45"
+													autocomplete="off"
+													value="#{faiaBean.searchStaff.firstname}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.last_name}" /></td>
+											<td><h:inputText id="se_lastname" maxlength="45"
+													autocomplete="off"
+													value="#{faiaBean.searchStaff.lastname}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg.middle_name}" /></td>
+											<td><h:inputText id="se_middlename" maxlength="45"
+													autocomplete="off"
+													value="#{faiaBean.searchStaff.middlename}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['hr.staff.post']}" /></td>
+											<td><p:selectOneMenu styleClass="branch" id="se_pos"
+													value="#{faiaBean.searchSalary.position_id}">
+													<f:selectItem itemLabel="#{msg.all}" itemValue="0"/>
+													<f:selectItems value="#{positionF4Bean.position_list}"
+														var="wa_pos" itemLabel="#{wa_pos.text}"
+														itemValue="#{wa_pos.position_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><p:commandButton
+													actionListener="#{faiaBean.to_search_staff}"
+													value="#{msg.search}" /></td>
+											<td></td>
+										</tr>
+									</table>
+
+								</fieldset>
+							</div>
+							<br />
+
+
+							<p:dataTable id="staffTable" var="emp" rowKey="#{emp.staff_id}" scrollable="true" scrollHeight="220"
+								value="#{faiaBean.p_staff_list}" emptyMessage="#{msg.empty_rows}"
+								selectionMode="single" selection="#{faiaBean.selectedStaff}">
+								<f:facet name="header">
+
+									<p:commandButton process="staffTable"
+										actionListener="#{faiaBean.assignFoundEmployee}"
+										onclick="PF('employeeWidget').hide();" value="#{msg.select}" />
+								</f:facet>
+								<p:column headerText="#{msg['hr.customer.iin_bin']}">
+									<h:outputText value="#{emp.iin_bin}" />
+														
+									<p:button target="_blank" outcome="/hr/customer/hrc03.xhtml?customerId=#{emp.customer_id}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton2" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+								</p:column>
+								<p:column headerText="#{msg['hr.customer.passport_id']}">
+									<h:outputText value="#{emp.passport_id}" />
+								</p:column>
+								<p:column headerText="#{msg.first_name}">
+									<h:outputText value="#{emp.firstname}" />
+								</p:column>
+								<p:column headerText="#{msg.last_name}">
+									<h:outputText value="#{emp.lastname}" />
+								</p:column>
+								<p:column headerText="#{msg.middle_name}">
+									<h:outputText value="#{emp.middlename}" />
+								</p:column>
+								<p:column headerText="#{msg['hr.customer.birthday']}">
+									<p:calendar id="birthday" styleClass="bldat"
+										pattern="dd.MM.yyyy" mask="true" autocomplete="off"
+										value="#{emp.birthday}" converterMessage="Date is invalid."
+										disabled="true">
+									</p:calendar>
+								</p:column>
+
+							</p:dataTable>
+
+
+						</p:dialog>
+						
+						<p:dialog header="#{msg.employees}" widgetVar="accountStaffWidget"
+							dynamic="true" width="500" height="300" >
+							<div class="wrapBTClass">
+
+							<p:dataTable id="staffTableASW" var="o" rowKey="#{o.customer_id}"
+								value="#{faiaBean.l_pdo}" emptyMessage="Нет записей" paginator="true" rows="10">
+								
+								<p:column headerText="Клиент ID">
+									<h:outputText value="#{o.customer_id}" />
+								
+												<p:button target="_blank" outcome="/hr/customer/hrc03.xhtml?customerId=#{o.customer_id}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton3" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+									
+								</p:column>
+								<p:column headerText="#{msg.last_name}">
+									<h:outputText value="#{o.lastname}" />
+								</p:column>
+								<p:column headerText="#{msg.first_name}">
+									<h:outputText value="#{o.firstname}" />
+								</p:column>								
+								<p:column headerText="#{msg.middle_name}">
+									<h:outputText value="#{o.middlename}" />
+								</p:column>
+								<p:column headerText="#{msg['bkpf.waers.long']}">
+									<h:outputText value="#{o.waers}" />
+								</p:column>
+								<p:column headerText="#{msg.amount}">
+									<h:outputText value="#{o.summa}" >
+												<f:convertNumber pattern="#,###,##0.00" />
+											</h:outputText>
+								</p:column>
+								
+
+						
+
+
+
+							</p:dataTable>
+							</div>
+
+						</p:dialog>
+						
+						<p:dialog header="Касса/Банк" widgetVar="bracnhCashWidget"
+									dynamic="true" width="500" height="200">
+														<p:dataTable
+															value="#{faiaBean.l_as}" var="o"
+															rows="5" rowKey="#{o.hkont}" id="outputTableBranchCash"
+															emptyMessage="#{msg.empty_rows}" styleClass="outputTable2"
+															headerClass="outputTableHeade2r" 
+															rowClasses="outputTableOddRow2,outputTableEvenRow2">
+															<p:column style="width:150px">
+																<f:facet name="header"><h:outputLabel  value="#{msg['bseg.hkont.long']}"/></f:facet>
+																
+																<h:outputText value="#{hkontF4Bean.getNameByBukrsHkont(faiaBean.p_bkpf.bukrs,o.hkont,systemLocale.currentLocale)}" styleClass="input1" />
+															</p:column>
+															<p:column style="width:50px">
+																<f:facet name="header"><h:outputLabel  value="#{msg.amount}"/></f:facet>
+																<h:outputText value="#{o.amount}">
+																	<f:convertNumber pattern="#,###,##0.00" />
+																</h:outputText>	
+															</p:column>
+															<p:column style="width:50px">
+																<f:facet name="header"><h:outputLabel  value="#{msg['bkpf.waers.long']}"/></f:facet>
+																<h:outputText value="#{o.waers}" />
+															</p:column>
+			
+														</p:dataTable>
+														
+								</p:dialog>
+					</h:form>
+
+
+				</f:view>
+			</div>
+
+		</div>
+	</div>
+
+
+</h:body>
+</html>

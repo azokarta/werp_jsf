@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['hr.bonus.view_bonus']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{hrb03Bean.breadcrumb}" />
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+				<f:view>
+
+					<h:form id="form" rendered="#{hrb01Bean.canRead}">
+						<fieldset>
+							<legend>#{msg.search_options}</legend>
+							<div id="bonusSearch">
+								<table>
+									<tr>
+										<td>#{msg.company}</td>
+										<td><p:selectOneMenu styleClass="bukrs" id="bonus-bukrs"
+												value="#{hrb03Bean.searchModel.bukrs}">
+												<p:ajax update="bonus-business_area_id" />
+												<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+												<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+													var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+													itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu></td>
+										<td>#{msg.business_area}</td>
+										<td><p:selectOneMenu id="bonus-business_area_id"
+												value="#{hrb03Bean.searchModel.business_area_id}">
+												<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+												<f:selectItems
+													value="#{businessAreaBean.getItemsByBukrs(hrb03Bean.searchModel.bukrs)}"
+													var="ba" itemLabel="#{ba.name}"
+													itemValue="#{ba.business_area_id}" />
+											</p:selectOneMenu></td>
+										<td>#{msg.country}</td>
+										<td><p:selectOneMenu id="bonus-country_id"
+												value="#{hrb03Bean.searchModel.country_id}">
+												<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+												<f:selectItems value="#{countryF4Bean.country_list}"
+													var="wa_country" itemLabel="#{wa_country.country}"
+													itemValue="#{wa_country.country_id}" />
+											</p:selectOneMenu></td>
+
+										<td><p:commandButton type="push" value="#{msg.search}"
+												actionListener="#{hrb03Bean.Search}"
+												update="bonusTable,:messages" /></td>
+									</tr>
+								</table>
+
+							</div>
+						</fieldset>
+						<div id="bonusInfo">
+							<p:dataTable value="#{hrb03Bean.bonusList}" var="bonus"
+								widgetVar="dataTableWidgetVar" id="bonusTable"
+								emptyMessage="#{msg.no_records}" styleClass="employeeTable"
+								headerClass="employeeTableHeader"
+								rowClasses="employeeTableOddRow,employeeTableEvenRow">
+
+								<p:column>
+									<f:facet name="header">#{msg['hr.bonus.matnr']}</f:facet>
+									<p:outputLabel value="#{matnrF4Bean.getName(bonus.matnr)}"></p:outputLabel>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">#{msg['hr.bonus.bonus_type_id']}</f:facet>
+									<p:outputLabel
+										value="#{bonusTypeF4Bean.getBonusTypeName(bonus.bonus_type_id)}"></p:outputLabel>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">#{msg['hr.bonus.position_id']}</f:facet>
+									<p:outputLabel
+										value="#{positionF4Bean.getName(bonus.position_id)}"></p:outputLabel>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">#{msg['hr.bonus.from_num']}</f:facet>
+									<p:outputLabel value="#{bonus.from_num}"></p:outputLabel>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">#{msg['hr.bonus.to_num']}</f:facet>
+									<p:outputLabel value="#{bonus.to_num}"></p:outputLabel>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">#{msg['hr.bonus.coef']}</f:facet>
+									<p:outputLabel value="#{bonus.coef}"></p:outputLabel>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">#{msg.currency}</f:facet>
+									<p:selectOneMenu id="b_waers" value="#{bonus.waers}"
+										disabled="true">
+										<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+										<f:selectItems value="#{currencyF4Bean.currency_list}"
+											var="wa_currency" itemLabel="#{wa_currency.text20}"
+											itemValue="#{wa_currency.currency}" />
+									</p:selectOneMenu>
+								</p:column>
+								<p:column>
+									<f:facet name="header">#{msg['hr.bonus.deposit']}</f:facet>
+									<p:outputLabel value="#{bonus.deposit}"></p:outputLabel>
+								</p:column>
+							</p:dataTable>
+
+						</div>
+					</h:form>
+
+					<p:panel header="Confirmation" rendered="#{!hrb01Bean.canRead}"
+						style="margin-bottom:20px">
+						<h:panelGrid columns="2" cellpadding="10">
+							<p:graphicImage name="img/alert-icon.png" />
+							<h:outputText value="No permission" />
+						</h:panelGrid>
+					</p:panel>
+				</f:view>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

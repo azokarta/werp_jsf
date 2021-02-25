@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>#{logWriteoffRepairListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.activeMenu {
+	
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="#{logWriteoffRepairListBean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader"
+					value="#{logWriteoffRepairListBean.pageHeader}" />
+			</ui:include>
+
+
+			<p:layout fullPage="false">
+
+				<p:layoutUnit position="north" size="50" resizable="true"
+					closable="true" collapsible="true">
+					<p:tabMenu activeIndex="#{param.i}">
+						<p:menuitem value="#{msg['logistics.new_docs']}" outcome="List.xhtml"
+							icon="ui-icon-document">
+							<f:param name="i" value="0" />
+						</p:menuitem>
+						<p:menuitem value="#{msg['logistics.closed_docs']}" outcome="List.xhtml"
+							icon="ui-icon-document">
+							<f:param name="i" value="1" />
+						</p:menuitem>
+
+					</p:tabMenu>
+				</p:layoutUnit>
+
+				<p:layoutUnit position="west" size="200" header="#{msg['search_panel']}"
+					resizable="false" closable="false" collapsible="false">
+					<h:form>
+
+					</h:form>
+				</p:layoutUnit>
+
+				<p:layoutUnit position="center">
+					<p:dataTable value="#{logWriteoffRepairListBean.items}" var="item">
+						<f:facet name="header" id="tableHeader">
+							<p:button title="#{msg['add']}" outcome="Create.xhtml"
+								value="#{msg['add']}" style="float:right;margin-right:5px;" />
+							<div style="clear: both;"></div>
+						</f:facet>
+
+						<p:column headerText="№" sortBy="#{item.id}" style="width:100px;text-align:center;">#{item.id}</p:column>
+						
+						<p:column headerText="#{msg['branch']}" style="text-align:justify;">
+							<h:outputLabel
+								value="#{branchF4Bean.getBranchNameByID(item.branchId)}"></h:outputLabel>
+						</p:column>
+						
+						<p:column headerText="#{msg['logistics.material']}" style="text-align:justify;">
+							<h:outputLabel rendered="#{!empty item.matnrObject}"
+								value="#{item.matnrObject.text45}"></h:outputLabel>
+						</p:column>
+						<p:column headerText="#{msg['logistics.creator']}" style="text-align:justify;">
+							<h:outputLabel rendered="#{!empty item.creator}"
+								value="#{item.creator.getLF()}"></h:outputLabel>
+						</p:column>
+						<p:column headerText="#{msg['logistics.created_at']}" style="text-align:justify;">
+							<h:outputText value="#{item.createdAt}">
+								<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+							</h:outputText>
+						</p:column>
+						<p:column>
+							<p:button target="_blank" outcome="View.xhtml?id=#{item.id}"
+								icon="ui-icon-search" title="#{msg['view']}">
+							</p:button>
+						</p:column>
+					</p:dataTable>
+				</p:layoutUnit>
+			</p:layout>
+		</div>
+	</div>
+</h:body>
+</html>

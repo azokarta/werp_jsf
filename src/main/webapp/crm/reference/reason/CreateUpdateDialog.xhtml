@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<style>
+.field-row {
+	margin-top: 10px;
+}
+
+.field-label {
+	border: solid 0px red;
+	font-size: 14px;
+	font-weight: 600;
+	font-style: italic;
+}
+
+.field-label label {
+	float: right;
+	margin-right: 5px;
+}
+
+.field-value {
+	border: solid 0px red;
+}
+
+.field-value input, textarea, .ui-selectonemenu {
+	width: 80%;
+}
+
+.field-value .ui-selectonemenu {
+	
+}
+</style>
+	<p:dialog header="#{crmReasonListBean.dialogHeader}"
+		widgetVar="ReasonCreateUpdateDialog" id="ReasonCreateUpdateDialog"
+		minHeight="100" width="700" style="padding:10px;" appendTo="@(body)"
+		modal="true" resizable="false">
+		<h:form id="ReasonCreateUpdateDialogForm"
+			rendered="#{!empty crmReasonListBean.selected}">
+			<p:toolbar styleclass="mp_toolbar">
+				<f:facet name="left">
+					<p:commandButton type="push" value="#{msg['dmsc.save']}"
+						icon="ui-icon ui-icon-check"
+						actionListener="#{crmReasonListBean.save()}" update=":messages">
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+			<br />
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Название" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmReasonListBean.selected.name}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Название (Tr)" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmReasonListBean.selected.nameTr}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Название (En)" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputText value="#{crmReasonListBean.selected.nameEn}" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Тип" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmReasonListBean.selected.typeId}">
+							<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+							<f:selectItems
+								value="#{crmReasonListBean.reasonTypes.entrySet()}" var="e"
+								itemLabel="#{e.value}" itemValue="#{e.key}"></f:selectItems>
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+			</div>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

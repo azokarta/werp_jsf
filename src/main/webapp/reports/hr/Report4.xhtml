@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{repHr4Bean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{repHr4Bean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{repHr4Bean.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+							<p:panelGrid columns="2" style="width:99%;margin-top:1px;">
+								<f:facet name="header">Панель для поиска</f:facet>
+								<p:outputLabel value="Компания"></p:outputLabel>
+								<p:selectOneMenu value="#{repHr4Bean.searchModel.bukrs}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="Выберите компанию" itemValue=""></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Филиал"></p:outputLabel>
+								<p:selectManyMenu id="branch_id" scrollHeight="150"
+									rendered="#{userinfo.sys_admin or userinfo.main}"
+									value="#{repHr4Bean.searchModel.branchIds}">
+									<f:selectItems
+										value="#{branchF4Bean.getAllBranchByBukrs(repHr4Bean.searchModel.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectManyMenu>
+
+								<p:outputLabel value="Департамент"></p:outputLabel>
+								<p:selectManyMenu scrollHeight="150"
+									value="#{repHr4Bean.searchModel.departmentIds}">
+									<f:selectItems value="#{departmentF4Bean.l_dep}" var="dep"
+										itemLabel="#{dep.name_ru}" itemValue="#{dep.dep_id}"></f:selectItems>
+								</p:selectManyMenu>
+
+								<p:outputLabel value="Должность"></p:outputLabel>
+								<p:selectManyMenu scrollHeight="150"
+									value="#{repHr4Bean.searchModel.positionIds}">
+									<f:selectItems value="#{positionF4Bean.position_list}" var="p"
+										itemLabel="#{p.text}" itemValue="#{p.position_id}"></f:selectItems>
+								</p:selectManyMenu>
+
+								<p:outputLabel rendered="false" value="Дата с"></p:outputLabel>
+								<p:calendar rendered="false" yearRange="2016:2021"
+									pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+									value="#{repHr4Bean.searchModel.fromDate}"
+									converterMessage="Date is invalid."
+									locale="#{systemLocale.currentLocale.getLanguage()}" />
+
+								<p:outputLabel rendered="false" value="Дата по"></p:outputLabel>
+								<p:calendar rendered="false" yearRange="2016:2021"
+									pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+									value="#{repHr4Bean.searchModel.toDate}"
+									converterMessage="Date is invalid."
+									locale="#{systemLocale.currentLocale.getLanguage()}" />
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton id="searchBtn" value="Сформировать"
+									actionListener="#{repHr4Bean.generateData()}"
+									update=":dataForm, :messages"></p:commandButton>
+							</p:panelGrid>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="dataForm">
+							<ui:repeat var="branch" value="#{repHr4Bean.branchList}">
+								<p:panel
+									header="#{branchF4Bean.getBranchNameByID(branch.branch_id)}">
+									<ui:repeat var="dep"
+										value="#{repHr4Bean.getBranchDepartments(branch.branch_id)}">
+										<p:dataTable var="report"
+											value="#{repHr4Bean.getDataByDepartmentId(branch.branch_id,dep.dep_id)}"
+											style="margin-bottom:7px;">
+											<f:facet name="header">
+												<p:outputLabel
+													value="#{departmentF4Bean.getName(dep.dep_id,userinfo.u_language)}"
+													style="float:left;"></p:outputLabel>
+												<br style="clear: both;" />
+											</f:facet>
+											<p:columnGroup type="header">
+												<p:row>
+													<p:column headerText="Месяц" />
+													<p:column headerText="Принятие" />
+													<p:column headerText="Увольнени" />
+													<p:column headerText="Перевод" />
+													<p:column headerText="Изменение з-п" />
+												</p:row>
+											</p:columnGroup>
+
+											<p:column>
+												<h:outputText value="#{monthF4Bean.p_month_list.get(report.month).name}" />
+											</p:column>
+
+											<p:column>
+												<h:outputText value="#{report.countRecruitment}" />
+											</p:column>
+
+											<p:column>
+												<h:outputText value="#{report.countDismiss}" />
+											</p:column>
+
+											<p:column>
+												<h:outputText value="#{report.countTransfer}" />
+											</p:column>
+
+											<p:column>
+												<h:outputText value="#{report.countChangeSalary}" />
+											</p:column>
+										</p:dataTable>
+									</ui:repeat>
+								</p:panel>
+								<hr />
+							</ui:repeat>
+						</h:form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+</h:body>
+</html>

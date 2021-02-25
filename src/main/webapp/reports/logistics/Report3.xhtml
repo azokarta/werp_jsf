@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['logistics.rep_mvm_on_acc_goods']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.logItemsTable .numberColumn {
+	width: 80px;
+	text-align: center;
+}
+
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" 
+					value="#{msg['breadcrumb.log']} > #{msg['breadcrumb.reports']} > #{msg['logistics.rep_mvm_on_acc_goods']}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{msg['logistics.rep_mvm_on_acc_goods']}" />
+			</ui:include>
+
+			<div class="ui-grid">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm">
+							<p:panelGrid columns="2" style="width:99%;margin-top:1px;">
+								<f:facet name="header">#{msg['search_panel']}</f:facet>
+
+								<p:outputLabel value="#{msg['company']}"></p:outputLabel>
+								<werp:companySelect elementId="companyId" mode="update"
+									value="#{repLog3Bean.bukrs}">
+								</werp:companySelect>
+
+
+								<p:outputLabel>#{msg['logistics.matnr_code']}</p:outputLabel>
+								<p:inputText value="#{repLog3Bean.code}"></p:inputText>
+
+								<p:outputLabel value="#{msg['date_from']}"></p:outputLabel>
+								<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{repLog3Bean.fromDate}" converterMessage="Wrong Date"
+									navigator="true">
+								</p:calendar>
+
+								<p:outputLabel value="#{msg['date_to']}"></p:outputLabel>
+								<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{repLog3Bean.toDate}" converterMessage="Wrong Date"
+									navigator="true">
+								</p:calendar>
+
+								<p:outputLabel value="#{msg['employee']}"></p:outputLabel>
+								<p:panel id="selectedStaffPanel">
+									<h:outputText value="#{repLog3Bean.selectedStaff.getLF()}"
+										rendered="#{!empty repLog3Bean.selectedStaff.staff_id}"></h:outputText>
+									<p:commandButton icon="ui-icon-close" type="push"
+										update="selectedStaffPanel"
+										actionListener="#{repLog3Bean.removeSelectedStaff()}"
+										styleClass="f4button">
+									</p:commandButton>
+									<p:commandButton icon="ui-icon-newwin" type="push"
+										oncomplete="PF('StaffListDialog').show();"
+										styleClass="f4button">
+									</p:commandButton>
+
+								</p:panel>
+
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg['form']}"
+									actionListener="#{repLog3Bean.generateData()}"
+									update=":dataForm:reportDataTable, :messages"></p:commandButton>
+
+							</p:panelGrid>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="dataForm">
+							<p:dataTable value="#{repLog3Bean.items}" var="item"
+								tableStyleClass="logItemsTable" id="reportDataTable">
+
+								<p:column headerText="#{msg['date']}"
+									style="width:100px;text-align:center;">
+									<p:outputLabel value="#{item.invoice_date}">
+										<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+									</p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.accountability']}"
+									style="width:100px;text-align:center;">
+									<p:outputLabel value="#{item.accountQuantity}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.return']}"
+									style="width:100px;text-align:center;">
+									<p:outputLabel value="#{item.returnFromAccountQuantity}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.service']}"
+									style="width:100px;text-align:center;">
+									<p:outputLabel value="#{item.wrOffDocQuantity}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.written_off']}"
+									style="width:100px;text-align:center;">
+									<p:outputLabel value="#{item.wrOffQuantity}"></p:outputLabel>
+								</p:column>
+								
+								<p:column headerText="#{msg['balance']}"
+									style="width:100px;text-align:center;">
+									<p:outputLabel value="#{item.balance}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.link_to_doc']}">
+									<p:button value="#{msg['view']}" target="_blank" outcome="#{item.getDocumentViewLink()}" rendered="#{item.type_id > 0}"
+										icon="ui-icon-search" title="Просмотр документа">
+									</p:button>
+								</p:column>
+
+								<p:columnGroup type="footer">
+									<p:row>
+										<p:column style="text-align:right;" footerText="#{msg['total']}:">
+											<p:outputLabel value="Total:"></p:outputLabel>
+										</p:column>
+										<p:column>
+											<f:facet name="footer">
+												<h:outputText value="#{repLog3Bean.accTotal}" />
+											</f:facet>
+										</p:column>
+										<p:column>
+											<f:facet name="footer">
+												<h:outputText value="#{repLog3Bean.returnAccTotal}" />
+											</f:facet>
+										</p:column>
+
+										<p:column>
+											<f:facet name="footer">
+												<h:outputText value="#{repLog3Bean.wrOffDocTotal}" />
+											</f:facet>
+										</p:column>
+
+										<p:column>
+											<f:facet name="footer">
+												<h:outputText value="#{repLog3Bean.wrOffTotal}" />
+											</f:facet>
+										</p:column>
+										
+										<p:column>
+											<f:facet name="footer">
+												<h:outputText value="#{repLog3Bean.resultBalance}" />
+											</f:facet>
+										</p:column>
+										
+										<p:column style="text-align:left;">
+											<f:facet name="footer">
+												<h:outputText value="#{msg['logistics.period_balance']}: #{repLog3Bean.getBalanceInPeriod()}" rendered="false" />
+												&nbsp;&nbsp;&nbsp;
+												<h:outputText value="#{msg['logistics.total_balance']}: #{repLog3Bean.totalBalance}" rendered="false" />
+											</f:facet>
+										</p:column>
+									</p:row>
+								</p:columnGroup>
+							</p:dataTable>
+							<br/><br/>
+						</h:form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<p:dialog widgetVar="StaffListDialog" modal="true" resizable="false"
+		appendTo="@(body)" header="#{msg['employees']}" width="800" height="500">
+
+		<h:form id="staffSearchForm">
+			<p:panel header="#{msg.advanced_search}">
+				<h:panelGrid columns="4" cellpadding="10">
+					<p:outputLabel value="#{msg['hr.staff.lastname']}"></p:outputLabel>
+					<p:inputText value="#{repLog3Bean.staffSearchModel.lastname}"></p:inputText>
+
+					<p:outputLabel value="#{msg['hr.staff.firstname']}"></p:outputLabel>
+					<p:inputText value="#{repLog3Bean.staffSearchModel.firstname}"></p:inputText>
+
+
+					<p:outputLabel value=""></p:outputLabel>
+					<p:outputLabel value=""></p:outputLabel>
+					<p:outputLabel value=""></p:outputLabel>
+					<p:commandButton value="#{msg.search}"
+						actionListener="#{repLog3Bean.loadStaffList()}"
+						update=":messages,:StaffListDlgForm:staffListDlgTable"></p:commandButton>
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+
+		<h:form id="StaffListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="staffListDlgTable" var="item"
+					rowKey="#{item.staff_id}" value="#{repLog3Bean.staffList}"
+					emptyMessage="#{msg.no_records}" selectionMode="single"
+					paginator="true" rows="500"
+					selection="#{repLog3Bean.selectedStaff}">
+					<p:ajax event="rowDblselect"
+						listener="#{repLog3Bean.onSelectStaff}" update=":searchForm" />
+
+					<p:column headerText="#{msg['hr.staff.lastname']}">
+						<h:outputText value="#{item.lastname}" />
+					</p:column>
+
+					<p:column headerText="#{msg['hr.staff.firstname']}">
+						<h:outputText value="#{item.firstname}" />
+					</p:column>
+
+					<p:column headerText="#{msg['hr.staff.middlename']}">
+						<h:outputText value="#{item.middlename}" />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>

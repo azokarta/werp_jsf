@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<f:metadata>
+	<f:viewParam name="contract_number"
+		value="#{wfacmtBean.contract_number}" />
+	<f:viewParam name="contract_id" value="#{wfacmtBean.contract_id}" />
+	<f:event type="preRenderView" listener="#{wfacmtBean.init}" />
+</f:metadata>
+<h:head>
+	<title>#{msg['dmsc.viewContract']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+</h:head>
+
+<h:body>
+
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.dmsc03']}" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Запрос на одобрение договора уцененного товара" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+
+				<f:view>
+
+					<h:form id="form">
+
+						<p:growl id="messages" sticky="false" showDetail="true" />
+
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton icon="ui-icon-check" type="push"
+									value="Одобрить" update="messages">
+									<p:ajax listener="#{wfacmtBean.approveRequest}" />
+										<p:confirm header="Confirmation"
+											message="#{msg['dmsc.hint_save_new_contr']}"
+											icon="ui-icon-alert" />
+									</p:commandButton>
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+								<p:commandButton type="push" value="Отклонить"
+									icon="ui-icon ui-icon-close" update="messages"
+									actionListener="#{wfacmtBean.declineRequest}" >
+									<p:confirm header="Confirmation"
+										message="После отклонения запрос будет удален из базы. Вы уверены что хотите отклонить запрос?"
+										icon="ui-icon-alert" />	
+								</p:commandButton>
+							</f:facet>
+
+							<f:facet name="right">
+								<h:outputLabel>#{msg['dmsc.contractNo']} </h:outputLabel>
+								<h:inputText id="contract_number_search" maxlength="14"
+									autocomplete="off" value="#{wfacmtBean.contract_number_search}" />
+								<h:outputLabel>&nbsp;</h:outputLabel>
+								<p:commandButton type="push" value="#{msg['dmsc.search']}"
+									icon="ui-icon ui-icon-search"
+									actionListener="#{wfacmtBean.to_search}" update="messages" />
+							</f:facet>
+						</p:toolbar>
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+							align="center">
+							<p:commandButton value="#{msg['dmsc.yes']}" type="button"
+								align="center" styleClass="ui-confirmdialog-yes"
+								icon="ui-icon-check" />
+							<p:commandButton value="#{msg['dmsc.no']}" type="button"
+								align="center" styleClass="ui-confirmdialog-no"
+								icon="ui-icon-close" />
+						</p:confirmDialog>
+
+						<div class="ui-grid-row" style="margin-top: 15px;">
+
+							<div id="contract" style="display: block; float: left;">
+
+								<fieldset class="contractViewEditFieldSet">
+									<legend>#{msg['dmsc.contract']}</legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.bukrs']}" /></td>
+											<td><p:selectOneMenu id="bukrs"
+													value="#{wfacmtBean.p_contract.bukrs}" disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}"
+														itemValue="0" />
+													<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+														var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+														itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.branch']}" /></td>
+											<td><p:selectOneMenu id="branch"
+													value="#{wfacmtBean.p_contract.branch_id}" disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+														itemValue="0" />
+													<f:selectItems value="#{branchF4Bean.branch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td colspan="2">
+												<table>
+													<tr>
+														<td><h:outputLabel value="Сервис" /></td>
+														<td><p:selectOneMenu id="servBranch"
+																update="messages"
+																value="#{wfacmtBean.p_contract.serv_branch_id}"
+																disabled="true">
+																<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+																	itemValue="0" />
+																<f:selectItems value="#{branchF4Bean.branch_list}"
+																	var="wa_branch" itemLabel="#{wa_branch.text45}"
+																	itemValue="#{wa_branch.branch_id}" />
+															</p:selectOneMenu></td>
+														<td width="75" align="right"><h:outputLabel
+																value="Финансы " /></td>
+														<td><p:selectOneMenu id="finBranch" disabled="true"
+																value="#{wfacmtBean.p_contract.finBranchId}">
+																<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+																	itemValue="0" />
+																<f:selectItems value="#{branchF4Bean.branch_list}"
+																	var="wa_branch" itemLabel="#{wa_branch.text45}"
+																	itemValue="#{wa_branch.branch_id}" />
+															</p:selectOneMenu></td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.contr_type']}" /></td>
+											<td><p:selectOneMenu id="contract_type_id"
+													value="#{wfacmtBean.p_contract.contract_type_id}"
+													disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.select_contr_type']}"
+														itemValue="0" />
+													<f:selectItems
+														value="#{contractTypeF4Bean.contractType_list}"
+														var="wa_contractType" itemLabel="#{wa_contractType.name}"
+														itemValue="#{wa_contractType.contract_type_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.status']}" /></td>
+											<td><p:selectOneMenu id="contract_status_id"
+													value="#{wfacmtBean.p_contract.contract_status_id}"
+													disabled="true">
+													<f:selectItems
+														value="#{contractStatusF4Bean.contractStatus_list}"
+														var="wa_contractStatus"
+														itemLabel="#{wa_contractStatus.name}"
+														itemValue="#{wa_contractStatus.contract_status_id}" />
+												</p:selectOneMenu> <p:selectOneMenu id="contract_last_state"
+													style="margin-left: 10px;"
+													value="#{wfacmtBean.p_contract.last_state}" disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.lsFormalised']}"
+														itemValue="1" />
+													<f:selectItem itemLabel="#{msg['dmsc.lsIssued']}"
+														itemValue="2" />
+													<f:selectItem itemLabel="#{msg['dmsc.lsReturned']}"
+														itemValue="3" />
+													<f:selectItem itemLabel="#{msg['dmsc.lsMounted']}"
+														itemValue="4" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.contractNo']}" /></td>
+											<td><h:inputText id="dogSN" size="10" autocomplete="off"
+													value="#{wfacmtBean.p_contract.contract_number}"
+													disabled="true" /> <h:outputLabel
+													value=" #{msg['dmsc.barcode']} " style="margin-left: 20px;" />
+												<h:inputText id="dogBarCode" size="15" autocomplete="off"
+													value="#{wfacmtBean.p_contract.contract_barcode}"
+													disabled="true" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.customer']}" /></td>
+											<td><h:inputText id="fio" size="35" autocomplete="off"
+													value="#{wfacmtBean.p_fio}" disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.demo_secretary']}" /></td>
+											<td><h:inputText id="demo_sc" size="35"
+													autocomplete="off" value="#{wfacmtBean.p_fioDemoSec}"
+													disabled="true" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.dealer']}" /></td>
+											<td><h:inputText id="dealer" size="35"
+													autocomplete="off" value="#{wfacmtBean.p_fioDealer}"
+													disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel style="margin-left: 0px;" value="Премия Дилера" /></td>
+											<td><h:inputText id="dealerPremi2" size="10"
+													autocomplete="off" value="#{wfacmtBean.p_dealerPremi}"
+													disabled="true">
+													<f:convertNumber type="number" groupingUsed="true"
+														minFractionDigits="2" pattern="#0.00" />
+													</h:inputText>
+													 <h:outputLabel id="premiCurrency2"
+													value=" #{wfacmtBean.p_currency}" />
+													</td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.collector']}" /></td>
+											<td><h:inputText id="collector" size="35"
+													autocomplete="off" value="#{wfacmtBean.p_fioColl}"
+													disabled="true" /></td>
+										</tr>
+<!-- 										<tr> -->
+<!-- 											<td><h:outputLabel value="#{msg['dmsc.fitter']}" /></td> -->
+<!-- 											<td><h:inputText id="fitter" size="35" -->
+<!-- 													autocomplete="off" value="#{wfacmtBean.p_fioFitter}" -->
+<!-- 													disabled="true" /></td> -->
+<!-- 										</tr> -->
+										
+										<tr>
+											<td><h:outputLabel value="Менеджер" /></td>
+											<td><h:inputText id="manager" size="35"
+													autocomplete="off" value="#{wfacmtBean.p_fioManager}"
+													disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel style="margin-left: 0px;" value="Премия Менеджера" /></td>
+											<td><h:inputText id="managerPremi" size="10"
+													autocomplete="off" value="#{wfacmtBean.p_managerPremi}"
+													disabled="true">
+													<f:convertNumber type="number" groupingUsed="true"
+														minFractionDigits="2" pattern="#0.00" />
+													</h:inputText>
+													 <h:outputLabel id="premiManCurrency"
+													value=" #{wfacmtBean.p_currency}" />
+													</td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel value="Директор" /></td>
+											<td><h:inputText id="director" size="35"
+													autocomplete="off" value="#{wfacmtBean.p_fioDirector}"
+													disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel style="margin-left: 0px;" value="Премия Директора" /></td>
+											<td><h:inputText id="directorPremi" size="10"
+													autocomplete="off" value="#{wfacmtBean.p_directorPremi}"
+													disabled="true">
+													<f:convertNumber type="number" groupingUsed="true"
+														minFractionDigits="2" pattern="#0.00" />
+													</h:inputText>
+													 <h:outputLabel id="premiDirCurrency"
+													value=" #{wfacmtBean.p_currency}" />
+													</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.price']}" /></td>
+											<td><h:inputText id="price" size="10" autocomplete="off"
+													value="#{wfacmtBean.p_contract.price}" disabled="true" />
+												<h:outputLabel id="currencyName"
+													value=" #{wfacmtBean.p_currency}" />
+													
+													<h:outputLabel
+													value="#{msg['dmsc.payment_schedule']}"
+													style="margin-left: 30px;" /> <h:inputText
+													id="payment_schedule" size="5" autocomplete="off"
+													style="margin-left: 10px;"
+													value="#{wfacmtBean.p_contract.payment_schedule}"
+													disabled="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel
+													value="#{msg['dmsc.advance_payment']}" /></td>
+											<td><h:inputText id="firstpayment" size="10"
+													autocomplete="off"
+													value="#{wfacmtBean.p_contract.first_payment}"
+													disabled="true" /> <h:outputLabel id="currencyName2"
+													value=" #{wfacmtBean.p_currency}" /> 
+													
+													<h:outputLabel value="#{msg['dmsc.remain']}" style="margin-left: 30px;" />
+												<h:inputText id="remain" size="10"
+													style="margin-left: 10px;" autocomplete="off"
+													value="#{wfacmtBean.remain}" disabled="true" /> <h:outputLabel
+													id="currencyName4" value=" #{wfacmtBean.p_currency}" /></td>
+										</tr>
+<!-- 										<tr> -->
+<!-- 											<td><h:outputLabel value="#{msg['dmsc.paid']}" /></td> -->
+<!-- 											<td><h:inputText id="paid" size="10" autocomplete="off" -->
+<!-- 													value="#{wfacmtBean.p_contract.paid}" disabled="true" /> <h:outputLabel -->
+<!-- 													id="currencyName5" value=" #{wfacmtBean.p_currency}" />  -->
+<!-- 												</td> -->
+<!-- 										</tr> -->
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.bank_partner']}" /></td>
+											<td><p:selectOneMenu id="bank_partner"
+													value="#{wfacmtBean.p_contract.bank_partner_id}"
+													disabled="true">
+													<f:selectItem itemLabel="#{msg['dmsc.without_bank']}"
+														itemValue="0" />
+													<f:selectItems
+														value="#{bankPartnerF4Bean.bankPartner_list}"
+														var="wa_bpartner" itemLabel="#{wa_bpartner.name_full}"
+														itemValue="#{wa_bpartner.id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel value="Оформлен на: " /></td>
+											<td><p:selectOneMenu id="subcompany" disabled="true"
+													value="#{wfacmtBean.p_contract.legal_entity_id}">
+													<f:selectItem itemLabel="Выберите ИП или ТОО"
+														itemValue="0" />
+													<f:selectItems
+														value="#{wfacmtBean.sc_list}"
+														var="wa_sc" itemLabel="#{wa_sc.name_ru}"
+														itemValue="#{wa_sc.sc_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.contract_date']}" /></td>
+											<td><p:calendar id="contract_date"
+													styleClass="dateField" pattern="dd.MM.yyyy"
+													autocomplete="off"
+													value="#{wfacmtBean.p_contract.contract_date}"
+													converterMessage="Date is invalid." disabled="true" /> <h:outputLabel
+													style="margin-left: 20px;"
+													value=" #{msg['dmsc.date_issued']} &nbsp;&nbsp;" /> <p:calendar
+													id="matnr_release_date" styleClass="dateField"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{wfacmtBean.p_contract.matnr_release_date}"
+													converterMessage="Date is invalid." disabled="true" /></td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.matnr_serial']}" /></td>
+											<td><h:inputText id="barcode" autocomplete="off"
+													value="#{wfacmtBean.p_contract.tovar_serial}"
+													disabled="true" /></td>
+										</tr>
+
+									</table>
+								</fieldset>
+							</div>
+
+
+							<div id="contact" class="contactFieldDiv"
+								style="display: block; float: left;">
+								<fieldset class="contractViewEditFieldSet">
+									<legend>#{msg['dmsc.contact_info']}</legend>
+									<table>
+
+										<tr>
+											<td><b><h:outputLabel
+														value="#{msg['dmsc.addr_home']}" /></b></td>
+											<td><p:inputTextarea rows="2" cols="25" disabled="true"
+													autoResize="false" style="font-size: 1em;"
+													value="#{wfacmtBean.addrHome.address}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Телефон " /></td>
+											<td><p:inputTextarea id="tel_mob1" rows="2" cols="25"
+													disabled="true" autoResize="false" style="font-size: 1em;"
+													value="#{wfacmtBean.addrHome.telDom}  #{wfacmtBean.addrHome.telMob1}  #{wfacmtBean.addrHome.telMob2}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><b><h:outputLabel
+														value="#{msg['dmsc.addr_rab']}" /></b></td>
+											<td><p:inputTextarea rows="2" cols="25" disabled="true"
+													autoResize="false" style="font-size: 1em;"
+													value="#{wfacmtBean.addrWork.address}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Телефон " /></td>
+											<td><p:inputTextarea id="telWork" rows="2" cols="25"
+													disabled="true" autoResize="false" style="font-size: 1em;"
+													value="#{wfacmtBean.addrWork.telDom}  #{wfacmtBean.addrWork.telMob1}  #{wfacmtBean.addrWork.telMob2}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><b><h:outputLabel value="Адрес для сервиса" /></b></td>
+											<td><p:inputTextarea rows="2" cols="25" disabled="true"
+													autoResize="false" style="font-size: 1em;"
+													value="#{wfacmtBean.addrService.address}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Телефон " /></td>
+											<td><p:inputTextarea id="telServ" rows="2" cols="25"
+													disabled="true" autoResize="false" style="font-size: 1em;"
+													value="#{wfacmtBean.addrService.telDom}  #{wfacmtBean.addrService.telMob1}  #{wfacmtBean.addrService.telMob2}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.email']}" /></td>
+											<td><p:inputText id="email" disabled="true" size="27"
+													value="#{wfacmtBean.selectedCustomer.email}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.info']}" /></td>
+											<td><p:inputTextarea rows="4" cols="25"
+													counter="display" maxlength="255" disabled="true"
+													counterTemplate="#{msg['dmsc.hint_left']} {0} #{msg['dmsc.hint_char']}"
+													autoResize="false" style="font-size: 1em;"
+													value="#{wfacmtBean.p_contract.info}" /><br /> <h:outputText
+													style="color:#aaa;" styleClass="notetext" id="display" />
+
+											</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.reissuedDate']}" /></td>
+											<td><p:calendar id="new_contract_date"
+													styleClass="dateField" pattern="dd.MM.yyyy"
+													autocomplete="off"
+													value="#{wfacmtBean.p_contract.new_contract_date}"
+													converterMessage="Date is invalid." disabled="true">
+
+												</p:calendar></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.cancelledDate']}" /></td>
+											<td><p:calendar id="cancel_date" styleClass="dateField"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{wfacmtBean.p_contract.cancel_date}"
+													converterMessage="Date is invalid." disabled="true">
+
+												</p:calendar></td>
+										</tr>
+
+									</table>
+								</fieldset>
+							</div>
+
+							<div class="paymentFieldDiv"
+								style="display: block; float: left; margin-top: 12px;">
+								<fieldset class="payment_scheduleFieldSet"
+									style="margin-top: -12px; height: 52em;">
+									<legend>#{msg['dmsc.payment_graph']}</legend>
+
+									<div class="ui-grid-row">
+										<table>
+											<tr>
+												<td width="97px"><h:outputLabel
+														value="#{msg['dmsc.first_payment']}" /></td>
+												<td><p:inputText id="first_payment" size="10"
+														autocomplete="off" disabled="true"
+														value="#{wfacmtBean.psDetFirstPayment.ps.sum}">
+													</p:inputText> <p:inputText id="first_paid" size="10" autocomplete="off"
+														disabled="true"
+														value="#{wfacmtBean.psDetFirstPayment.ps.paid}">
+													</p:inputText></td>
+											</tr>
+										</table>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="paymentScheduleDiv"
+											style="display: block; float: left;">
+
+											<p:dataTable id="PaymentTable" var="ps" rowKey="#{ps.index}"
+												value="#{wfacmtBean.psDetL}"
+												emptyMessage="#{msg['dmsc.nalichka']}"
+												style="margin-top: 10px; width:310px;">
+
+												<p:column headerText="" style="width:15px;">
+													<h:outputText value="#{ps.index}" />
+												</p:column>
+												<p:column headerText="#{msg['dmsc.date']}"
+													style="width:77px;">
+													<p:calendar styleClass="dateField" pattern="dd.MM.yyyy"
+														autocomplete="off" value="#{ps.ps.payment_date}"
+														converterMessage="Date is invalid."
+														disabled="#{ps.mon_dis}">
+													</p:calendar>
+												</p:column>
+												<p:column headerText="#{msg['dmsc.amount']}">
+													<h:inputText size="10" autocomplete="off"
+														value="#{ps.ps.sum}" disabled="#{ps.mon_dis}">
+													</h:inputText>
+												</p:column>
+												<p:column headerText="#{msg['dmsc.paid']}">
+													<h:inputText size="10" autocomplete="off"
+														value="#{ps.ps.paid}" disabled="#{ps.mon_dis}">
+													</h:inputText>
+												</p:column>
+											</p:dataTable>
+										</div>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+
+					</h:form>
+
+				</f:view>
+			</div>
+		</div>
+	</div>
+
+</h:body>
+</html>

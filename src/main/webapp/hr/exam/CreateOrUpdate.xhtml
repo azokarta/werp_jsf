@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="ExamCreateDlg" widgetVar="ExamCreateDialog" modal="true"
+		resizable="false" appendTo="@(body)"
+		header="Добавление/Редактирование экзамена">
+		<h:form id="ExamCreateForm">
+			<div class="ui-grid-row" style="margin-top: 10px;">
+				<div class="ui-grid-col-12">
+					<p:dataTable id="creationList"
+						value="#{hrsExamListBean.creationList}" var="item" rows="30"
+						style="width:100%;">
+
+						<f:facet name="header" id="tableHeader">
+                                                    Экзамен
+                             <p:commandButton icon="ui-icon-plus"
+								actionListener="#{hrsExamListBean.addCreationList}"
+								update="creationList" style="float:right;margin-right:5px;">
+							</p:commandButton>
+
+							<div style="clear: both;"></div>
+						</f:facet>
+						<p:column style="width:300px;">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.exam.title']}"></h:outputText>
+							</f:facet>
+							<p:inputText value="#{item.title}" />
+						</p:column>
+
+						<p:column style="width:300px;">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.exam.grade']}"></h:outputText>
+							</f:facet>
+							<p:inputText value="#{item.grade}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.exam.exam_date']}" />
+							</f:facet>
+							<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+								value="#{item.exam_date}" converterMessage="Wrong Date"
+								navigator="true">
+							</p:calendar>
+						</p:column>
+					</p:dataTable>
+					<p:commandButton actionListener="#{hrsExamListBean.Create}"
+						value="#{msg.save}" update=":ExamCreateForm:creationList,:messages" />
+					<p:commandButton actionListener="#{hrsExamListBean.Reset}"
+						value="#{msg.cancel}" oncomplete="PF('ExamCreateDialog').hide()" />
+				</div>
+			</div>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

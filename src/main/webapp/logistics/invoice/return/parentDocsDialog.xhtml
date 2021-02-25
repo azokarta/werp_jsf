@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<p:dialog id="ParenDocsDlg" widgetVar="ParenDocsDlg" modal="true"
+		resizable="false" appendTo="@(body)" header="#{dialogTitle}"
+		width="900" height="500">
+
+		<div class="ui-grid">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-3">
+					<h:form id="searchForm">
+						<p:panelGrid columns="1" style="width:99%;margin-top:1px;">
+							<p:outputLabel value="Компания"></p:outputLabel>
+							<werp:companySelect elementId="companyId" mode="update"
+								value="#{invoiceModel.searchModel.bukrs}" onChangeUpdate=":searchForm:fromWerksSelect:fromWerks">
+
+							</werp:companySelect>
+
+							<p:outputLabel value="Склад отправитель"></p:outputLabel>
+							<werp:werksSelect id="fromWerksSelect" elementId="fromWerks"
+								companyValue="#{invoiceModel.searchModel.bukrs}"
+								value="#{invoiceModel.searchModel.from_werks}" mode="update">
+							</werp:werksSelect>
+							
+							<p:outputLabel value="Номер договора"></p:outputLabel>
+							<p:inputText value="#{invoiceModel.searchModel.contract_number}"></p:inputText>
+							<br/>
+							<p:outputLabel value="Номер сервиса"></p:outputLabel>
+							<p:inputText value="#{invoiceModel.searchModel.service_number}"></p:inputText>
+							<br/>
+							
+							<p:commandButton value="Поиск" update=":parentDocsDataForm:dataTable"></p:commandButton>
+
+						</p:panelGrid>
+					</h:form>
+				</div>
+
+				<div class="ui-grid-col-9">
+					<h:form id="parentDocsDataForm">
+						<p:dataTable id="dataTable" var="item" rowKey="#{item.id}"
+							value="#{invoiceModel}" emptyMessage="#{msg.no_records}"
+							selectionMode="single" selection="#{selectedParentDoc}"
+							paginator="true" rows="50" lazy="true" scrollable="true"
+							scrollHeight="400" style="max-width:650px;">
+							
+							<p:ajax event="rowSelect" update=":sendFormButtons" />
+							<p:ajax event="rowUnselect" update=":sendFormButtons" />
+
+							<p:column headerText="№" style="width:80px;text-align:center;"
+								sortBy="#{item.id}">
+								<h:outputText value="№#{item.id}" />
+							</p:column>
+							
+							<p:column headerText="Номер дог." style="width:80px;text-align:center;"
+								sortBy="#{item.contract_number}">
+								<h:outputText value="дог. №#{item.contract_number}" rendered="#{item.contract_number > 0}" />
+							</p:column>
+							
+							<p:column headerText="Номер серв." style="width:80px;text-align:center;"
+								sortBy="#{item.service_number}">
+								<h:outputText value="дог. №#{item.service_number}" rendered="#{item.service_number > 0}" />
+							</p:column>
+
+							<p:column headerText="Склад отправитель">
+								<h:outputText value="#{werksF4Bean.getName(item.from_werks)}" />
+							</p:column>
+
+							<p:column headerText="Дата списании">
+								<h:outputText value="#{item.invoice_date}">
+									<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</div>
+
+			</div>
+
+
+		</div>
+
+		<f:facet name="footer">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="sendFormButtons">
+						<p:commandButton actionListener="#{assignParentDocBean[assignParentDocAction]}"
+							value="Ok" update="#{updateOnAssign},:messages"
+							oncomplete="PF('ParenDocsDlg').hide()">
+						</p:commandButton>
+					&nbsp;
+					<p:commandButton value="Отмена"
+							oncomplete="PF('ParenDocsDlg').hide()" />
+					</h:form>
+				</div>
+			</div>
+		</f:facet>
+	</p:dialog>
+</ui:composition>
+</html>

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:metadata>
+</f:metadata>
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{hrDismissedList.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="HR > #{hrDismissedList.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{hrDismissedList.pageHeader}" />
+			</ui:include>
+			
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel id="horizontal" header="#{msg.advanced_search}"
+							toggleable="true" toggleOrientation="vertical" collapsed="false">
+							<h:panelGrid columns="4" cellpadding="10">
+								<p:outputLabel rendered="false" value="#{msg.company}"></p:outputLabel>
+								<p:selectOneMenu rendered="false"
+									value="#{hrDismissedList.staffModel.searchModel.bukrs}"
+									disabled="#{!userinfo.main}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg.branch}" rendered="false"></p:outputLabel>
+								<p:selectOneMenu id="branch_id" rendered="false"
+									value="#{hrDismissedList.staffModel.searchModel.branch_id}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems
+										value="#{branchF4Bean.getAllBranchByBukrs(hrDismissedList.staffModel.searchModel.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg['hr.staff.iin_bin']}"></p:outputLabel>
+								<p:inputText
+									value="#{hrDismissedList.staffModel.searchModel.iin_bin}"></p:inputText>
+
+								<p:outputLabel value="#{msg['hr.staff.firstname']}"></p:outputLabel>
+								<p:inputText
+									value="#{hrDismissedList.staffModel.searchModel.firstname}"></p:inputText>
+
+								<p:outputLabel value="#{msg['hr.staff.lastname']}"></p:outputLabel>
+								<p:inputText
+									value="#{hrDismissedList.staffModel.searchModel.lastname}"></p:inputText>
+
+								<p:outputLabel value="#{msg['hr.staff.email']}"></p:outputLabel>
+								<p:inputText value="#{hrDismissedList.staffModel.searchModel.email}"></p:inputText>
+
+								<p:outputLabel rendered="false">Должность</p:outputLabel>
+								<p:selectOneMenu rendered="false"
+									value="#{hrDismissedList.staffModel.searchModel.position_id}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems value="#{positionF4Bean.position_list}"
+										var="pos" itemLabel="#{pos.text}"
+										itemValue="#{pos.position_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" update=":StaffListForm"
+									actionListener="#{hrDismissedList.Search}"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<h:form id="StaffListForm">
+					<p:dataTable id="datalist" value="#{hrDismissedList.staffModel}"
+						var="item" selectionMode="single"
+						selection="#{hrDismissedList.selected}" paginator="true"
+						paginatorPosition="bottom" rowKey="#{item.staff_id}" rows="50"
+						lazy="true">
+
+						<p:ajax event="rowSelect" update="createButton viewButton updateButton" />
+						<p:ajax event="rowUnselect" update="createButton viewButton updateButton" />
+
+						<f:facet name="header" id="tableHeader">
+							<h:commandLink id="xlsxExport" rendered="false"
+								style="float:right;margin-right:5px;">
+								<p:graphicImage name="xlsx_export_icon.png" library="img"
+									width="32" />
+								<p:dataExporter type="xls" target="datalist"
+									fileName="staffList" postProcessor="#{hrsListBean.exportXLS}" />
+							</h:commandLink>
+
+							<span class="ui-separator" style="float: right;"> <span
+								style="float: right;"
+								class="ui-icon ui-icon-grip-dotted-vertical" />
+							</span>
+
+							<p:button target="_blank" outcome="/hr/staff/View.xhtml" rendered="#{hrDismissedList.showButtons()}"
+								icon="ui-icon-zoomin" disabled="#{empty hrDismissedList.selected}"
+								title="View" id="viewButton"
+								style="float:right;margin-right:5px;">
+								<f:param name="staffId" value="#{hrDismissedList.selected.staff_id}" />
+							</p:button>
+							
+							<p:button target="_blank" outcome="/hr/staff/Update.xhtml" rendered="#{hrDismissedList.canAll()}"
+								icon="ui-icon-pencil" disabled="#{empty hrDismissedList.selected}"
+								title="Редактировать" id="updateButton"
+								style="float:right;margin-right:5px;">
+								<f:param name="staffId" value="#{hrDismissedList.selected.staff_id}" />
+							</p:button>
+
+							<p:button title="Create" id="createButton" rendered="#{hrDismissedList.canAll()}"
+								outcome="/hr/staff/Create.xhtml" icon="ui-icon-plus"
+								style="float:right;margin-right:5px;" />
+
+							<span class="ui-separator" style="float: right;"> <span
+								style="float: right;"
+								class="ui-icon ui-icon-grip-dotted-vertical" />
+							</span>
+							<span
+								style="display: block; float: left; color: blue; font-weight: bold;">ВСЕГО:
+								#{hrDismissedList.staffModel.rowCount}</span>
+							<div style="clear: both;"></div>
+						</f:facet>
+
+						<p:column style="width:70px;text-align:center;">
+							<f:facet name="header">
+								<h:outputText value="STAFF ID" />
+							</f:facet>
+							<h:outputText value="#{item.staff_id}" />
+						</p:column>
+
+						<p:column sortBy="#{item.lastname}">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.staff.lastname']}" />
+							</f:facet>
+							<h:outputText value="#{item.lastname}" />
+						</p:column>
+
+						<p:column sortBy="#{item.firstname}">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.staff.firstname']}" />
+							</f:facet>
+							<h:outputText value="#{item.firstname}" />
+						</p:column>
+
+						<p:column sortBy="#{item.middlename}">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.staff.middlename']}" />
+							</f:facet>
+							<h:outputText value="#{item.middlename}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.staff.iin_bin']}" />
+							</f:facet>
+							<h:outputText value="#{item.iin_bin}" />
+						</p:column>
+						<p:column rendered="false">
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.staff.position_id']}" />
+							</f:facet>
+							<h:outputText value="#{hrDismissedList.getSalaries(item)}" />
+						</p:column>
+					</p:dataTable>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

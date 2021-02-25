@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<!-- STAFF OFFICIAL DATA -->
+<ui:composition>
+	<p:dataTable emptyMessage="#{msg.no_records}" id="sodList" var="sod"
+		rowKey="#{sod.id}" value="#{sodItems}" rendered="#{sodBean.canRead()}">
+
+		<f:facet name="header" id="sodTableHeader">
+			<p:commandButton id="sodCreateButton" icon="ui-icon-plus"
+				title="Create" actionListener="#{sodBean.prepareCreate}"
+				update="#{parentElementId}:SodCreateForm"
+				oncomplete="PF('SodCreateDialog').show()"
+				style="float:right;margin-right:5px;" rendered="#{sodBean.canCreate()}" />
+
+			<div style="clear: both;"></div>
+		</f:facet>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.official_data.sub_company_id']}" />
+			</f:facet>
+			<h:outputText value="#{sod.subCompany.name_ru}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.official_data.post']}" />
+			</f:facet>
+			<h:outputText value="#{sod.post}" />
+		</p:column>
+
+		<p:column style="width:100px;text-align:center;">
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.official_data.salary']}" />
+			</f:facet>
+			<h:outputText value="#{sod.salary}">
+				<f:convertNumber pattern="#0.00" groupingUsed="true"
+					minFractionDigits="1" />
+			</h:outputText>
+			
+			#{sod.currency}
+		</p:column>
+
+		<p:column style="width:100px;text-align:center;">
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.official_data.pension']}" />
+			</f:facet>
+			<h:outputText value="#{sod.pension}">
+				<f:convertNumber pattern="#0.00" groupingUsed="true"
+					minFractionDigits="1" />
+			</h:outputText>
+		</p:column>
+
+		<p:column style="width:100px;text-align:center;">
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.official_data.ipn']}" />
+			</f:facet>
+			<h:outputText value="#{sod.ipn}">
+				<f:convertNumber pattern="#0.00" groupingUsed="true"
+					minFractionDigits="1" />
+			</h:outputText>
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="#{msg['hr.official_data.comment']}" />
+			</f:facet>
+			<h:outputText value="#{sod.comment}" />
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">
+				<h:outputText value="Действия" />
+			</f:facet>
+			<p:commandButton rendered="#{sodBean.canAll()}" update="#{parentElementId}:SodCreateForm"
+				value="Редактировать" type="push"
+				actionListener="#{sodBean.setSelected(sod)}"
+				oncomplete="PF('SodCreateDialog').show();"></p:commandButton>
+
+			<p:commandButton rendered="#{sodBean.canAll()}" value="Удалить" actionListener="#{sodBean.Delete(sod)}"
+				update=":messages">
+				<p:confirm header="Предупреждение"
+					message="Действительно хотите удалить элемент?"
+					icon="ui-icon-alert" />
+			</p:commandButton>
+		</p:column>
+
+	</p:dataTable>
+
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+		<p:commandButton value="Да" type="button"
+			styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		<p:commandButton value="Нет" type="button"
+			styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+	</p:confirmDialog>
+	
+	<p:panel header="Офф. данные сотрудника" rendered="#{!sodBean.canRead()}">
+		<h3 style="margin:auto;text-align: center;">Нет доступа!</h3>
+	</p:panel>
+
+	<ui:include src="Create2.xhtml">
+		<ui:param name="sodBean" value="#{sodBean}"></ui:param>
+	</ui:include>
+</ui:composition>
+</html>

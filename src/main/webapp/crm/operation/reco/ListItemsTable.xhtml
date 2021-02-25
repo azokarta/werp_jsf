@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<style>
+.ui-panelgrid-blank .ui-panelgrid-cell {
+	border: 0px;
+}
+
+.table-buttons {
+	float: right;
+}
+
+.reco-data-row {
+	font-weight: 600;
+	font-size: 14px;
+	background-image: none !important;
+}
+
+.reco-date {
+	padding: 5px 25px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 14px;
+	margin: 4px 2px;
+	cursor: pointer;
+	border: none;
+	margin: auto;
+}
+
+.reco-new {
+	background-color: #4CAF50;
+	color: white;
+}
+
+.reco-new-overdue {
+	background-color: #f44336 !important;
+	color: white;
+}
+
+.reco-call-date-td {
+	padding: 5px;
+	margin: auto;
+	width: 150px;
+	text-align: center;
+}
+
+.ui-datatable-odd {
+	background-color: #fafafb;
+}
+</style>
+
+	<div class="ui-grid-col-9">
+		<p:dataTable id="#{prefix}_itemsDataTable"
+			value="#{crmRecoListBean.items}" var="item"
+			rowStyleClass="reco-data-row">
+			<f:facet name="header">
+				<p:commandButton value="Добавить"
+					actionListener="#{crmRecoCrudBean.prepareCreate()}"
+					oncomplete="PF('CreateUpdateDialog').show();"
+					update=":CreateUpdateDialog" styleClass="table-buttons" type="push" />
+				<p:commandButton value="Добавить списком"
+					actionListener="#{crmRecoCrudBean.prepareCreateItems()}"
+					update=":CreateItemsPanel :form" styleClass="table-buttons"
+					type="push">
+					<f:actionListener binding="#{crmRecoListBean.prepareCreateItems()}"></f:actionListener>
+				</p:commandButton>
+
+				<br style="clear: both;" />
+			</f:facet>
+
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="Клиент" />
+				</f:facet>
+				<h:outputText value="#{item.clientName}" />
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="Рекомендатель" />
+				</f:facet>
+				<h:outputText value="#{item.tempRecommender}" />
+			</p:column>
+
+			<p:column styleClass="reco-call-date-td">
+				<f:facet name="header">
+					<h:outputText value="Дата звонка" />
+				</f:facet>
+				<div class="reco-date #{crmRecoListBean.getDateStyleClass(item)}">
+					<h:outputText value="#{item.callDate}">
+						<f:convertDateTime pattern="dd.MM.yyyy kk:mm"
+							timeZone="Asia/Almaty"></f:convertDateTime>
+					</h:outputText>
+				</div>
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="Тел. номер" />
+				</f:facet>
+				<ui:repeat var="phone" value="#{item.phones}">
+					<p:commandButton oncomplete="PF('RecoCallDialog').show();"
+						actionListener="#{crmRecoCrudBean.prepareCall(item,phone)}"
+						value="#{phone.getFormattedNumber()}" />
+				</ui:repeat>
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="Отв. сотрудник" />
+				</f:facet>
+				<h:outputText rendered="#{!empty item.responsible}"
+					value="#{item.responsible.getLF()}" />
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="Примечание" />
+				</f:facet>
+				<h:outputText value="#{item.note}" />
+			</p:column>
+
+			<p:column style="width:120px;">
+				<f:facet name="header">
+					<h:outputText value="Статус" />
+				</f:facet>
+				<div class="reco-status">
+					<h:outputText value="#{item.getStatusName()}" />
+				</div>
+			</p:column>
+
+
+
+			<p:column style="width:170px;">
+				<f:facet name="header">
+					<h:outputText value="" />
+				</f:facet>
+				<p:commandButton value="Звонок" rendered="false"
+					actionListener="#{crmCallCrudBean.prepareCreate(item)}"
+					oncomplete="PF('CallCreateUpdateDialog').show()"
+					update=":CallCreateUpdateDialog :messages" />
+				&nbsp;
+				<p:button icon="ui-icon-search" title="Просмотр"
+					outcome="View.xhtml" target="_blank">
+					<f:param name="id" value="#{item.id}" />
+				</p:button>
+				&nbsp;
+				
+				<p:commandButton
+					actionListener="#{crmRecoListBean.setSelected(item)}"
+					oncomplete="PF('CreateUpdateDialog').show();"
+					update=":CreateUpdateDialog :form" icon="ui-icon-pencil"
+					title="Редактировать" />
+					
+				&nbsp;
+				
+				<p:commandButton
+					actionListener="#{crmRecoCrudBean.setSelected(item)}"
+					oncomplete="PF('RecoCallDialog').show();"
+					update=":RecoCallDialog :form" title="Звонок" value="Звонок" />
+
+
+			</p:column>
+
+		</p:dataTable>
+	</div>
+</ui:composition>
+</html>

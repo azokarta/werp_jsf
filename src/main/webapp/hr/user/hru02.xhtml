@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>ERP Systems</title>
+	<meta http-equiv="Pragma" content="no-cache" /> 
+    <meta http-equiv="Expires" content="-1" /> 
+    <meta http-equiv="cache-control" content="no-store" /> 
+</h:head>
+<h:body>
+	<f:view>
+		<h:form id="form">
+		<p:growl id="messages"  sticky="false" showDetail = "true"/>
+	<p:toolbar styleclass = "mp_toolbar">
+
+        <f:facet name="right">
+        	<p:commandButton type="push" value="Logout" icon="ui-icon ui-icon-check" action = "#{userinfo.logout}"/>
+         </f:facet>   
+ 
+        <f:facet name="left">
+            <p:commandButton type="push" value="Main page" icon="ui-icon-home" action = "#{hrc01Bean.toMainPage}" ajax="false"/>
+        </f:facet>         
+    </p:toolbar>
+    <p:toolbar styleclass = "mp_toolbar">
+        <f:facet name="left">
+            <p:commandButton type="push" value="Save" icon="ui-icon ui-icon-check" actionListener = "#{hru02Bean.to_update}" ajax="false"/>
+        </f:facet>         
+    </p:toolbar>
+    <div id="search">
+    	<table> 
+    	<tr>
+    	<td>Username</td>
+    	<td><h:inputText id="username_search" maxlength="14" autocomplete="off" value = "#{hru02Bean.username_search}"/></td> 
+    	<td><p:commandButton type="push" value="Search" actionListener = "#{hru02Bean.to_search}"  update="messages"/></td>
+    	</tr>
+    	</table>
+    </div>
+    <div id="user">
+    <fieldset>
+    <legend>Пользователь</legend>
+    <div>
+    	<table>
+    		<tr>
+    			<td>
+    				<h:outputLabel value="Username"/>
+    			</td>
+    			<td>
+    				<h:inputText id="username" maxlength="20" autocomplete="off" value="#{hru02Bean.p_user.username}"/>
+    			</td>
+    		</tr>
+    		<tr>
+    			<td>
+    				<h:outputLabel value="Password"/>
+    			</td>
+    			<td>
+    				<h:inputText id="password" maxlength="40" autocomplete="off" value="#{hru02Bean.p_user.password}"/>
+    			</td>
+    		</tr>
+    		<tr>
+    			<td>
+    				<h:outputLabel value="Email"/>
+    			</td>
+    			<td>
+    				<h:inputText id="email" maxlength="40" autocomplete="off" value="#{hru02Bean.p_user.email}"/>
+    			</td>
+    		</tr>
+    	</table>
+    </div>
+    <div>
+    	<table>
+    		<tr>
+    			<td>
+	    			<h:outputLabel value = "Компания" />
+	    		</td> 
+	    		<td>
+	    			<h:outputLabel value = "Филиал" />
+	    		</td>
+    		</tr>
+    		<tr>
+	    	<td>
+	    		 
+		        <p:selectOneMenu styleClass = "bukrs" id = "bukrs" value="#{hru02Bean.p_user.bukrs}">
+				    <f:selectItem itemLabel="Выберите компанию" itemValue ="0"/>
+				    <f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="wa_bukrs" 
+		                itemLabel="#{wa_bukrs.name}" itemValue ="#{wa_bukrs.bukrs}" />
+				</p:selectOneMenu>
+	    	</td> 
+	    	<td>
+	    		<p:selectOneMenu styleClass = "branch" id="branch"  value="#{hru02Bean.p_user.branch_id}">
+	    			<f:selectItem itemLabel="Выберите филиал" itemValue ="0"/>
+		            <f:selectItems value="#{branchF4Bean.branch_list}" var="wa_branch" 
+		                itemLabel="#{wa_branch.text45}" itemValue ="#{wa_branch.branch_id}" />
+		        </p:selectOneMenu> 
+	    	</td>
+    	</tr>
+    	</table>
+    </div>
+    </fieldset>
+    </div>
+		</h:form>
+	</f:view>
+</h:body>
+	
+</html>

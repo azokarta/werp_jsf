@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<h:form id="SalaryCreateForm">
+		<h:panelGroup id="display" rendered="#{salaryBean.selected != null}">
+			<p:panelGrid columns="2">
+				<p:outputLabel value="#{msg.company}" />
+				<p:selectOneMenu value="#{salaryBean.selected.bukrs}">
+					<p:ajax update="business_area_id branch_id" />
+					<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+					<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+						itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="#{msg.business_area}" />
+				<p:selectOneMenu id="business_area_id"
+					value="#{salaryBean.selected.business_area_id}">
+					<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+					<f:selectItems
+						value="#{businessAreaBean.getItemsByBukrs(salaryBean.selected.bukrs)}"
+						var="ba" itemLabel="#{ba.name}" itemValue="#{ba.business_area_id}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="#{msg.branch}" />
+				<p:selectOneMenu id="branch_id"
+					value="#{salaryBean.selected.branch_id}">
+					<p:ajax update="parent_pyramid_id" listener="#{salaryBean.onChangeBranch()}"></p:ajax>
+					<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+					<f:selectItems
+						value="#{branchBean.getItemsByBukrs(salaryBean.selected.bukrs)}"
+						var="branch" itemLabel="#{branch.text45}"
+						itemValue="#{branch.branch_id}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="#{msg['hr.parent_pyramid']}" />
+				<p:selectOneMenu id="parent_pyramid_id"
+					value="#{salaryBean.parentPyramidId}">
+					<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+					<f:selectItems value="#{salaryBean.outputPyramidList}" var="pr"
+						itemLabel="#{pr.title}" itemValue="#{pr.pyramid_id}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="#{msg.position}" />
+				<p:selectOneMenu value="#{salaryBean.selected.position_id}">
+					<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+					<f:selectItems value="#{positionF4Bean.position_list}"
+						var="position" itemLabel="#{positionF4Bean.getName(position.position_id,userinfo.u_language)}"
+						itemValue="#{position.position_id}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="#{msg['hr.salary.beg_date']}" />
+				<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+					value="#{salaryBean.selected.beg_date}"
+					converterMessage="Wrong Date" navigator="true">
+				</p:calendar>
+
+				<p:outputLabel value="#{msg.currency}" />
+				<p:selectOneMenu id="waers" value="#{salaryBean.selected.waers}">
+					<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+					<f:selectItems value="#{currencyF4Bean.currency_list}"
+						var="currency" itemLabel="#{currency.text20}"
+						itemValue="#{currency.currency}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="#{msg['hr.staff.salary']}" />
+				<p:inputText value="#{salaryBean.selected.amount}" />
+
+				<p:outputLabel value="#{msg['hr.salary.salary_type']}" />
+				<p:selectOneMenu value="#{salaryBean.selected.salary_type}">
+					<f:selectItem itemLabel="#{msg['hr.salary.monthly']}"
+						itemValue="monthly" />
+					<f:selectItem itemLabel="#{msg['hr.salary.daily']}"
+						itemValue="daily" />
+					<f:selectItem itemLabel="#{msg['hr.salary.hourly']}"
+						itemValue="hourly" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="#{msg.department}" />
+				<p:selectOneMenu value="#{salaryBean.selected.department_id}">
+					<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+					<f:selectItems value="#{refDepartment.recordList}" var="dep"
+						itemLabel="#{dep.name_ru}" itemValue="#{dep.dep_id}" />
+				</p:selectOneMenu>
+				
+				<p:outputLabel value="#{msg['hr.note']}" />
+				<p:inputTextarea value="#{salaryBean.selected.note}"></p:inputTextarea>
+
+			</p:panelGrid>
+
+			<p:commandButton actionListener="#{hrSalaryBean.Save()}"
+				value="#{msg.save}" update=":messages" />
+			<p:commandButton actionListener="#{salaryBean.Reset}"
+				value="#{msg.cancel}" oncomplete="PF('SalaryCreateDialog').hide()" />
+		</h:panelGroup>
+	</h:form>
+
+</ui:composition>
+</html>

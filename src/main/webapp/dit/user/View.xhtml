@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="UserViewDlg" widgetVar="UserViewDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="#{bundle.ViewUserTitle}">
+		<h:form id="UserViewForm">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2"
+					rendered="#{ditUserListBean.selected != null}">
+					
+					<h:outputText value="#ID" />
+					<h:outputText value="#{ditUserListBean.selected.user_id}"
+						title="#ID" />
+						
+					<h:outputText value="Сотрудник" />
+					<h:outputText rendered="#{!empty ditUserListBean.selectedStaff}" value="#{ditUserListBean.selectedStaff.getLF()}"
+						title="Сотрудник" />
+					<h:outputText rendered="#{empty ditUserListBean.selectedStaff}" value="Сотрудник не выбран"
+						title="Сотрудник" />
+					
+					<h:outputText value="Username" />
+					<h:outputText value="#{ditUserListBean.selected.username}"
+						title="Username" />
+					
+					<h:outputText value="Password" />
+					<h:outputText value="***"
+						title="Password" />
+						
+					<h:outputText value="Email" />
+					<h:outputText value="#{ditUserListBean.selected.email}"
+						title="Email" />
+						
+					<h:outputText value="Company" />
+					<h:outputText value="#{bukrsF4Bean.getNameByBukrs(ditUserListBean.selected.bukrs)}"
+						title="Bukrs" />
+						
+					<h:outputText value="Branch" />
+					<h:outputText value="#{branchF4Bean.getBranchNameByID(ditUserListBean.selected.branch_id)}"
+						title="Branch" />
+						
+					<h:outputText value="Role" />
+					<h:outputText value="#{roleF4Bean.getName(ditUserListBean.selected.role_id)}"
+						title="Role" />
+						
+				</p:panelGrid>
+				<p:commandButton value="Close"
+					onclick="PF('UserViewDialog').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

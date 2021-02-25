@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+
+				document.getElementById("form:sc_name").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+
+
+		}
+	</script>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<ui:include src="/template/sessionTimeOut.xhtml" />
+	<h:outputScript library="js" name="money.js" />
+	<h:outputStylesheet library="css" name="finance/debitor/fdsog.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b><h:outputLabel value="#{msg.menu}" /></b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.fksg']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,fksgBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+	
+								<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<p:commandButton type="push" value="#{msg.save}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{fksgBean.to_save}" disabled="#{!fksgBean.editdisabled}"/>
+										<p:commandButton type="push" value="#{msg.edit}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{fksgBean.to_edit}" disabled="#{!fksgBean.editdisabled}"/>
+										<p:commandButton type="push" value="#{msg.check}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{fksgBean.to_check}" disabled="#{fksgBean.editdisabled}"/>	
+										<p:commandButton type="push" value="#{msg['balance']} #{msg['cashbank']}"
+											icon="ui-icon ui-icon-check"
+											onclick="PF('bracnhCashWidget').show();" />	
+											
+											
+									</f:facet>
+								</p:toolbar>
+		
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<fieldset>
+									<legend><h:outputLabel value="#{msg.header}" /></legend>
+									
+									
+									<p:panelGrid styleClass="searchPanelGrid">
+							    <p:row>
+        							<p:column><h:outputLabel value="#{msg.company}" /></p:column>
+        							<p:column>
+										<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{fksgBean.p_bkpf.bukrs}" disabled="#{fksgBean.editdisabled}">
+											<p:ajax listener ="#{fksgBean.changeBukrs}" />
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu>
+									</p:column>
+									
+									<p:column><h:outputLabel value="#{msg['bkpf.blart.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_blart" styleClass="blart" style="color: #{fksgBean.p_bkpf.blart=='ST' ? 'red' : 'black'}"
+											maxlength="2" autocomplete="off"
+											value="#{fksgBean.p_bkpf.blart}" disabled="true" /> 
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.monat.long']}" /></p:column>
+									<p:column>
+										<p:selectOneMenu styleClass="monat" id="bkpf_monat"	value="#{fksgBean.p_bkpf.monat}" disabled="true">  
+													<f:selectItem  itemLabel="" itemValue="0" />
+													<f:selectItem  itemLabel="1" itemValue="1" />
+													<f:selectItem  itemLabel="2" itemValue="2" />
+													<f:selectItem  itemLabel="3" itemValue="3" />
+													<f:selectItem  itemLabel="4" itemValue="4" />
+													<f:selectItem  itemLabel="5" itemValue="5" />
+													<f:selectItem  itemLabel="6" itemValue="6" />
+													<f:selectItem  itemLabel="7" itemValue="7" />
+													<f:selectItem  itemLabel="8" itemValue="8" />
+													<f:selectItem  itemLabel="9" itemValue="9" />
+													<f:selectItem  itemLabel="10" itemValue="10" />
+													<f:selectItem  itemLabel="11" itemValue="11" />
+													<f:selectItem  itemLabel="12" itemValue="12" />
+												</p:selectOneMenu>
+									</p:column>
+        							
+        							
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.business_area}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="business_area" value="#{fksgBean.p_bkpf.business_area_id}" disabled="true">
+													<f:selectItem itemLabel="" itemValue="0" />
+												</p:selectOneMenu>
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.budat.long']}" /></p:column>
+        							<p:column><p:calendar id="bkpf_budat" styleClass="budat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{fksgBean.p_bkpf.budat}"  disabled="true"/></p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.awkey.long']}" /></p:column>
+        							<p:column><h:inputText id="awkey"
+											value="#{fksgBean.p_bkpf.awkey}" disabled="true"/></p:column>		
+									
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.branch}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="branch"
+													value="#{fksgBean.p_bkpf.brnch}" disabled="#{fksgBean.editdisabled}">
+													<p:ajax listener ="#{fksgBean.changeBranch}" />
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{branchF4Bean.getByBukrsOrBusinessArea(fksgBean.p_bkpf.bukrs,userinfo.bukrs,fksgBean.p_bkpf.business_area_id,fksgBean.p_bkpf.business_area_id,0,userinfo.branch_id)}"
+														var="branch" itemLabel="#{branch.text45}"
+														itemValue="#{branch.branch_id}" />
+												</p:selectOneMenu>
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.bldat.long']}" /></p:column>										
+									<p:column>
+										<p:calendar id="bkpf_bldat" styleClass="bldat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{fksgBean.p_bkpf.bldat}" disabled="#{fksgBean.editdisabled}"/>																			
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.contract_number.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="contract_number"
+											value="#{fksgBean.p_bkpf.contract_number}" disabled="true"/>
+											
+												<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{fksgBean.p_bkpf.contract_number}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton1" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+									</p:column>
+									
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.department}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="department"
+													value="#{fksgBean.p_bkpf.dep}" disabled="#{fksgBean.editdisabled}">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{departmentF4Bean.getL_dep(systemLocale.currentLocale)}"
+														var="d" itemLabel="#{d.getName(systemLocale.currentLocale)}"
+														itemValue="#{d.dep_id}" /> 
+												</p:selectOneMenu>
+									</p:column>									
+									<p:column><h:outputLabel value="#{msg['bkpf.waers.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_waers" styleClass="waers" 
+											value="#{fksgBean.p_bkpf.waers}" disabled="true" />
+										<p:commandButton
+											icon="ui-icon-newwin" onclick="PF('waersType').show();"
+											type="push" styleClass="f4button" disabled="#{fksgBean.editdisabled}" />	
+											
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.bktxt.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_bktxt"
+											value="#{fksgBean.p_bkpf.bktxt}" disabled="#{fksgBean.editdisabled}"/>
+									</p:column>
+									
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg['cashbank']}" /></p:column>
+									<p:column> 
+											<p:selectOneMenu id="selectedCashOffice" value="#{fksgBean.selectedCashOfficeIndex}" disabled="#{fksgBean.editdisabled}">
+													<f:selectItems
+														value="#{fksgBean.l_as2}"
+														var="o" itemLabel="#{o.hkont_name}"
+														itemValue="#{o.index}" /> 
+												</p:selectOneMenu>
+									</p:column>
+									<p:column><h:outputLabel value="#{msg.ex_rate}" /></p:column>
+									<p:column>
+										<h:inputText
+											id="bkpf_kursf" styleClass="kursf" 
+											value="#{fksgBean.p_bkpf.kursf}" disabled="true" />
+									</p:column>
+									<p:column><h:outputLabel value="#{msg.calc_in_USD}" /></p:column>
+									<p:column>
+										<p:commandButton type="push" 
+											icon="ui-icon-arrowrefresh-1-s"
+											actionListener="#{fksgBean.refreshUSD}" update="messages" disabled="#{fksgBean.editdisabled}"/>
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.emp_on_account}" /></p:column>
+									<p:column><h:inputText id="selectedStaff" value="#{fksgBean.podotchetnikFio}" disabled="true" size = "30"/>
+									<p:commandButton icon="ui-icon-newwin"
+													type="push"
+													onclick="PF('employeeWidget').show();" actionListener="#{fksgBean.assignSearchCollector}"
+													styleClass="f4button" disabled="#{fksgBean.editdisabled}">
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{fksgBean.clearCollector}"
+													styleClass="f4button" disabled="#{fksgBean.editdisabled}" /> </p:column>
+									<p:column></p:column>
+									<p:column></p:column>
+									<p:column></p:column>
+									<p:column></p:column>
+								</p:row>
+								
+							</p:panelGrid>
+									
+								</fieldset>
+
+
+
+
+
+
+
+
+ 
+								<div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:300px"
+										easing="easeOutElastic" id="bsegScrollPanel"
+										>
+										<p:dataTable value="#{fksgBean.l_bseg}" var="o"
+											widgetVar="dataTableWidgetVar" id="bsegTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											
+											
+											
+											<p:column style="width: 350px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.matnr.long']}" /></f:facet>
+												<h:inputText id="b_matnr" value="#{o.matnrName}" size="45"  styleClass="input1"   disabled="true"/>
+												<p:commandButton icon="ui-icon-newwin" onclick="PF('priceListType').show();" type="push" styleClass="f4button" actionListener="#{fksgBean.addAllPriceList}" disabled="#{fksgBean.editdisabled}">
+													<f:setPropertyActionListener target="#{fksgBean.p_bseg}" value="#{o}" />
+												</p:commandButton>		
+													
+											</p:column>	
+											<p:column style="width: 50px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.menge.long']}" /></f:facet>
+												<h:inputText id="b_menge" value="#{o.t_bseg.menge}" size="5" maxlength="15" styleClass="input1"   onfocus="this.select();" disabled="#{fksgBean.editdisabled}">
+												<f:convertNumber pattern="#,###,##0" />
+												</h:inputText>		
+											</p:column>
+
+											
+
+											<p:column style="width: 115px;" >
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.dmbtr.long']}" /></f:facet>
+												<h:inputText id="b_dmbtr" value="#{o.t_bseg.dmbtr}" size="15" maxlength="15" styleClass="input1"  disabled = "#{fksgBean.summaBool('DMBTR')}" onkeyup="formatMoney($(this))" onfocus="this.select();">
+												<f:convertNumber pattern="#,###,##0.00" />
+												</h:inputText>
+											</p:column>
+											
+											<p:column style="width: 115px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.wrbtr.long']}" /> </f:facet>
+												<h:inputText id="b_wrbtr" value="#{o.t_bseg.wrbtr}" size="15" maxlength="15" styleClass="input1"  disabled = "#{fksgBean.summaBool('WRBTR')}" onkeyup="formatMoney($(this))" onfocus="this.select();">
+												<f:convertNumber pattern="#,###,##0.00" />
+												</h:inputText>
+											</p:column>
+									
+											<p:column style="width: 185px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.werks.long']}" /></f:facet>
+												<h:inputText id="b_werks" value="#{o.werksName}" size="20"
+													maxlength="10" styleClass="input1" disabled="true" /> 
+												<p:commandButton icon="ui-icon-newwin" type="push"
+													onclick="PF('werksWidget').show();" styleClass="f4button" disabled="#{fksgBean.editdisabled}">
+													<f:setPropertyActionListener target="#{fksgBean.p_bseg}"
+														value="#{o}" />
+												</p:commandButton>	
+											</p:column>
+
+										</p:dataTable>
+
+									</p:scrollPanel>
+
+
+								</div>
+
+
+
+								
+
+								<p:dialog header="#{msg['bkpf.waers.long']}" widgetVar="waersType" dynamic="true"
+									width="500" height="500">
+
+									<p:commandButton
+										actionListener="#{fksgBean.assignSelectedCurrency}"
+										onclick="PF('waersType').hide();" value="#{msg.select}" update = "messages"/>
+									<p:dataTable scrollable="true" scrollHeight="400"
+										id="singleCurrency" var="waers" rowKey="#{waers.currency}"
+										value="#{currencyF4Bean.currency_list}" selectionMode="single"
+										selection="#{fksgBean.selectedCurrency}">
+										<p:column headerText="Code" 
+											style="width:10px">
+											<h:outputText value="#{waers.currency}" />
+										</p:column>
+										<p:column headerText="#{msg.name}" 
+											style="width:100px">
+											<h:outputText value="#{waers.text20}" />
+										</p:column>
+									</p:dataTable>
+								</p:dialog>
+								
+							
+								<p:dialog header="#{msg['bseg.matnr.long']}" widgetVar="priceListType" dynamic="true"
+								width="500" height="500">
+								
+								<p:dataTable scrollable="true" scrollHeight="400"
+									id="singlePriceList" var="wa" rowKey="#{wa.matnr}"
+									value="#{fksgBean.l_pricelist}" selectionMode="single" paginator="true" rows="10"
+									selection="#{fksgBean.selected_pricelist}" filteredValue="#{fksgBean.l_pricelist_filtered}">
+									<p:ajax event="rowDblselect" listener="#{fksgBean.onRowDblClckSelect}" />
+									 
+									<p:column headerText="Code" filterBy="#{wa.code}" filterMatchMode="contains" style="width:70px" filterStyle="width: 50px;">									
+										<h:outputText value="#{wa.code}" />
+									</p:column>
+									<p:column headerText="#{msg.name}" filterBy="#{wa.text45}" filterMatchMode="contains" style="width:170px" filterStyle="width: 100px;">									
+										<h:outputText value="#{wa.text45}" />
+									</p:column>
+									<p:column headerText="#{msg.amount}" >
+										<h:outputText value="#{wa.price}" />
+									</p:column>
+									<p:column headerText="#{msg['bkpf.waers.long']}" >
+										<h:outputText value="#{wa.waers}" />
+									</p:column>
+								</p:dataTable>
+								
+							</p:dialog>
+							
+							
+
+							<p:dialog header="#{msg['bseg.werks.long']}" widgetVar="werksWidget" dynamic="true"
+									width="500" height="500"> 
+									<p:dataTable scrollable="true" scrollHeight="400"
+										id="singleWerks" var="werks" rowKey="#{werks.werks}"
+										value="#{fksgBean.werks_list}" selectionMode="single"
+										selection="#{fksgBean.selectedWerks}">
+										<p:ajax event="rowDblselect" listener="#{fksgBean.assignSelectedWerks}" />
+										<p:column headerText="ID" 
+											style="width:10px">
+											<h:outputText value="#{werks.werks}" />
+										</p:column>
+										<p:column headerText="#{msg.name}" 
+											style="width:100px">
+											<h:outputText value="#{werks.text45}" />
+										</p:column>
+									</p:dataTable>
+
+								</p:dialog>
+
+								
+								
+								
+								<p:dialog header="Касса/Банк" widgetVar="bracnhCashWidget"
+									dynamic="true" width="500" height="200">
+														<p:dataTable
+															value="#{fksgBean.l_as}" var="o"
+															rows="5" rowKey="#{o.hkont}" id="outputTableBranchCash"
+															emptyMessage="#{msg.empty_rows}" styleClass="outputTable2"
+															headerClass="outputTableHeade2r" 
+															rowClasses="outputTableOddRow2,outputTableEvenRow2">
+															<p:column style="width:150px">
+																<f:facet name="header"><h:outputLabel  value="#{msg['bseg.hkont.long']}"/></f:facet>
+																
+																<h:outputText value="#{hkontF4Bean.getNameByBukrsHkont(fksgBean.p_bkpf.bukrs,o.hkont,systemLocale.currentLocale)}" styleClass="input1" />
+															</p:column>
+															<p:column style="width:50px">
+																<f:facet name="header"><h:outputLabel  value="#{msg.amount}"/></f:facet>
+																<h:outputText value="#{o.amount}">
+																	<f:convertNumber pattern="#,###,##0.00" />
+																</h:outputText>	
+															</p:column>
+															<p:column style="width:50px">
+																<f:facet name="header"><h:outputLabel  value="#{msg['bkpf.waers.long']}"/></f:facet>
+																<h:outputText value="#{o.waers}" />
+															</p:column>
+			
+														</p:dataTable>
+														
+								</p:dialog>
+								
+								<p:dialog header="#{msg['dmsc.staff']}" widgetVar="employeeWidget"
+							dynamic="true" width="900" height="500" >
+							
+							<div id="se_div">
+								<fieldset class="se_FieldSet">
+									<legend>#{msg['dmsc.search']}</legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.branch']}" /></td>
+											<td>
+												
+												<p:selectOneMenu id="staffBranch"
+													value="#{fksgBean.searchSalary.branch_id}">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{fksgBean.branch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.name']}" /></td>
+											<td><h:inputText id="se_firstname" maxlength="45"
+													autocomplete="off"
+													value="#{fksgBean.searchStaff.firstname}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.lastname']}" /></td>
+											<td><h:inputText id="se_lastname" maxlength="45"
+													autocomplete="off"
+													value="#{fksgBean.searchStaff.lastname}" /></td> 
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.midname']}" /></td>
+											<td><h:inputText id="se_middlename" maxlength="45"
+													autocomplete="off"
+													value="#{fksgBean.searchStaff.middlename}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.duty']}" /></td>
+											<td><p:selectOneMenu styleClass="branch" id="se_pos"
+													value="#{fksgBean.searchSalary.position_id}">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{positionF4Bean.position_list}"
+														var="wa_pos" itemLabel="#{wa_pos.getName(systemLocale.currentLocale)}"
+														itemValue="#{wa_pos.position_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><p:commandButton
+													actionListener="#{fksgBean.to_search_staff}"
+													value="#{msg['dmsc.search']}" update="messages" /></td>
+											<td></td>
+										</tr>
+									</table>
+
+								</fieldset>
+							</div>
+							<br />
+
+							<p:dataTable id="staffTable" var="emp" rowKey="#{emp.staff_id}"
+								value="#{fksgBean.p_staff_list}"
+								emptyMessage="#{msg['dmsc.emptyRec']}" selectionMode="single" scrollable="true" scrollHeight="220"
+								selection="#{fksgBean.selectedStaff}">
+								<f:facet name="header">
+
+									<p:commandButton process="staffTable"
+										actionListener="#{fksgBean.assignFoundEmployee}"
+										onclick="PF('employeeWidget').hide();"
+										value="#{msg['dmsc.select']}" />
+								</f:facet>
+								
+								<p:columnGroup type="header">
+										            <p:row>
+										                <p:column headerText="#{msg['dmsc.IINBIN']}"/>
+										                <p:column headerText="#{msg['dmsc.passportNo']}"/>
+										                <p:column headerText="#{msg['dmsc.name']}"/>
+										                <p:column headerText="#{msg['dmsc.lastname']}"/>
+										                <p:column headerText="#{msg['dmsc.midname']}"/>
+										                <p:column headerText="#{msg['dmsc.bdate']}"/>
+										            </p:row>
+										        </p:columnGroup>
+								<p:column>
+									<h:outputText value="#{emp.iin_bin}" />									
+								</p:column>
+								<p:column>
+									<h:outputText value="#{emp.passport_id}" />
+									<h:link outcome="/hr/staff/View.xhtml" target="_blank"
+										styleClass="urlLinks">
+										<f:param name="staffId"
+											value="#{emp.staff_id}" />
+										<h:graphicImage value="/img/link.png"
+											style="float:right; width:15px; height:15px;" />
+									</h:link>
+								</p:column>
+								<p:column>
+									<h:outputText value="#{emp.firstname}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{emp.lastname}" />
+								</p:column>
+								<p:column>
+									<h:outputText value="#{emp.middlename}" />
+								</p:column>
+								<p:column>
+									<p:calendar id="birthday" styleClass="bldat"
+										pattern="dd.MM.yyyy" mask="true" autocomplete="off"
+										value="#{emp.birthday}" converterMessage="Date is invalid."
+										disabled="true">
+									</p:calendar>
+								</p:column>
+							</p:dataTable>
+
+						</p:dialog>
+							</h:form>
+
+
+						</f:view>
+					</div> 
+
+		</div>
+	</div>
+</h:body>
+</html>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{repHr6Bean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{repHr6Bean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{repHr6Bean.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+							<p:panelGrid columns="2" style="width:99%;margin-top:1px;">
+								<f:facet name="header">Панель для поиска</f:facet>
+								<p:outputLabel value="Компания"></p:outputLabel>
+								<p:selectOneMenu value="#{repHr6Bean.bukrs}"
+									disabled="#{repHr6Bean.disableBukrs}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="Выберите компанию" itemValue=""></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Филиал"></p:outputLabel>
+								<p:selectOneMenu id="branch_id"
+									disabled="#{repHr6Bean.disableBranch}"
+									value="#{repHr6Bean.branchId}">
+									<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+									<f:selectItems
+										value="#{branchBean.getUserBranches(repHr6Bean.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Должность"></p:outputLabel>
+								<p:selectOneMenu value="#{repHr6Bean.positionId}"
+									style="width:250px;">
+									<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+									<f:selectItems value="#{positionF4Bean.position_list}" var="p"
+										itemLabel="#{p.text}" itemValue="#{p.position_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Департамент"></p:outputLabel>
+								<p:selectOneMenu value="#{repHr6Bean.departmentId}"
+									style="width:250px;">
+									<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+									<f:selectItems value="#{departmentF4Bean.l_dep}" var="dep"
+										itemLabel="#{dep.name_ru}" itemValue="#{dep.dep_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton id="searchBtn" value="Сформировать"
+									actionListener="#{repHr6Bean.generateData()}"
+									update=":dataForm, :messages"></p:commandButton>
+							</p:panelGrid>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="dataForm">
+							<p:dataTable var="item" value="#{repHr6Bean.items}"
+								style="margin-bottom:7px;" id="dataTable">
+
+								<f:facet name="header">
+									<h:commandLink id="xlsxExport"
+										style="float:right;margin-right:5px;">
+										<p:graphicImage name="xlsx_export_icon.png" library="img"
+											width="32" />
+										<p:dataExporter type="xls" target="dataTable"
+											fileName="expList" postProcessor="#{repHr6Bean.exportXLS}" />
+									</h:commandLink>
+								</f:facet>
+
+								<p:column headerText="Филиал">
+									<p:outputLabel
+										value="#{branchF4Bean.getBranchNameByID(item.branchId)}" />
+								</p:column>
+
+								<p:column headerText="ФИО сотрудника">
+									<p:outputLabel value="#{item.fullName}" />
+								</p:column>
+
+								<p:column headerText="Должность">
+									<p:outputLabel
+										value="#{positionF4Bean.getName(item.positionId)}" />
+								</p:column>
+
+								<p:column headerText="Категория">
+									<p:outputLabel value="#{item.getCatName()}" />
+								</p:column>
+
+								<p:column headerText="Стаж (мес.)" sortBy="#{item.monthCount}">
+									<p:outputLabel value="#{item.monthCount}" />
+								</p:column>
+
+								<p:column headerText="Стаж (год)" sortBy="#{item.yearCount}">
+									<p:outputLabel value="#{item.yearCount}">
+										<f:convertNumber pattern="#0.00" />
+									</p:outputLabel>
+								</p:column>
+
+								<p:column
+									rendered="false">
+									<p:button target="_blank" outcome="/hr/staff/View.xhtml"
+										value="Просмотр" title="View">
+										<f:param name="staffId" value="#{item.staffId}" />
+									</p:button>
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+</h:body>
+</html>

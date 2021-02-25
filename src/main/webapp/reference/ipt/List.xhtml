@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Условия оплаты для Инвойса</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP');
+                         $(this).toggleClass('shiftLeft');
+                         $('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Логистика > Условия оплаты для Инвойса" />
+				</ui:include>
+			</ui:insert>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel id="horizontal" header="Расширенный поиск"
+							toggleable="true" toggleOrientation="vertical" collapsed="true">
+							<h:panelGrid columns="4" cellpadding="10">
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<h:form id="IptListForm">
+					<p:dataTable id="datalist" value="#{refInvoicePaymentTerm.items}" var="item"
+						selectionMode="single" selection="#{refInvoicePaymentTerm.selected}"
+						paginator="true" paginatorPosition="bottom" rowKey="#{item.ipt_id}"
+						rows="50">
+
+						<f:facet name="header" id="tableHeader">
+							<p:commandButton disabled="#{empty refInvoicePaymentTerm.selected.ipt_id}"
+								id="updateButton" icon="ui ui-icon-pencil" title="Update"
+								update=":IptCreateDlg"
+								oncomplete="PF('IptCreateDialog').show()"
+								style="float:right;margin-right:5px;" />
+
+							<p:commandButton id="createButton" icon="ui ui-icon-plus"
+								title="Create" actionListener="#{refInvoicePaymentTerm.prepareCreate}"
+								update=":IptCreateDlg"
+								oncomplete="PF('IptCreateDialog').show()"
+								style="float:right;margin-right:5px;" />
+							<div style="clear: both;"></div>
+						</f:facet>
+						<p:ajax event="rowSelect"
+							update="createButton updateButton, :IptCreateForm" />
+						<p:ajax event="rowUnselect"
+							update="createButton updateButton, :IptCreateForm" />
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Наименование" />
+							</f:facet>
+							<h:outputText value="#{item.name_ru}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Наименование (EN)" />
+							</f:facet>
+							<h:outputText value="#{item.name_en}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Наименование (TR)" />
+							</f:facet>
+							<h:outputText value="#{item.name_tr}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{item.code}" />
+						</p:column>
+
+					</p:dataTable>
+				</h:form>
+
+				<ui:include src="CreateOrUpdate.xhtml" />
+
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+	<p:dialog id="MatnrListDlg" widgetVar="MatnrListDlg" modal="true"
+		resizable="false" appendTo="@(body)" header="#{msg['listOfGoodsInWH']}"
+		width="700px">
+
+		<h:form id="MatnrListForm">
+			<div class="ui-grid-row">
+				<table>
+					<tr height="40px">
+						<td width="200px"><p:outputLabel value=" Barcode: " /> <p:inputText
+								value="#{formBean.mlSearch.barcode}">
+								<p:ajax event="keyup"
+									listener="#{formBean.refreshMatnrListDlg}" />
+							</p:inputText></td>
+					</tr>
+				</table>
+			</div>
+
+			<p:dataTable id="matnrListInWerksDlgTable" var="item"
+				selectionMode="single" rowKey="#{item.matnr_list_id}"
+				value="#{formBean.mlDetail}"
+				selection="#{formBean.selectedML}"
+				emptyMessage="#{msg.no_records}" paginator="true" rows="10">
+
+				<f:facet name="header">
+					<p:outputPanel>
+						<p:commandButton id="selectMLBtn" icon="ui-icon-plus"
+							value="Select" update=":form:tovarSerial"
+							actionListener="#{formBean.assignSelectedMatnrList}"
+							oncomplete="PF('MatnrListDlg').hide()" />
+						<p:commandButton id="toggler" type="button"
+							value="#{msg['dmsc.columns']}" style="float:right"
+							icon="ui-icon-calculator" />
+						<p:columnToggler datasource="matnrListInWerksDlgTable"
+							trigger="toggler" />
+					</p:outputPanel>
+				</f:facet>
+				<p:ajax event="rowSelect" update="selectMLBtn" />
+				<p:ajax event="rowUnselect" update="selectMLBtn" />
+
+				<p:column headerText="#{msg['name']}">
+					<h:outputText value="#{item.matnrObject.text45}" />
+				</p:column>
+				<p:column headerText="Barcode">
+					<h:outputText value="#{item.barcode}" />
+				</p:column>
+
+				<p:column headerText="#{msg['accountable_employee']}">
+					<h:outputText value="#{item.staff.getLF()}" />
+				</p:column>archive
+				<p:column exportable="false" headerText="#{msg['archive']}"
+					style="width:100px;">
+					<p:button target="_blank" value="#{msg['view']}"
+						outcome="/logistics/werks/matnrHistory.xhtml">
+						<f:param name="matnrListId" value="#{item.matnr_list_id}"></f:param>
+					</p:button>
+				</p:column>
+				<f:facet name="footer">
+					<span>#{msg['dmsc.foundTotal']}:
+						#{formBean.matnrListDetail.size()} #{msg['pieces']}.</span>
+				</f:facet>
+
+			</p:dataTable>
+
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

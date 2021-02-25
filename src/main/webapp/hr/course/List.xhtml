@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<!-- Course -->
+<ui:composition>
+	<p:dialog id="StaffCourseDlg" widgetVar="StaffCourseDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="#{hrsCourseListBean.listDialogHeader}" width="600px">
+		<h:form id="CourseListForm">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2"
+					rendered="#{hrsCourseListBean.selectedStaff != null}"
+					style="width:580px;">
+					<p:dataTable scrollable="true" scrollHeight="400"
+						emptyMessage="Нет записей" id="courseList" var="course"
+						rowKey="#{course.sc_id}"
+						value="#{hrsCourseListBean.staffCourseList}">
+
+						<f:facet name="header" id="courseTableHeader">
+							<p:commandButton id="courseCreateButton" icon="ui-icon-plus"
+								title="Create"
+								actionListener="#{hrsCourseListBean.prepareCreate}"
+								update=":CourseCreateForm"
+								oncomplete="PF('CourseCreateDialog').show()"
+								style="float:right;margin-right:5px;">
+								<f:actionListener binding="#{hrsDialogBean.Reset()}"></f:actionListener>
+								</p:commandButton>
+			
+							<div style="clear: both;"></div>
+						</f:facet>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.course.course_id']}" />
+							</f:facet>
+							<h:outputText
+								value="#{hrsCourseListBean.getCourseName(course.course_id)}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.course.educator_id']}" />
+							</f:facet>
+							<h:outputText value="#{course.educator_id}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.course.begin_date']}" />
+							</f:facet>
+							<h:outputText value="#{course.begin_date}">
+								<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+							</h:outputText>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="#{msg['hr.course.finish_date']}" />
+							</f:facet>
+							<h:outputText value="#{course.finish_date}">
+								<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+							</h:outputText>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="" />
+							</f:facet>
+								<p:commandButton title="#{msg.edit}"
+									oncomplete="PF('CourseCreateDialog').show()"
+									actionListener="#{hrsCourseListBean.setSelected(course)}"
+									icon="ui-icon ui-icon-pencil" update=":CourseCreateDlg">
+									<f:actionListener
+										binding="#{hrsDialogBean.setSelected(course.educator_id)}"></f:actionListener>
+								</p:commandButton>
+						</p:column>
+
+					</p:dataTable>
+				</p:panelGrid>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+	<ui:include src="CreateOrUpdate.xhtml" />
+</ui:composition>
+</html>

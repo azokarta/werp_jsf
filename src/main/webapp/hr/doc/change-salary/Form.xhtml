@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<p:commandButton rendered="#{hrDocChangeSalaryBean.mode != 'view'}"
+					type="push" value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check"
+					actionListener="#{hrDocChangeSalaryBean.Save()}" update=":messages">
+				</p:commandButton>
+			</f:facet>
+		</p:toolbar>
+		<br />
+		<div class="ui-grid-row" style="background-color: #EBF0FA">
+			<fieldset>
+				<legend>Компания и сотрудники</legend>
+				<div class="ui-grid-col-3">
+					<table>
+						<tr>
+							<td>Компания:</td>
+							<td><werp:companySelect elementId="companyId"
+									mode="#{hrDocChangeSalaryBean.mode == 'view' ? 'view':'update'}"
+									value="#{hrDocChangeSalaryBean.document.bukrs}"
+									onChangeUpdate=":form:branchSelect">
+								</werp:companySelect></td>
+						</tr>
+						<tr>
+							<td>Филиал:</td>
+							<td><p:selectOneMenu id="branchSelect"
+									value="#{hrDocChangeSalaryBean.document.branchId}">
+									<p:ajax update="itemList, :staffListForm"
+										listener="#{hrDocChangeSalaryBean.onBranchChange}"></p:ajax>
+									<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+									<f:selectItems
+										value="#{hrDocChangeSalaryBean.branchBean.getUserBranches(hrDocChangeSalaryBean.document.bukrs)}"
+										var="br" itemLabel="#{br.text45}" itemValue="#{br.branch_id}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+					</table>
+				</div>
+				<div class="ui-grid-col-9">
+					<p:dataTable value="#{hrDocChangeSalaryBean.document.hrDocItems}"
+						var="item" id="itemList" rowKey="#{item.salaryId}"
+						rowIndexVar="rowIndex">
+
+						<f:facet name="header" id="tableHeader">
+							<p:commandButton
+								disabled="#{empty hrDocChangeSalaryBean.document.branchId or hrDocChangeSalaryBean.document.branchId == 0}"
+								rendered="#{hrDocChangeSalaryBean.mode != 'view'}"
+								icon="ui-icon-plus" title="Add"
+								onclick="PF('staffWidget').show();" style="float:right;"></p:commandButton>
+							<div style="clear: both;"></div>
+						</f:facet>
+						<p:column>
+							<f:facet name="header">Сотрудник</f:facet>
+							<p:outputLabel
+								rendered="#{!empty item.salary and !empty item.salary.p_staff}"
+								value="#{item.salary.p_staff.getLF()}"></p:outputLabel>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">Должность</f:facet>
+							<p:outputLabel rendered="#{!empty item.salary}"
+								value="#{positionF4Bean.getName(item.salary.position_id)}"></p:outputLabel>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">Текущий дата начало работы</f:facet>
+							<p:outputLabel rendered="#{!empty item.salary}"
+								value="#{item.salary.beg_date}">
+								<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+							</p:outputLabel>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">Текущий оклад</f:facet>
+							<p:outputLabel rendered="#{!empty item.salary}"
+								value="#{item.salary.amount} #{item.salary.waers}">
+								<f:convertNumber currencySymbol="#{item.salary.waers}"
+									type="currency"></f:convertNumber>
+							</p:outputLabel>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">Новый Оклад</f:facet>
+							<p:outputLabel rendered="#{!empty item.salary}"
+								value="#{item.amount} #{item.currency}">
+								<f:convertNumber currencySymbol="#{item.currency}"
+									type="currency"></f:convertNumber>
+							</p:outputLabel>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">Новая дата</f:facet>
+							<p:outputLabel rendered="#{hrDocChangeSalaryBean.mode == 'view'}"
+								value="#{item.beginDate}">
+
+							</p:outputLabel>
+
+							<p:calendar rendered="#{hrDocChangeSalaryBean.mode != 'view'}"
+								value="#{item.beginDate}" pattern="dd.MM.yyyy">
+
+							</p:calendar>
+						</p:column>
+
+
+						<p:column style="width:60px;">
+							<f:facet name="header"></f:facet>
+							<p:commandButton icon="ui-icon-close"
+								rendered="#{hrDocChangeSalaryBean.mode != 'view'}"
+								actionListener="#{hrDocChangeSalaryBean.removeItemRow(item)}"
+								update="itemList"></p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</div>
+			</fieldset>
+		</div>
+
+		<div class="ui-grid-row" style="margin-bottom: 7px; margin-top: 10px;">
+			<div class="ui-grid-col-5" style="display: block; float: left;">
+				<p:dataTable value="#{crudBean.document.routes}" var="r"
+					id="routeList" rendered="false">
+					<f:facet name="header" id="tableHeader">
+							Согласующие
+							<div style="clear: both;"></div>
+					</f:facet>
+
+					<p:column>
+						<f:facet name="header">Название</f:facet>
+						<p:outputLabel value="#{r.title}"></p:outputLabel>
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">ФИО</f:facet>
+						<p:outputLabel value="#{r.user.staff.getLF()}"></p:outputLabel>
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">Статус действии</f:facet>
+						<h:outputText value="#{r.getStatusName()}"></h:outputText>
+					</p:column>
+
+					<p:column style="width:60px;">
+						<f:facet name="header"></f:facet>
+						<p:commandButton rendered="#{crudBean.mode != 'view'}"
+							icon="ui-icon-close" actionListener="#{crudBean.removeRoute(r)}"
+							update="routeList"></p:commandButton>
+					</p:column>
+				</p:dataTable>
+			</div>
+
+			<div class="ui-grid-col-5"
+				style="display: block; float: left; margin-left: 10px;">
+				<p:dataTable value="#{crudBean.document.actionLogs}" var="log"
+					id="eventList" rendered="false">
+					<f:facet name="header" id="tableHeader">
+							Действии
+							<div style="clear: both;"></div>
+					</f:facet>
+
+					<p:column style="text-align:center;">
+						<f:facet name="header">Название действии</f:facet>
+						<p:outputLabel value="#{log.getActionName()}"></p:outputLabel>
+					</p:column>
+
+					<p:column style="text-align:center;">
+						<f:facet name="header">Сотрудник</f:facet>
+						<p:outputLabel value="#{log.user.staff.getLF()}"></p:outputLabel>
+					</p:column>
+
+					<p:column style="text-align:center;">
+						<f:facet name="header">Дата-время</f:facet>
+						<h:outputText value="#{log.createdAt}">
+							<f:convertDateTime pattern="dd.MM.yyyy kk:mm"
+								timeZone="Asia/Almaty"></f:convertDateTime>
+						</h:outputText>
+					</p:column>
+				</p:dataTable>
+			</div>
+		</div>
+	</h:form>
+
+	<p:dialog header="Список сотрудников" widgetVar="staffWidget"
+		minHeight="40" width="700">
+		<h:form id="staffListForm">
+			<p:dataTable value="#{hrDocChangeSalaryBean.salaryList}" var="sal"
+				id="staffList" rowKey="#{sal.salary_id}" selectionMode="single"
+				paginator="true" paginatorPosition="bottom" rows="30">
+				<p:ajax event="rowDblselect"
+					listener="#{hrDocChangeSalaryBean.onSelectSalary}"
+					update=":form:itemList, :messages" global="false" />
+
+				<p:column sortBy="#{sal.p_staff.lastname}"
+					filterBy="#{sal.p_staff.lastname}">
+					<f:facet name="header">Фамилия</f:facet>
+					<h:outputText rendered="#{!empty sal.p_staff}"
+						value="#{sal.p_staff.lastname}"></h:outputText>
+				</p:column>
+
+				<p:column filterBy="#{sal.p_staff.lastname}">
+					<f:facet name="header">Имя</f:facet>
+					<h:outputText rendered="#{!empty sal.p_staff}"
+						value="#{sal.p_staff.firstname}"></h:outputText>
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">Отчество</f:facet>
+					<h:outputText rendered="#{!empty sal.p_staff}"
+						value="#{sal.p_staff.middlename}"></h:outputText>
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">Должность</f:facet>
+					<h:outputText value="#{positionF4Bean.getName(sal.position_id)}"></h:outputText>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

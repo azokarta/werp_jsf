@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>#{msg['hr.plan.plan_list']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<f:view locale="#{systemLocale.currentLocale}">
+		<div class="ui-grid ui-grid-responsive">
+			<div id="leftPanel" class="leftPanel">
+				<ui:insert name="sidebar">
+					<ui:include src="/template/sidebar.xhtml">
+					</ui:include>
+				</ui:insert>
+			</div>
+			<div class="leftPanelButton"
+				onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+				<span style="color: white;"><b>#{msg.menu}</b></span>
+			</div>
+			<div class="rightContainer">
+				<ui:insert name="header">
+					<ui:include src="/template/header.xhtml">
+						<ui:param name="pageTitle" value="#{msg['hr.plan.breadcrumb']}" />
+					</ui:include>
+				</ui:insert>
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<h:form id="searchForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+							<p:panel id="horizontal" header="#{msg.advanced_search}"
+								toggleable="true" toggleOrientation="vertical" collapsed="true">
+								<h:panelGrid columns="4" cellpadding="10">
+
+									<p:outputLabel value="#{msg.branch}"></p:outputLabel>
+									<p:selectOneMenu value="#{hrPlanBean.searchModel.branch_id}">
+										<f:selectItem itemLabel="#{msg.select_branch}" itemValue="0" />
+										<f:selectItems value="#{branchF4Bean.branch_list}"
+											var="branch" itemLabel="#{branch.text45}"
+											itemValue="#{branch.branch_id}" />
+									</p:selectOneMenu>
+									<p:outputLabel></p:outputLabel>
+									<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+										id="searchBtn" update=":PlanListForm:datalist"
+										actionListener="#{hrPlanBean.Search}"></p:commandButton>
+								</h:panelGrid>
+							</p:panel>
+						</h:form>
+					</div>
+				</div>
+
+				<div class="ui-grid-row">
+					<h:form id="PlanListForm">
+						<p:dataTable id="datalist" value="#{hrPlanBean.items}" var="item"
+							selectionMode="single" selection="#{hrPlanBean.selected}"
+							paginator="true" paginatorPosition="bottom"
+							rowKey="#{item.sp_id}" rows="30">
+
+
+							<p:column style="width:30px;">
+								<f:facet name="header">
+									<h:outputText value="ID" />
+								</f:facet>
+								<h:outputText value="#{item.sp_id}" />
+							</p:column>
+							<p:column style="width:40px;">
+								<f:facet name="header">
+									<h:outputText value="#{msg['hr.plan.year']}" />
+								</f:facet>
+								<h:outputText value="#{item.year}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['hr.plan.month']}" />
+								</f:facet>
+								<h:outputText value="#{monthBean.getMonthByIndex(item.month)}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Staff id" />
+								</f:facet>
+								<h:outputText value="#{item.staff_id}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['hr.plan']}" />
+								</f:facet>
+								<h:outputText value="#{item.plan_count}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['hr.plan']} (Sum)" />
+								</f:facet>
+								<h:outputText value="#{item.plan_sum}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg.currency}" />
+								</f:facet>
+								<h:outputText value="#{item.waers}" />
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</f:view>
+</h:body>
+
+</html>

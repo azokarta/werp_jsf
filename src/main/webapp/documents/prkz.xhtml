@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+	<f:viewParam name="id" value="#{prikazBean.sel_prikaz.id_prikaz}" />
+	<f:event type="preRenderView" listener="#{prikazBean.init}" />
+</f:metadata>
+<h:head>
+	<title>WERP</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+	<h:outputStylesheet name="main2.css" library="css" />
+	<h:outputStylesheet name="main-form.css" library="css" />
+</h:head>
+<h:body>
+
+    <div class="ui-grid ui-grid-responsive">
+        <div class="ui-grid"  id="menubar">
+        	
+            <ui:insert name="header">
+				<ui:include src="/template/header2.xhtml">
+					<ui:param name="pageTitle"
+						value="#{msg['breadcrumb.prkz']}" />
+				</ui:include>
+			</ui:insert>
+        </div>
+        
+     		   	<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,prikazBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+								<p:separator />
+          
+            	
+                
+                	<h:form id="form">
+							
+							<p:growl id="messages" sticky="false" showDetail="true" /> 
+							<p:tabView id = "tabView" cache="false" activeIndex="#{prikazBean.tabindex}" >
+									<p:ajax event="tabChange" update =":form:tabView" />
+									
+							<p:tab title="Список" id = "tab0">
+							<div class="ui-grid">
+								<div class="ui-grid-col-3">
+			                			<p:panel header="#{msg.advanced_search}">
+											<h:panelGrid columns="2" cellpadding="10">
+												<p:outputLabel value="Компания"></p:outputLabel>
+												<p:selectOneMenu styleClass="bukrs" id="se_bukrs"	value="#{prikazBean.searchModel.bukrs}">
+													<p:ajax listener="#{prikazBean.searchChangeBukrs}" />
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+													itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu>
+												
+												<p:outputLabel value="Филиал"></p:outputLabel>
+												<p:selectCheckboxMenu id="se_branch" value="#{prikazBean.searchModel.selectedBranches}" label="Выберите"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												                              <f:selectItem itemLabel="Все" itemValue="0" itemDisabled="#{branchF4Bean.getAllEnabled(prikazBean.searchModel.bukrs,userinfo.branch_id)}"/>
+												            <f:selectItems value="#{branchF4Bean.getByBukrsOrBusinessAreaOfficesOnly(prikazBean.searchModel.bukrs,userinfo.bukrs,'','','',userinfo.branch_id)}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+												        </p:selectCheckboxMenu>
+												
+												
+												
+												<p:outputLabel value="Отдел"></p:outputLabel>
+												<p:selectOneMenu styleClass="branch" id="se_dep" value="#{prikazBean.searchModel.department_id}">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{departmentF4Bean.getL_dep(systemLocale.currentLocale)}"
+														var="wa_dep" itemLabel="#{wa_dep.name_ru}"
+														itemValue="#{wa_dep.dep_id}" />
+												</p:selectOneMenu>
+			
+												<p:outputLabel value="Название"></p:outputLabel>												
+												<p:inputTextarea  value="#{prikazBean.searchModel.name_prikaz}" maxlength="255" size="70" rows="2" cols="30" 
+												counterTemplate="{0}" autoResize="true"/>
+												
+												<p:outputLabel value="Тип" />
+												<p:selectOneMenu styleClass="branch" id="se_type_id" value="#{prikazBean.searchModel.type_prikaz}">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItem itemLabel="Приказ" itemValue="1" />
+												</p:selectOneMenu>
+			
+												<p:outputLabel></p:outputLabel>
+												<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+													actionListener="#{prikazBean.loadList}"
+													id="searchBtn" update=":form:tabView:datalist"></p:commandButton>
+											</h:panelGrid>
+										</p:panel>
+									
+									
+                			</div>
+                			<div class="ui-grid-col-9">
+							
+							
+							<p:dataTable id="datalist" style="margin-left:30px"
+								value="#{prikazBean.getList(2)}" var="item"
+								 paginator="true"
+								paginatorPosition="bottom" rowKey="#{item.id_prikaz}"
+								rows="30" emptyMessage="Нет записей">
+								<f:facet name="header" id="tableHeader">
+									
+
+									<p:commandButton id="createButton" icon="ui-icon-plus"
+										actionListener="#{prikazBean.prepareCreate()}"
+										title="Создать" update=""
+										style="float:right;margin-right:5px;" />
+									
+									<div style="clear: both;"></div>
+								</f:facet>
+								<p:column style="width:16px">
+						            <p:rowToggler rendered="#{item.countChild>0}"/>
+						        </p:column>
+						        <p:column style="width:106px">
+									<f:facet name="header">
+										<h:outputText value="Компания" />
+									</f:facet>
+									<h:outputText value="#{item.bukrs_name}" />
+								</p:column>
+						        <p:column style="width:156px">
+									<f:facet name="header">
+										<h:outputText value="Филиал" />
+									</f:facet>
+									<h:outputText value="#{item.branch_name}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Название" />
+									</f:facet>
+									<h:outputText value="#{item.name_prikaz}" />
+								</p:column>
+								<p:column style="width:206px">
+									<f:facet name="header">
+										<h:outputText value="Отдел" />
+									</f:facet>
+									<p:selectOneMenu styleClass="branch" value="#{item.department_id}" disabled="true">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{departmentF4Bean.getL_dep(systemLocale.currentLocale)}"
+														var="wa_dep" itemLabel="#{wa_dep.name_ru}"
+														itemValue="#{wa_dep.dep_id}" />
+												</p:selectOneMenu>
+								</p:column>
+								<p:column style="width:76px">
+									<f:facet name="header" >
+										<h:outputText value="Дата" />
+									</f:facet>
+									<h:outputText value="#{item.date_prikaz_str}" />
+								</p:column>
+								<p:column style="width:66px">
+									<p:commandButton id="updateButton" icon="ui-icon-pencil"
+										title="Изменить" 
+										actionListener="#{prikazBean.prepareChange(item.id_prikaz)}"
+										style="float:right;margin-right:5px;" />
+										
+									<p:commandButton action="#{prikazBean.prepareLook(item.id_prikaz)}" icon="ui-icon-search" update="" />
+										
+								</p:column>
+								
+								
+								<p:rowExpansion>
+								<p:dataTable id="datalistChild" style="margin-left:30px"
+								value="#{prikazBean.getChild(item.id_prikaz)}" var="item2"
+								paginatorPosition="bottom" rowKey="#{item2.id_prikaz}"
+								rows="30" emptyMessage="Нет записей">
+								<p:column>
+									<h:outputText value="#{item2.name_prikaz}" />
+								</p:column>
+								<p:column style="width:76px">
+									<h:outputText value="#{item2.date_prikaz_str}" />
+								</p:column>
+								<p:column style="width:33px">
+									<p:commandButton action="#{prikazBean.prepareLook(item2.id_prikaz)}" icon="ui-icon-search" update="" />
+										
+								</p:column>
+								</p:dataTable>
+            				
+        					</p:rowExpansion>
+
+							</p:dataTable>
+							 </div>
+							  </div>
+							</p:tab>
+							
+							
+							
+							<p:tab title="Исходящие" id = "tab1">
+								<p:dataTable id="draftDatalist" style="margin-left:30px"
+								value="#{prikazBean.getList(0)}" var="item"
+								 paginator="true"
+								paginatorPosition="bottom" rowKey="#{item.id_prikaz}"
+								rows="30" emptyMessage="Нет записей">
+								
+								<p:column style="width:16px">
+						            <p:rowToggler rendered="#{item.countChild>0}"/>
+						        </p:column>
+						        <p:column style="width:106px">
+									<f:facet name="header">
+										<h:outputText value="Компания" />
+									</f:facet>
+									<h:outputText value="#{item.bukrs_name}" />
+								</p:column>
+						        <p:column style="width:156px">
+									<f:facet name="header">
+										<h:outputText value="Филиал" />
+									</f:facet>
+									<h:outputText value="#{item.branch_name}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Название" />
+									</f:facet>
+									<h:outputText value="#{item.name_prikaz}" />
+								</p:column>
+								<p:column style="width:206px">
+									<f:facet name="header">
+										<h:outputText value="Отдел" />
+									</f:facet>
+									<p:selectOneMenu styleClass="branch" value="#{item.department_id}" disabled="true">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{departmentF4Bean.getL_dep(systemLocale.currentLocale)}"
+														var="wa_dep" itemLabel="#{wa_dep.name_ru}"
+														itemValue="#{wa_dep.dep_id}" />
+												</p:selectOneMenu>
+								</p:column>
+								<p:column style="width:76px">
+									<f:facet name="header" >
+										<h:outputText value="Дата" />
+									</f:facet>
+									<h:outputText value="#{item.date_prikaz_str}" />
+								</p:column>
+								<p:column style="width:66px">
+									<p:commandButton id="updateButton" icon="ui-icon-pencil"
+										title="Изменить" 
+										actionListener="#{prikazBean.prepareChange(item.id_prikaz)}"
+										style="float:right;margin-right:5px;" />
+										
+									<p:commandButton action="#{prikazBean.prepareLook(item.id_prikaz)}" icon="ui-icon-search" update="" />
+										
+								</p:column>
+								
+								
+								<p:rowExpansion>
+								<p:dataTable id="datalistChild" style="margin-left:30px"
+								value="#{prikazBean.getChild(item.id_prikaz)}" var="item2"
+								paginatorPosition="bottom" rowKey="#{item2.id_prikaz}"
+								rows="30" emptyMessage="Нет записей">
+								<p:column>
+									<h:outputText value="#{item2.name_prikaz}" />
+								</p:column>
+								<p:column style="width:76px">
+									<h:outputText value="#{item2.date_prikaz_str}" />
+								</p:column>
+								<p:column style="width:33px">
+									<p:commandButton action="#{prikazBean.prepareLook(item2.id_prikaz)}" icon="ui-icon-search" update="" />
+										
+								</p:column>
+								</p:dataTable>
+            				
+        					</p:rowExpansion>
+
+							</p:dataTable>
+							</p:tab>
+							<p:tab title="Отправленные" id = "tab2">
+								<p:dataTable id="sentDatalist" style="margin-left:30px"
+								value="#{prikazBean.getList(1)}" var="item"
+								 paginator="true"
+								paginatorPosition="bottom" rowKey="#{item.id_prikaz}"
+								rows="30" emptyMessage="Нет записей">
+								
+								<p:column style="width:16px">
+						            <p:rowToggler rendered="#{item.countChild>0}"/>
+						        </p:column>
+						        <p:column style="width:106px">
+									<f:facet name="header">
+										<h:outputText value="Компания" />
+									</f:facet>
+									<h:outputText value="#{item.bukrs_name}" />
+								</p:column>
+						        <p:column style="width:156px">
+									<f:facet name="header">
+										<h:outputText value="Филиал" />
+									</f:facet>
+									<h:outputText value="#{item.branch_name}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Название" />
+									</f:facet>
+									<h:outputText value="#{item.name_prikaz}" />
+								</p:column>
+								<p:column style="width:206px">
+									<f:facet name="header">
+										<h:outputText value="Отдел" />
+									</f:facet>
+									<p:selectOneMenu styleClass="branch" value="#{item.department_id}" disabled="true">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{departmentF4Bean.getL_dep(systemLocale.currentLocale)}"
+														var="wa_dep" itemLabel="#{wa_dep.name_ru}"
+														itemValue="#{wa_dep.dep_id}" />
+												</p:selectOneMenu>
+								</p:column>
+								<p:column style="width:76px">
+									<f:facet name="header" >
+										<h:outputText value="Дата" />
+									</f:facet>
+									<h:outputText value="#{item.date_prikaz_str}" />
+								</p:column>
+								<p:column style="width:66px">
+										
+									<p:commandButton action="#{prikazBean.prepareLook(item.id_prikaz)}" icon="ui-icon-search" update="" />
+										
+								</p:column>
+								
+								
+								<p:rowExpansion>
+								<p:dataTable id="datalistChild" style="margin-left:30px"
+								value="#{prikazBean.getChild(item.id_prikaz)}" var="item2"
+								paginatorPosition="bottom" rowKey="#{item2.id_prikaz}"
+								rows="30" emptyMessage="Нет записей">
+								<p:column>
+									<h:outputText value="#{item2.name_prikaz}" />
+								</p:column>
+								<p:column style="width:76px">
+									<h:outputText value="#{item2.date_prikaz_str}" />
+								</p:column>
+								<p:column style="width:33px">
+									<p:commandButton action="#{prikazBean.prepareLook(item2.id_prikaz)}" icon="ui-icon-search" update="" />
+										
+								</p:column>
+								</p:dataTable>
+            				
+        					</p:rowExpansion>
+
+							</p:dataTable>
+							</p:tab>
+							<p:tab title="На согласование" id = "tab3">
+								<p:dataTable id="agreeDatalist" style="margin-left:30px"
+								value="#{prikazBean.l_prikaz_to_agree}" var="item"
+								 paginator="true"
+								paginatorPosition="bottom" rowKey="#{item.id_prikaz}"
+								rows="30" emptyMessage="Нет записей">
+								
+								<p:column style="width:16px">
+						            <p:rowToggler rendered="#{item.countChild>0}"/>
+						        </p:column>
+						        <p:column style="width:106px">
+									<f:facet name="header">
+										<h:outputText value="Компания" />
+									</f:facet>
+									<h:outputText value="#{item.bukrs_name}" />
+								</p:column>
+						        <p:column style="width:156px">
+									<f:facet name="header">
+										<h:outputText value="Филиал" />
+									</f:facet>
+									<h:outputText value="#{item.branch_name}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Название" />
+									</f:facet>
+									<h:outputText value="#{item.name_prikaz}" />
+								</p:column>
+								<p:column style="width:206px">
+									<f:facet name="header">
+										<h:outputText value="Отдел" />
+									</f:facet>
+									<p:selectOneMenu styleClass="branch" value="#{item.department_id}" disabled="true">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{departmentF4Bean.getL_dep(systemLocale.currentLocale)}"
+														var="wa_dep" itemLabel="#{wa_dep.name_ru}"
+														itemValue="#{wa_dep.dep_id}" />
+												</p:selectOneMenu>
+								</p:column>
+								<p:column style="width:76px">
+									<f:facet name="header" >
+										<h:outputText value="Дата" />
+									</f:facet>
+									<h:outputText value="#{item.date_prikaz_str}" />
+								</p:column>
+								<p:column style="width:66px">
+										
+									<p:commandButton action="#{prikazBean.prepareLook(item.id_prikaz)}" icon="ui-icon-search" update="" />
+										
+								</p:column>
+								
+								
+								<p:rowExpansion>
+								<p:dataTable id="datalistChild" style="margin-left:30px"
+								value="#{prikazBean.getChild(item.id_prikaz)}" var="item2"
+								paginatorPosition="bottom" rowKey="#{item2.id_prikaz}"
+								rows="30" emptyMessage="Нет записей">
+								<p:column>
+									<h:outputText value="#{item2.name_prikaz}" />
+								</p:column>
+								<p:column style="width:76px">
+									<h:outputText value="#{item2.date_prikaz_str}" />
+								</p:column>
+								<p:column style="width:33px">
+									<p:commandButton action="#{prikazBean.prepareLook(item2.id_prikaz)}" icon="ui-icon-search" update="" />
+										
+								</p:column>
+								</p:dataTable>
+            				
+        					</p:rowExpansion>
+
+							</p:dataTable>
+							</p:tab>
+							<p:tab title="#{prikazBean.tabName}" id = "tab4">
+							
+							<div class="ui-grid">
+							<div class="ui-grid-col-12">	
+							
+							
+							<p:panelGrid columns="6"  id="display" layout="grid" styleClass="ui-panelgrid-blank"  rendered="#{prikazBean.sel_prikaz != null and prikazBean.prosmotr==false}">
+					            <f:facet name="footer">
+					               <p:commandButton actionListener="#{prikazBean.save}"
+										value="Сохранить"
+										update="display"/>
+								   <p:commandButton actionListener="#{prikazBean.send}" 
+								   rendered="#{(prikazBean.sel_prikaz.id_prikaz>0 and prikazBean.sel_prikaz.status_id==0)}"
+										value="Отправить"/>		
+					            </f:facet>  
+					        </p:panelGrid>
+							<table>
+								<tr>
+									<td>
+										<p:outputLabel value="Компания" />	
+									</td>
+									<td>
+										 <p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{prikazBean.sel_prikaz.bukrs}" disabled="#{(prikazBean.sel_prikaz.id_prikaz>0 and prikazBean.sel_prikaz.status_id!=0) or prikazBean.prosmotr==true}">
+											<p:ajax listener="#{prikazBean.changeBukrs}" />
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu>
+										<p:outputLabel value=" *" style="color:red"/>
+									</td>
+									<td>
+										<p:outputLabel value="Должность" />
+									</td>
+									<td>
+										<p:selectOneMenu styleClass="branch"  value="#{prikazBean.sel_prikaz.position_id}" disabled="#{(prikazBean.sel_prikaz.id_prikaz>0 and prikazBean.sel_prikaz.status_id!=0) or prikazBean.prosmotr==true}">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{positionF4Bean.position_list}"
+														var="wa_pos" itemLabel="#{wa_pos.text}"
+														itemValue="#{wa_pos.position_id}" />
+												</p:selectOneMenu>
+									</td>
+									
+								</tr>
+								<tr>
+									<td>
+										<p:outputLabel value="Филиал" />
+									</td>
+									<td>
+										<p:selectOneMenu id="branch" value="#{prikazBean.sel_prikaz.branch_id}" disabled="#{(prikazBean.sel_prikaz.id_prikaz>0 and prikazBean.sel_prikaz.status_id!=0) or prikazBean.prosmotr==true}">
+											<f:selectItem itemLabel="" itemValue="9999" />
+											<f:selectItem itemLabel="Все" itemValue="0" />
+											<f:selectItems
+											value="#{branchF4Bean.getByBukrsOrBusinessAreaOfficesOnly(prikazBean.sel_prikaz.bukrs,userinfo.bukrs,'','','',userinfo.branch_id)}"
+											var="branch" itemLabel="#{branch.text45}"
+											itemValue="#{branch.branch_id}" /> 
+										</p:selectOneMenu>		 
+										<p:outputLabel value=" *" style="color:red"/>
+									</td>
+									<td>
+										<p:outputLabel value="Ссылка" />
+									</td>
+									<td>
+										<p:inputText value="#{prikazBean.sel_prikaz.parent_id_prikaz}" disabled="true"/>
+									</td>
+									
+								</tr>
+								<tr>
+									<td>
+										<p:outputLabel value="Дата" />
+									</td>
+									<td>
+										<p:calendar id="bkpf_budat" styleClass="budat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{prikazBean.sel_prikaz.date_prikaz}"  disabled="#{prikazBean.prosmotr==true}"/>
+										<p:outputLabel value=" * " style="color:red"/>
+									</td>
+									<td>
+										<p:outputLabel value="Версия" />
+									</td>
+									<td>
+										<p:inputText value="#{prikazBean.sel_prikaz.version}" disabled="true"/>
+									</td>
+									
+								</tr>
+								
+								
+								
+								<tr>
+									<td>
+										<p:outputLabel value="Отдел" />
+									</td>
+									<td>
+									
+									
+										<p:selectOneMenu styleClass="branch"  value="#{prikazBean.sel_prikaz.department_id}" disabled="#{(prikazBean.sel_prikaz.id_prikaz>0 and prikazBean.sel_prikaz.status_id!=0) or prikazBean.prosmotr==true}">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{departmentF4Bean.getL_dep(systemLocale.currentLocale)}"
+												var="wa_dep" itemLabel="#{wa_dep.name_ru}"
+												itemValue="#{wa_dep.dep_id}" />
+										</p:selectOneMenu>
+										<p:outputLabel value=" *" style="color:red"/>
+									</td>
+									
+									<td>
+										<p:outputLabel value="Статус" />
+									</td>
+									<td>
+										
+										<p:selectOneMenu styleClass="branch" id="status_id_new" value="#{prikazBean.sel_prikaz.status_id}" disabled="true">
+													<f:selectItem itemLabel="Новый" itemValue="0" />
+													<f:selectItem itemLabel="Отправлен" itemValue="1" />
+													<f:selectItem itemLabel="Согласован" itemValue="2" />
+													<f:selectItem itemLabel="Отменен" itemValue="3" />
+												</p:selectOneMenu>
+										<p:outputLabel value=" *" style="color:red"/>
+									</td>
+									
+								</tr>
+								<tr>
+									<td>
+										<p:outputLabel value="Тип" />
+									</td>
+									<td>
+										<p:selectOneMenu styleClass="branch" id="type_id_new" value="#{prikazBean.sel_prikaz.type_prikaz}" disabled="#{(prikazBean.sel_prikaz.id_prikaz>0 and prikazBean.sel_prikaz.status_id!=0) or prikazBean.prosmotr==true}">
+													<f:selectItem itemLabel="Выберите" itemValue="0" />
+													<f:selectItem itemLabel="Приказ" itemValue="1" />
+												</p:selectOneMenu>
+										<p:outputLabel value=" *" style="color:red"/>
+									</td>
+									<td>
+										<p:outputLabel value="Код" />
+									</td>
+									<td>
+										<p:inputText value="#{prikazBean.sel_prikaz.code}" disabled="true"/>
+									</td>
+									
+								</tr>
+									
+								
+								
+								
+								
+								<tr>
+									<td>
+										<p:outputLabel value="Название" />
+									</td>
+									<td >
+										<p:inputTextarea  value="#{prikazBean.sel_prikaz.name_prikaz}" maxlength="255" size="100" rows="2" cols="50" counter="dis"
+										counterTemplate="{0}" autoResize="true" disabled="#{prikazBean.prosmotr==true}"/>
+										<p:outputLabel value=" *     " style="color:red"/>
+										<h:outputText id="dis" rendered="#{prikazBean.prosmotr==false}"/>
+									</td>
+									<td>
+										<p:outputLabel value="Создано" />
+									</td>
+									<td>
+										<p:inputText value="#{prikazBean.sel_prikaz.creatorName}" disabled="true"/>
+									</td>
+									
+								</tr>
+								<tr>
+									<td colspan="4">
+										<ui:repeat value="#{prikazBean.getPrikazAttachList()}" var="item" rendered="#{prikazBean.prosmotr==true}">
+											
+											<p:commandLink  actionListener="#{prikazBean.downloadWord(item.prikaz_attach_id)}" ajax="false">
+										        <h:outputText value="#{item.name}.#{item.ext}" />
+										    </p:commandLink>
+										    <h:outputText value=" " style="white-space: pre;"/>
+										    <h:outputText value=" " style="white-space: pre;"/>
+										    <h:outputText value=" " style="white-space: pre;"/>
+										</ui:repeat>
+									</td>
+									
+									
+								</tr>
+								
+								<tr>
+									<td colspan="4">
+										<p:fileUpload fileUploadListener="#{prikazBean.handleFileUpload}" mode="advanced" dragDropSupport="false" label="Выберите"
+										cancelLabel="Отменить" uploadLabel="Загрузить"
+                  							multiple="true" sizeLimit="100000"  allowTypes="/(\.|\/)(gif|jpe?g|png|pdf|docx|doc)$/" rendered="#{prikazBean.prosmotr==false}"/>
+                  					
+	                  				<p:dataTable id="attachTable"  value="#{prikazBean.l_pa}" var="item"  emptyMessage = "" rendered="#{prikazBean.prosmotr==false}">
+										<p:column >
+											<p:commandLink  actionListener="#{prikazBean.downloadWord(item.prikaz_attach_id)}" ajax="false">
+										        <h:outputText value="#{item.name}.#{item.ext} " />
+										    </p:commandLink>
+											<p:commandButton icon="ui-icon-close" type="push" actionListener="#{prikazBean.removeFile(item.name)}" styleClass="f4button" />
+										</p:column>
+									</p:dataTable>
+									</td>
+									
+									
+								</tr>
+								
+								
+								
+							</table>
+					        
+					        </div>
+							<div class="ui-grid-col-5">	
+									
+							
+							<br />
+					        
+					        <p:dataTable id="agreementDataList" 
+								value="#{prikazBean.l_a}" var="item"
+								paginatorPosition="bottom" rowKey="#{item.agree_id}"
+								rows="30" emptyMessage="Нет записей" draggableRows="#{prikazBean.prosmotr==false}">
+								<f:facet name="header" id="tableHeader">
+									
+
+									<p:commandButton id="createButton" icon="ui-icon-plus"
+										actionListener="#{prikazBean.addAgreeData(prikazBean.sel_prikaz.id_prikaz)}"
+										title="Создать" update=""
+										style="float:right;margin-right:5px;" rendered="#{prikazBean.prosmotr==false}"/>
+									
+									<div style="clear: both;"></div>
+								</f:facet>
+								<p:ajax event="rowReorder" listener="#{prikazBean.onRowReorder}" />
+								<p:column style="width:10px">
+									<h:outputText value="#{item.step}" />
+								</p:column>	
+								<p:column style="width:250px">
+							           
+				        			<h:outputText value="#{prikazBean.getUserName(item.user_id)} " />
+				        			<p:commandButton icon="ui-icon-newwin" type="push"
+													onclick="PF('agreeWidget').show();" style="float:right"
+													styleClass="f4button" >
+													
+													<f:setPropertyActionListener target="#{prikazBean.temp_agree}" value="#{item}" />
+												</p:commandButton>
+								</p:column>
+								<p:column style="width:100px">
+									<p:selectOneMenu styleClass="branch" id="agree_status_id" value="#{item.status_id}" disabled="#{!(prikazBean.sel_prikaz.status_id==1 and item.current_a==1 and item.user_id==userinfo.userid)}">
+										<f:selectItem itemLabel="Ожидает" itemValue="1" />										
+										<f:selectItem itemLabel="Одобрил" itemValue="2" />
+										<f:selectItem itemLabel="Отказал" itemValue="3" />
+									</p:selectOneMenu>
+								</p:column>
+															
+								<p:column style="width:20px">
+									
+    								<p:graphicImage name="img/green_circle.png" rendered="#{item.current_a==1}"/>
+								</p:column>
+								<p:column>
+									<h:inputText value="#{item.note}" disabled="#{prikazBean.sel_prikaz.status_id!=1 or item.current_a!=1 or item.user_id!=userinfo.userid}"/>
+									<p:commandButton actionListener="#{prikazBean.confirm(item.agree_id)}" value="Подтвердить" rendered="#{prikazBean.sel_prikaz.status_id==1 and item.current_a==1 and item.user_id==userinfo.userid}"/>
+								</p:column>
+								<p:column style="width:28px" rendered="#{prikazBean.prosmotr==false}">
+									<p:commandButton icon="ui-icon-close" type="push" actionListener="#{prikazBean.removeAgreeData(item.step)}" styleClass="f4button" />
+								</p:column>	
+								
+							</p:dataTable>
+							</div>
+							</div>	
+								
+								
+								
+								
+							</p:tab>
+							</p:tabView>
+							<p:dialog header="Пользователь" widgetVar="agreeWidget"
+									dynamic="true" width="400" height="400">
+									
+
+									<p:dataTable id="userTable" var="item" rowKey="#{item.user_id}"
+										value="#{prikazBean.l_userstaff}" scrollable="true" scrollHeight="320" paginator="true" rows="20"
+										paginatorPosition="bottom" selectionMode="single"  selection="#{prikazBean.sel_userstaff}"
+										emptyMessage="#{msg.empty_rows}" filteredValue="#{prikazBean.l_userstaff2}">
+										<p:ajax event="rowDblselect" listener="#{prikazBean.onRowDblClckSelectUserStaff}" />
+										
+										<p:column style="width:36px">
+											<h:outputText value="#{item.user_id}" />
+										</p:column>
+										<p:column style="width:234px" filterBy="#{item.filteredname}" filterMatchMode="contains">
+											<f:facet name="header">
+												
+											</f:facet>
+											<h:outputText value="#{item.userFio}" />
+										</p:column>
+									</p:dataTable>
+
+
+								</p:dialog>
+						</h:form>
+                </div>
+           
+            
+            
+      
+    
+</h:body>
+
+</html>

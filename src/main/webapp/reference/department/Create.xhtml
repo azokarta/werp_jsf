@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="DepartmentCreateDlg" widgetVar="DepartmentCreateDialog"
+                  modal="true" resizable="false" appendTo="@(body)"
+                  header="Create Department">
+            <h:form id="DepartmentCreateForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2"
+                                 rendered="#{refDepartment.selectedRecord != null}">
+
+                        <p:outputLabel value="Название (Рус)" />
+                        <p:inputText
+                            value="#{refDepartment.selectedRecord.name_ru}" title="Название (Рус)" />
+
+                        <p:outputLabel value="Название (En)" />
+                        <p:inputText
+                            value="#{refDepartment.selectedRecord.name_en}" title="Название (En)" />
+
+                        <p:outputLabel value="Название (Tr)" />
+                        <p:inputText
+                            value="#{refDepartment.selectedRecord.name_tr}" title="Название (Tr)" />
+                    </p:panelGrid>
+
+                    <p:commandButton actionListener="#{refDepartment.Create}"
+                                     value="Save" update=":DepartmentListForm:datalist,:messages" />
+                    <p:commandButton actionListener="#{refDepartment.Reset}"
+                                     value="Cancel" onclick="PF('DepartmentCreateDialog').hide()"
+                                     update="display,:DepartmentListForm" />
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

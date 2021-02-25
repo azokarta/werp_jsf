@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="AddressCreateDlg" widgetVar="AddressCreateDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Создание/Редактирование адреса клиента">
+		<h:form id="AddressCreateForm">
+			<h:panelGroup id="display" rendered="#{hrCustomerAddresses.selected != null}">
+					<table border="0">
+						<tr>
+							<td width="130em"><h:outputLabel value="#{msg['dmsc.address_type']} " /> <h:outputLabel
+									value=" *" class="notemark" /></td>
+							<td><p:selectOneMenu id="servBranch" update=":messages"
+									value="#{hrCustomerAddresses.selected.addrType}">
+									<f:selectItem itemLabel="#{msg['select']}" itemValue="0" />
+									<f:selectItems value="#{addrTypeF4Bean.addrType_list}" var="wa_at"
+										itemLabel="#{wa_at.getName(systemLocale.currentLocale)}" itemValue="#{wa_at.id}" />
+								</p:selectOneMenu></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.country']} " /> <h:outputLabel
+									value=" *" class="notemark" /></td>
+							<td><p:selectOneMenu id="country_id"
+									value="#{hrCustomerAddresses.selected.countryId}">
+									<p:ajax update=":messages, state_id" />
+									<f:selectItem itemLabel="#{msg['dmsc.hint_country']} "
+										itemValue="0" />
+									<f:selectItems value="#{countryF4Bean.country_list}"
+										var="wa_country" itemLabel="#{wa_country.country}"
+										itemValue="#{wa_country.country_id}" />
+								</p:selectOneMenu></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.state']}" /> <h:outputLabel
+									value=" *" class="notemark" /></td>
+							<td><p:selectOneMenu id="state_id"
+									value="#{hrCustomerAddresses.selected.stateId}">
+									<p:ajax update=":messages,city_id" />
+									<f:selectItem itemLabel="#{msg['dmsc.hint_state']}"
+										itemValue="0" />
+									<f:selectItems value="#{refState.getItemsByCountryId(hrCustomerAddresses.selected.countryId)}" var="wa_state"
+										itemLabel="#{wa_state.statename}"
+										itemValue="#{wa_state.idstate}" />
+								</p:selectOneMenu></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.city']}" /> <h:outputLabel
+									value=" *" styleClass="notemark" /></td>
+							<td><p:selectOneMenu id="city_id"
+									value="#{hrCustomerAddresses.selected.cityId}">
+									<p:ajax
+										update=":messages, cityreg_id" />
+									<f:selectItem itemLabel="#{msg['dmsc.hint_city']}"
+										itemValue="0" />
+									<f:selectItems value="#{refCity.getItemsByStateId(hrCustomerAddresses.selected.stateId)}" var="wa_city"
+										itemLabel="#{wa_city.name}" itemValue="#{wa_city.idcity}" />
+								</p:selectOneMenu></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.reg']}" /></td>
+							<td><p:selectOneMenu id="cityreg_id"
+									value="#{hrCustomerAddresses.selected.regId}">
+									<f:selectItem itemLabel="#{msg['dmsc.hint_reg']}" itemValue="0" />
+									<f:selectItems value="#{cityregF4Bean.getByCityId(hrCustomerAddresses.selected.cityId)}"
+										var="wa_cityreg" itemLabel="#{wa_cityreg.regname}"
+										itemValue="#{wa_cityreg.idcityreg}" />
+								</p:selectOneMenu></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="#{msg['zipcode']} " /></td>
+							<td><p:inputText id="postalCode" maxlength="20"
+									autocomplete="on" value="#{hrCustomerAddresses.selected.postalCode}" /></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="#{msg['microdistrict']} " /> <h:outputLabel
+									value=" *" styleClass="notemarkBlue" /></td>
+							<td><p:inputText id="addr_micro" maxlength="30"
+									style="width:15em;margin-top: 0px;" autocomplete="on"
+									value="#{hrCustomerAddresses.selected.microdistrict}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="#{msg['village']} " /> <h:outputLabel
+									value=" *" styleClass="notemarkBlue" /></td>
+							<td><p:inputText id="addr_viallage" maxlength="30"
+									style="width:15em;margin-top: 0px;" autocomplete="on"
+									value="#{hrCustomerAddresses.selected.village}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="#{msg['avenue']} " /> <h:outputLabel
+									value=" *" styleClass="notemarkBlue" /></td>
+							<td><p:inputText id="addr_avenue" maxlength="30"
+									style="width:15em;margin-top: 0px;" autocomplete="on"
+									value="#{hrCustomerAddresses.selected.avenue}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.street']}" /> <h:outputLabel
+									value=" *" styleClass="notemarkBlue" /></td>
+							<td><p:inputText id="addr_dom_str" maxlength="30"
+									style="width:15em;margin-top: 0px;" autocomplete="on"
+									value="#{hrCustomerAddresses.selected.street}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.house']}" /> <h:outputLabel
+									value=" *" class="notemark" /></td>
+
+							<td><p:inputText id="addr_dom_hn" maxlength="5"
+									style="width:3em;" autocomplete="off"
+									value="#{hrCustomerAddresses.selected.ap_number}" /> <h:outputLabel
+									value=" / " /> <p:inputText id="addr_dom_hm" maxlength="5"
+									autocomplete="off" style="width:3em;"
+									value="#{hrCustomerAddresses.selected.ap_drob}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.hint_flat']}" /></td>
+							<td><p:inputText id="addr_dom_fn" maxlength="5"
+									style="width:3em;" autocomplete="off"
+									value="#{hrCustomerAddresses.selected.flat_number}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.tel_dom']}" /></td>
+							<td><p:inputMask id="tel_dom" size="25" autocomplete="off"
+									value="#{hrCustomerAddresses.selected.telDom}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.mob_main']}" /> <h:outputLabel
+									value=" *" class="notemark" /></td>
+							<td><h:outputLabel id="tel_mob1_phonecode" value="#{formBean.p_country.phonecode} " /> 
+								<p:inputMask id="tel_mob1" size="20" 
+									mask="#{formBean.p_country.telPattern}" autocomplete="off"
+									value="#{hrCustomerAddresses.selected.telMob1}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.mob_add']}" /></td>
+							<td><p:inputMask id="tel_mob2" size="25" autocomplete="off"
+									value="#{hrCustomerAddresses.selected.telMob2}" /></td>
+						</tr>
+						<tr>
+							<td colspan="2"><hr /></td>
+						</tr>
+						<tr>
+							<td colspan="2"><span class="notetext"><h:outputLabel
+										value="#{msg['dmsc.hint_fill']}" class="notemark" /></span></td>
+						</tr>
+						<tr>
+							<td colspan="2"><span class="notetext"><h:outputLabel
+										value="#{msg['dmsc.hint_fill_one']}" class="notemarkBlue" /></span></td>
+						</tr>
+					</table>
+
+				<p:commandButton actionListener="#{hrCustomerAddresses.Save}"
+					value="#{msg.save}" update="#{updateAfterSave},:messages" />
+				<p:commandButton actionListener="#{hrCustomerAddresses.Reset}"
+					value="#{msg.cancel}" oncomplete="PF('AddressCreateDialog').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

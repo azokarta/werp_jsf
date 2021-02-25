@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="IptCreateDlg" widgetVar="IptCreateDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Добавить Условие Оплаты">
+		<h:form id="IptCreateForm" rendered="#{!empty refInvoicePaymentTerm.selected}">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2">
+
+					<p:outputLabel value="Название" />
+					<p:inputText value="#{refInvoicePaymentTerm.selected.name_ru}"
+						title="Название" />
+					
+					<p:outputLabel value="Название (EN)" />
+					<p:inputText value="#{refInvoicePaymentTerm.selected.name_en}"
+						title="Название" />
+						
+					<p:outputLabel value="Название (TR)" />
+					<p:inputText value="#{refInvoicePaymentTerm.selected.name_tr}"
+						title="Название" />
+					<p:outputLabel value="Код" />
+					<p:inputText value="#{refInvoicePaymentTerm.selected.code}" title="Код" />
+					
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{refInvoicePaymentTerm.Save}" value="Save"
+					update=":IptListForm:datalist,:messages" />
+				<p:commandButton actionListener="#{refInvoicePaymentTerm.Reset}" value="Cancel"
+					onclick="PF('IptCreateDialog').hide()"
+					update="display,:IptListForm" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

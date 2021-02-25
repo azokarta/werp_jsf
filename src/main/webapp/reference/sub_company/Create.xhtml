@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="SubCompanyCreateDlg" widgetVar="SubCompanyCreateDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Create SubCompany">
+		<h:form id="SubCompanyCreateForm">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2">
+					
+					<p:outputLabel value="Название (Рус)" />
+					<p:inputText value="#{refSubCompany.selectedRecord.name_ru}"
+						title="Название (Рус)" />
+
+					<p:outputLabel value="Название (En)" />
+					<p:inputText value="#{refSubCompany.selectedRecord.name_en}"
+						title="Название (En)" />
+
+					<p:outputLabel value="Название (Tr)" />
+					<p:inputText value="#{refSubCompany.selectedRecord.name_tr}"
+						title="Название (Tr)" />
+						
+					<p:outputLabel value="Тип" />
+					<p:selectOneMenu value="#{refSubCompany.selectedRecord.type}">
+						<f:selectItem itemLabel="Не выбрано" itemValue="" />
+						<f:selectItem itemLabel="ИП" itemValue="ip" />
+						<f:selectItem itemLabel="ТОО" itemValue="too" />
+						<f:selectItem itemLabel="Фонд" itemValue="fund" />
+					</p:selectOneMenu>
+					
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{refSubCompany.Create}"
+					value="Save" update=":SubCompanyListForm:datalist,:messages" />
+				<p:commandButton actionListener="#{refSubCompany.Reset}"
+					value="Cancel" onclick="PF('SubCompanyCreateDialog').hide()"
+					update="display,:SubCompanyListForm" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

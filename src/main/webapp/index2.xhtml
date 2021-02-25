@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+ 
+<h:head>
+</h:head>
+<h:body>
+	<h1>Hello World PrimeFacese</h1>
+ 
+	<h:form>
+	   <p:editor value="#{editor.value}" />
+	</h:form>
+ <h:form>
+    <h:panelGrid columns="2">
+      <h:outputLabel value="Celsius"></h:outputLabel>
+      <h:inputText  value="#{temperatureConvertor.celsius}"></h:inputText>
+    </h:panelGrid>
+    <h:commandButton action="#{temperatureConvertor.celsiusToFahrenheit}" value="Calculate"></h:commandButton>
+    <h:commandButton action="#{temperatureConvertor.reset}" value="Reset"></h:commandButton>
+    <h:messages layout="table"></h:messages>
+  </h:form>
+  
+  
+  <h:panelGroup rendered="#{temperatureConvertor.initial!=true}">
+  <h3> Result </h3>
+  <h:outputLabel value="Fahrenheit "></h:outputLabel>
+  <h:outputLabel value="#{temperatureConvertor.fahrenheit}"></h:outputLabel>
+  </h:panelGroup>
+</h:body>
+</html>

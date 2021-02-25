@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+<f:metadata>
+	<f:event type="preRenderView"
+		listener="#{logInvoiceListBean.initBean('writeoff')}" />
+</f:metadata>
+<h:head>
+	<title>#{logInvoiceListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.logItemsTable .numberColumn {
+	width: 80px;
+	text-align: center;
+}
+
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{logInvoiceListBean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader"
+					value="#{msg['logistics.writeoff_list_title']}" />
+			</ui:include>
+
+			<div class="ui-grid">
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<p:tabMenu activeIndex="#{param.i}">
+							<p:menuitem value="#{msg['logistics.new_docs']}" outcome="List.xhtml"
+								icon="ui-icon-document">
+								<f:param name="i" value="0" />
+							</p:menuitem>
+							<p:menuitem value="#{msg['logistics.closed_docs']}" outcome="List.xhtml"
+								icon="ui-icon-document">
+								<f:param name="i" value="1" />
+							</p:menuitem>
+
+						</p:tabMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm">
+							<p:panelGrid columns="2" style="width:99%;margin-top:1px;">
+								<f:facet name="header">#{msg['search_panel']}</f:facet>
+
+								<p:outputLabel value="ID"></p:outputLabel>
+								<p:inputText
+									value="#{logInvoiceListBean.invoiceModel.searchModel.id}"></p:inputText>
+
+								<p:outputLabel value="#{msg['company']}"></p:outputLabel>
+								<p:selectOneMenu
+									disabled="#{!userinfo.main and !userinfo.sys_admin}"
+									value="#{logInvoiceListBean.invoiceModel.searchModel.bukrs}">
+									<p:ajax update="werks"></p:ajax>
+									<f:selectItem itemLabel="#{msg['select']}" itemValue=""></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg['logistics.whouse']}"></p:outputLabel>
+								<p:selectOneMenu id="werks"
+									value="#{logInvoiceListBean.invoiceModel.searchModel.from_werks}">
+									<f:selectItem itemLabel="#{msg['select']}" itemValue="0"></f:selectItem>
+									<f:selectItems
+										value="#{lgHelperBean.getUserWerks(logInvoiceListBean.invoiceModel.searchModel.bukrs)}"
+										var="w" itemLabel="#{w.text45}" itemValue="#{w.werks}"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel>#{msg['logistics.write_off_type']}</p:outputLabel>
+								<p:selectOneMenu
+									value="#{logInvoiceListBean.invoiceModel.searchModel.serviceType}">
+									<f:selectItem itemLabel="#{msg['logistics.write_off_type_0']}" itemValue="0"></f:selectItem>
+									<f:selectItem itemLabel="#{msg['logistics.write_off_type_1']}" itemValue="1"></f:selectItem>
+									<f:selectItem itemLabel="#{msg['logistics.write_off_type_2']}" itemValue="2"></f:selectItem>
+								</p:selectOneMenu>
+
+								<p:outputLabel>#{msg['logistics.service_number']}</p:outputLabel>
+								<p:inputText
+									value="#{logInvoiceListBean.invoiceModel.searchModel.service_number}"></p:inputText>
+
+								<p:outputLabel>#{msg['logistics.contract_number']}</p:outputLabel>
+								<p:inputText
+									value="#{logInvoiceListBean.invoiceModel.searchModel.contract_number}"></p:inputText>
+
+								<p:outputLabel>#{msg['logistics.ser_num']}</p:outputLabel>
+								<p:inputText value="#{logInvoiceListBean.invoiceModel.barcode}"></p:inputText>
+								
+								<p:outputLabel>#{msg['logistics.matnr_code']}</p:outputLabel>
+								<p:inputText value="#{logInvoiceListBean.invoiceModel.matnrCode}"></p:inputText>
+
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg['search']}"
+									update=":dataForm:invoiceDataTable"></p:commandButton>
+
+							</p:panelGrid>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="dataForm">
+							<p:dataTable value="#{logInvoiceListBean.invoiceModel}"
+								var="item" paginator="true" rows="50" lazy="true"
+								tableStyleClass="logItemsTable" id="invoiceDataTable">
+								<f:facet name="header" id="tableHeader">
+									<div style="float: left; margin-left: 10px;">#{msg['total']}:
+										#{logInvoiceListBean.invoiceModel.rowCount}</div>
+									<p:button title="#{msg['add']}" outcome="Create.xhtml"
+										rendered="false" value="#{msg['add']}"
+										style="float:right;margin-right:5px;" />
+									<div style="clear: both;"></div>
+								</f:facet>
+
+								<p:column headerText="№" sortBy="#{item.id}"
+									styleClass="numberColumn">
+									<p:outputLabel value="#{item.id}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.sender_whouse']}">
+									<p:outputLabel value="#{werksF4Bean.getName(item.from_werks)}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.contract_number']}"
+									sortBy="#{item.contract_number}">
+									<p:outputLabel rendered="#{item.contract_number > 0}"
+										value="#{msg['contract']} №#{item.contract_number}"></p:outputLabel>
+								</p:column>
+
+
+
+
+
+								<p:column headerText="#{msg['logistics.service_number']}"
+									sortBy="#{item.service_number}">
+									<p:outputLabel rendered="#{item.service_number > 0}"
+										value="#{msg['service']} №#{item.service_number}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.embez_worker']}">
+									<p:outputLabel rendered="#{!empty item.responsible}"
+										value="#{item.responsible.getLF()}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['created_at']}">
+									<h:outputText value="#{item.created_at}">
+										<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+									</h:outputText>
+								</p:column>
+								<p:column>
+									<p:button target="_blank" value="#{msg['view']}"
+										outcome="View.xhtml?id=#{item.id}" icon="ui-icon-search"
+										title="#{msg['view']}">
+									</p:button>
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

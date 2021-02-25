@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog id="ServAppListDlg" widgetVar="ServAppListWidget"
+		modal="true" dynamic="true" resizable="false" appendTo="@(body)"
+		width="1300px" header="Заявки">
+
+		<h:form id="ServAppListForm">
+
+			<div class="container">
+				<fieldset>
+					<legend>Заголовок документа</legend>
+
+					<div style="float: left;">
+						<fieldset style="height: 82px; border: 1px solid #ddd;">
+							<legend>#{msg['dmsc.branch']}</legend>
+							<table>
+								<tr>
+									<td><h:outputLabel value="Компания" /></td>
+									<td><p:selectOneMenu id="bukrs"
+											value="#{formBean.servappModel.searchModel.bukrs}">
+
+											<f:selectItem itemLabel="Выберите компанию" itemValue="0" />
+											<f:selectItems value="#{formBean.bukrs_list}"
+												var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu></td>
+								</tr>
+								<tr>
+									<td><h:outputLabel value="Филиал" /></td>
+									<td><p:selectOneMenu styleClass="branch" id="branchref"
+											value="#{formBean.servappModel.searchModel.branch_id}">
+											<f:selectItem itemLabel="Выберите офис" itemValue="0" />
+											<f:selectItems value="#{formBean.branch_list}"
+												var="wa_branch" itemLabel="#{wa_branch.text45}"
+												itemValue="#{wa_branch.branch_id}" />
+										</p:selectOneMenu></td>
+								</tr>
+							</table>
+						</fieldset>
+					</div>
+
+					<div style="float: left;">
+						<div>
+							<fieldset style="height: 82px; border: 1px solid #ddd;">
+								<legend> #{msg['dmsc.date']} </legend>
+
+								<table>
+									<tr>
+										<td><h:outputLabel value="#{msg['dmsc.dateFrom']} " /></td>
+										<td><p:calendar id="start_date" styleClass="dateField"
+												value="#{formBean.servappModel.searchModel.p_start_date}"
+												navigator="true" pattern="dd.MM.yyyy" mask="true"
+												converterMessage="Date is invalid." /> <h:outputLabel
+												value="#{msg['dmsc.dateFrom1']} " /></td>
+									</tr>
+									<tr>
+										<td><h:outputLabel value=" #{msg['dmsc.dateTo']} " /></td>
+										<td><p:calendar id="end_date" styleClass="dateField"
+												value="#{formBean.servappModel.searchModel.p_end_date}"
+												navigator="true" pattern="dd.MM.yyyy" mask="true"
+												converterMessage="Date is invalid." />
+											#{msg['dmsc.dateTo1']}</td>
+									</tr>
+								</table>
+							</fieldset>
+						</div>
+
+					</div>
+
+					<div style="float: left;">
+						<div>
+							<fieldset style="height: 82px; border: 1px solid #ddd;">
+								<legend> #{msg['dmsc.status']}, #{msg['dmsc.type']} </legend>
+								<table>
+									<tr>
+										<td><h:outputLabel value="#{msg['dmsc.status']}: " /></td>
+										<td><p:selectOneMenu id="servapp_status"
+												value="#{formBean.servappModel.searchModel.app_status}">
+												<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+												<f:selectItem itemLabel="Новая" itemValue="1" />
+												<f:selectItem itemLabel="В обработке" itemValue="2" />
+												<f:selectItem itemLabel="Выполнена" itemValue="3" />
+												<f:selectItem itemLabel="Отменена" itemValue="4" />
+											</p:selectOneMenu></td>
+									</tr>
+									<tr>
+										<td><h:outputLabel value="#{msg['dmsc.type']}: " /></td>
+										<td><p:selectOneMenu id="servapp_type"
+												value="#{formBean.servappModel.searchModel.app_type}">
+												<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+												<f:selectItem itemLabel="ROBOCLEAN - Сервис" itemValue="3" />
+												<f:selectItem itemLabel="CEBILON - Сервис" itemValue="1" />
+												<f:selectItem itemLabel="Замена фильтров" itemValue="2" />
+												<f:selectItem itemLabel="Жалоба / Пожелание" itemValue="4" />
+												<f:selectItem itemLabel="Другое" itemValue="5" />
+											</p:selectOneMenu></td>
+									</tr>
+								</table>
+							</fieldset>
+						</div>
+					</div>
+
+					<div style="float: left;">
+						<div>
+							<fieldset style="height: 82px; border: 1px solid #ddd;">
+								<legend>#{msg['dmsc.searchByNumber']} </legend>
+
+								<table>
+									<tr>
+										<td><h:outputLabel value="№ Заявки: " /></td>
+										<td><p:inputText id="sapp_num" maxlength="20"
+												style="width: 95px;" autocomplete="off"
+												value="#{formBean.servappModel.searchModel.app_number}" /></td>
+									</tr>
+
+									<tr>
+										<td><h:outputLabel value="#{msg['dmsc.contractNo']} " /></td>
+										<td><p:inputText id="contr_num" maxlength="20"
+												style="width: 95px;" autocomplete="off"
+												value="#{formBean.servappModel.searchModel.contract_number}" /></td>
+									</tr>
+
+								</table>
+							</fieldset>
+						</div>
+					</div>
+
+					<div style="float: left;">
+						<fieldset style="height: 82px; border: 1px solid #ddd;">
+							<legend>#{msg['dmsc.staff']}</legend>
+
+							<table>
+								<tr>
+									<td><h:outputLabel value="Принял: " /></td>
+									<td><p:selectOneMenu id="createdBy" disabled="false"
+											value="#{formBean.servappModel.searchModel.created_by}">
+											<f:selectItem itemLabel="Неизвестно" itemValue="0" />
+											<f:selectItems value="#{formBean.user_list}" var="user"
+												itemLabel="#{user.username}" itemValue="#{user.user_id}" />
+										</p:selectOneMenu></td>
+								</tr>
+							</table>
+						</fieldset>
+					</div>
+					
+					<div style="float: right; margin-left: 25px;">
+						<p:hotkey bind="ctrl+space" actionListener="#{formBean.loadServAppOutputTable}" update=":messages" />
+						<table>
+							<tr>
+								<td></td>
+								<td><p:commandButton type="push" value="Поиск"
+										icon="ui-icon ui-icon-search" style="height:63px;"
+										actionListener="#{formBean.loadServAppOutputTable}"
+										update=":messages">
+									</p:commandButton></td>
+							</tr>
+						</table>
+					</div>
+				</fieldset>
+			</div>
+			
+			<div class="container">
+				<p:dataTable id="SAlist" value="#{formBean.servappModel}"
+					var="item" selectionMode="single" lazy="true"
+					selection="#{formBean.selectedSA}" paginator="true"
+					rowKey="#{item.id}" rows="10" rowsPerPageTemplate="10, 20, 50, 100"
+					resizableColumns="true" liveResize="true">
+
+					<f:facet name="header">
+						<p:commandButton process="SAlist"
+							actionListener="#{formBean.assignSelectedSA}"
+							value="Выбрать" />
+					</f:facet>
+					<p:ajax event="rowDblselect" listener="#{formBean.assignSelectedSA}" />
+					<p:column width="110">
+						<f:facet name="header">
+							<h:outputText value="№ заявки" />
+						</f:facet>
+						<h:outputText value="#{item.app_number}" />
+					</p:column>
+
+					<p:column width="100">
+						<f:facet name="header">
+							<h:outputText value="Компания" />
+						</f:facet>
+						<p:selectOneMenu id="bukrsSA" disabled="true"
+							value="#{item.bukrs}">
+							<f:selectItem itemLabel=" " itemValue="0" />
+							<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="wa_bukrs"
+								itemLabel="#{wa_bukrs.name}" itemValue="#{wa_bukrs.bukrs}" />
+						</p:selectOneMenu>
+					</p:column>
+
+					<p:column width="110">
+						<f:facet name="header">
+							<h:outputText value="Филиал" />
+						</f:facet>
+						<p:selectOneMenu styleClass="branch" id="branchSApp"
+							value="#{item.branch_id}" disabled="true">
+							<f:selectItem itemLabel=" " itemValue="0" />
+							<f:selectItems value="#{branchF4Bean.branch_list}"
+								var="wa_branch" itemLabel="#{wa_branch.text45}"
+								itemValue="#{wa_branch.branch_id}" />
+						</p:selectOneMenu>
+					</p:column>
+
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="Дог. SN" />
+						</f:facet>
+						<h:outputText value="#{item.contract_number}" />
+						<h:link outcome="/dms/contract/dmsc03" target="_blank"
+							styleClass="urlLinks" rendered="#{!empty item.contract_number}">
+							<f:param name="contract_number" value="#{item.contract_number}" />
+							<h:graphicImage value="/img/link.png"
+								style="float:right; width:15px; height:15px;" />
+						</h:link>
+					</p:column>
+
+					<p:column width="220">
+						<f:facet name="header">
+							<h:outputText value="Заявитель" />
+						</f:facet>
+						<h:outputText value="#{item.applicant_name}" />
+					</p:column>
+
+					<p:column width="80">
+						<f:facet name="header">
+							<h:outputText value="Дата" />
+						</f:facet>
+						<h:outputText value="#{item.adate}">
+							<f:convertDateTime pattern="dd.MM.yyyy" />
+						</h:outputText>
+					</p:column>
+
+					<p:column width="185">
+						<f:facet name="header">
+							<h:outputText value="Вид заявки" />
+						</f:facet>
+						<p:selectOneMenu id="type" value="#{item.app_type}"
+							disabled="true">
+							<f:selectItem itemLabel="Неопределенный вид" itemValue="0" />
+							<f:selectItem itemLabel="ROBOCLEAN - Сервис" itemValue="3" />
+							<f:selectItem itemLabel="CEBILON - Сервис" itemValue="1" />
+							<f:selectItem itemLabel="Замена фильтров" itemValue="2" />
+							<f:selectItem itemLabel="Жалоба / Пожелание" itemValue="4" />
+							<f:selectItem itemLabel="Другое" itemValue="5" />
+						</p:selectOneMenu>
+					</p:column>
+
+					<p:column width="120">
+						<f:facet name="header">
+							<h:outputText value="Статус заявки" />
+						</f:facet>
+						<p:selectOneMenu id="sa_type" value="#{item.app_status}"
+							disabled="true">
+							<f:selectItem itemLabel="Новая" itemValue="1" />
+							<f:selectItem itemLabel="В обработке" itemValue="2" />
+							<f:selectItem itemLabel="Выполнена" itemValue="3" />
+							<f:selectItem itemLabel="Отменена" itemValue="4" />
+						</p:selectOneMenu>
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Инфо" />
+						</f:facet>
+						<h:outputText value="#{item.info}" />
+					</p:column>
+
+					<p:column width="120">
+						<f:facet name="header">
+							<h:outputText value="Принял" />
+						</f:facet>
+						<p:selectOneMenu id="createdBy" value="#{item.created_by}"
+							disabled="true">
+							<f:selectItem itemLabel="Неизвестно" itemValue="0" />
+							<f:selectItems value="#{formBean.user_list}" var="user"
+								itemLabel="#{user.username}" itemValue="#{user.user_id}" />
+						</p:selectOneMenu>
+					</p:column>
+
+				</p:dataTable>
+			</div>
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:composition>
+</html>

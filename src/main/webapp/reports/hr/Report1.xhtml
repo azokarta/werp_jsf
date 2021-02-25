@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{repHr1Bean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{repHr1Bean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{repHr1Bean.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+							<p:panelGrid columns="2" style="width:99%;margin-top:1px;">
+								<f:facet name="header">Панель для поиска</f:facet>
+
+								<p:outputLabel value="Компания"></p:outputLabel>
+								<werp:companySelect elementId="companyId" mode="update"
+									value="#{repHr1Bean.bukrs}"
+									onChangeUpdate=":searchForm:branchSelect:branchId">
+								</werp:companySelect>
+
+								<p:outputLabel value="Филиал"></p:outputLabel>
+								<werp:branchSelect id="branchSelect" elementId="branchId"
+									companyValue="#{repHr1Bean.bukrs}"
+									value="#{repHr1Bean.branchId}" mode="update">
+								</werp:branchSelect>
+
+								<p:outputLabel value="Логин"></p:outputLabel>
+								<p:inputText value="#{repHr1Bean.username}"></p:inputText>
+
+								<p:outputLabel value="Роль"></p:outputLabel>
+								<p:selectOneMenu value="#{repHr1Bean.roleId}">
+									<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+									<f:selectItems value="#{repHr1Bean.roleList}" var="r"
+										itemLabel="#{r.text45}" itemValue="#{r.role_id}"></f:selectItems>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Статус"></p:outputLabel>
+								<p:selectOneMenu value="#{repHr1Bean.isActive}">
+									<f:selectItem itemLabel="Все" itemValue="2"></f:selectItem>
+									<f:selectItem itemLabel="Активный" itemValue="1"></f:selectItem>
+									<f:selectItem itemLabel="Заблокирован" itemValue="0"></f:selectItem>
+								</p:selectOneMenu>
+
+								<p:outputLabel value="IS ROOT"></p:outputLabel>
+								<p:selectOneMenu value="#{repHr1Bean.isRoot}">
+									<f:selectItem itemLabel="Все" itemValue="2"></f:selectItem>
+									<f:selectItem itemLabel="Да" itemValue="1"></f:selectItem>
+									<f:selectItem itemLabel="Нет" itemValue="0"></f:selectItem>
+								</p:selectOneMenu>
+
+
+								<p:commandButton value="Сброс"
+									actionListener="#{repHr1Bean.ResetSearchForm()}"
+									update=":searchForm, :messages"
+									disabled="#{!userinfo.main and !userinfo.sys_admin}"></p:commandButton>
+								<p:commandButton id="searchBtn" value="Сформировать"
+									actionListener="#{repHr1Bean.generateData()}"
+									update=":dataForm:invoiceDataTable, :messages"></p:commandButton>
+
+							</p:panelGrid>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="dataForm">
+							<p:dataTable value="#{repHr1Bean.items}" var="item"
+								tableStyleClass="logItemsTable" id="invoiceDataTable"
+								selectionMode="single" rowKey="#{item.user_id}"
+								selection="#{repHr1Bean.selected}" paginator="true" rows="50">
+
+								<f:facet name="header">
+									<span style="float: left;">Количество:
+										#{repHr1Bean.itemsCount}</span>
+								</f:facet>
+
+								<p:ajax event="rowSelect" listener="#{repHr1Bean.onRowSelect}"
+									oncomplete="PF('roleDialog').show();"
+									update=":messages, :roleDialog" />
+								<p:ajax event="rowUnselect"
+									listener="#{repHr1Bean.onRowUnselect}"
+									update=":messages, :roleDialog" />
+
+								<p:column headerText="Username" style="width:120px;"
+									sortBy="#{item.username}">
+									<p:outputLabel value="#{item.username}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="ФИО">
+									<p:outputLabel value="#{item.staffName}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="Филиал" style="width:200px;">
+									<p:outputLabel value="#{branchF4Bean.getName(item.branch_id)}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="Роли">
+									<ui:repeat var="r" value="#{item.roles}">
+										#{r.text45},
+									</ui:repeat>
+								</p:column>
+
+								<p:column headerText="Статус" style="width:200px;"
+									sortBy="#{item.is_active}">
+									<p:outputLabel style="color:green" value="АКТИВНЫЙ"
+										rendered="#{item.is_active == 1}"></p:outputLabel>
+									<p:outputLabel style="color:red" value="ЗАБЛОКИРОВАН"
+										rendered="#{item.is_active == 0}"></p:outputLabel>
+								</p:column>
+
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<p:dialog widgetVar="roleDialog" id="roleDialog" modal="true"
+		resizable="false" appendTo="@(body)"
+		header="#{repHr1Bean.selected.staffName}" width="800" height="500">
+		<h:panelGroup>
+			<p:dataTable var="item" rowKey="#{item.role_id}"
+				value="#{repHr1Bean.selected.roles}"
+				emptyMessage="#{msg.no_records}">
+				<p:column headerText="Роль">
+					<h:outputText value="#{item.text45}" />
+				</p:column>
+
+				<p:column headerText="Ссылка">
+					<p:button outcome="/dit/role/View.xhtml?roleId=#{item.role_id}"
+						target="_blank" value="Просмотр"></p:button>
+				</p:column>
+			</p:dataTable>
+		</h:panelGroup>
+	</p:dialog>
+
+	<p:dialog widgetVar="StaffListDialog" modal="true" resizable="false"
+		appendTo="@(body)" header="Сотрудники" width="800" height="500">
+
+		<h:form id="staffSearchForm">
+			<p:panel header="#{msg.advanced_search}">
+				<h:panelGrid columns="4" cellpadding="10">
+					<p:outputLabel value="Фамилия"></p:outputLabel>
+					<p:inputText value="#{repHr1Bean.staffSearchModel.lastname}"></p:inputText>
+
+					<p:outputLabel value="Имя"></p:outputLabel>
+					<p:inputText value="#{repHr1Bean.staffSearchModel.firstname}"></p:inputText>
+
+
+					<p:outputLabel value=""></p:outputLabel>
+					<p:outputLabel value=""></p:outputLabel>
+					<p:outputLabel value=""></p:outputLabel>
+					<p:commandButton value="#{msg.search}"
+						actionListener="#{repHr1Bean.loadStaffList()}"
+						update=":messages,:StaffListDlgForm:staffListDlgTable"></p:commandButton>
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+
+		<h:form id="StaffListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="staffListDlgTable" var="item"
+					rowKey="#{item.staff_id}" value="#{repHr1Bean.staffList}"
+					emptyMessage="#{msg.no_records}" selectionMode="single"
+					paginator="true" rows="500" selection="#{repHr1Bean.selectedStaff}">
+					<p:ajax event="rowDblselect" listener="#{repHr1Bean.onSelectStaff}"
+						update=":searchForm" />
+
+					<p:column headerText="Фамилия">
+						<h:outputText value="#{item.lastname}" />
+					</p:column>
+
+					<p:column headerText="Имя">
+						<h:outputText value="#{item.firstname}" />
+					</p:column>
+
+					<p:column headerText="Отчество">
+						<h:outputText value="#{item.middlename}" />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>

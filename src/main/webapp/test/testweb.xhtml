@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>ERP Systems</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh" content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml"/>
+	
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+
+
+
+
+<h:body>
+	
+	<h:outputStylesheet library="css" name="reports/finance/kreditor/rfklist.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.frep5']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE 
+		
+				
+				 -->
+						<f:view>
+
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,testwebBean.getTransactionId())}"/>
+									</f:facet>
+						</p:toolbar>
+						
+	
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								
+									
+						 		<!--  -->	<p:dataTable value="#{testwebBean.l_outputTable}" var="o" widgetVar="5"  id="l_outputTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											 
+											<p:columnGroup type="header">	
+												    <p:row>
+										                <p:column headerText="firstname" />
+										            
+										                <p:column headerText="secondname" />
+										            </p:row>
+										            
+										  
+										     </p:columnGroup>
+										     
+										     
+											
+											<p:column style="width: 165px;">
+												<h:inputText id="b_hkont" value="#{o.firstname}" disabled="true"/>
+							
+											</p:column>	 
+											
+											
+											<p:column style="width: 165px;">
+											 		<h:inputText   value="#{o.secondname}" disabled="true"/>
+										 
+											</p:column>	 
+													
+											
+										
+											
+										</p:dataTable>			
+										<h:outputLabel id = "idpole" value="#{testwebBean.pole}" />
+										<p:commandButton type="push" value="#{msg.save}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{testwebBean.testCall}" />
+										
+								 <h:outputLabel id = "idpolee" value="#{testwebBean.polee}" />
+										<p:commandButton type="push" value="#{msg.save}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{testwebBean.testCall2}" />
+										
+										
+										
+										
+										<p:button outcome="productDetail" value="Bookmark" icon="ui-icon-star">
+   											 <f:param name="productId" value="10" />
+										</p:button>
+					
+										
+						
+							</h:form>
+							
+							
+							<h:form>
+							</h:form>
+
+
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

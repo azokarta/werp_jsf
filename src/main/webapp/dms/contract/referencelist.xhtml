@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog header="#{msg['dmsc.referender']}" modal="true"
+		appendTo="@(body)" widgetVar="referenceWidget" dynamic="true"
+		width="1100" height="500">
+
+		<h:form id="ReferenceListForm">
+
+			<fieldset style="border: 1px solid #ccc;">
+				<legend>#{msg['dmsc.docTitle']}</legend>
+				<div style="float: left;">
+					<table>
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.bukrs']}: " /></td>
+							<td><p:selectOneMenu styleClass="bukrs" id="refBukrs"
+									disabled="true"
+									value="#{dmsc01Bean.outputTable.searchModel.bukrs}">
+									<p:ajax listener="#{dmsc01Bean.loadBranch2}" />
+									<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}"
+										itemValue="0" />
+									<f:selectItems value="#{dmsc01Bean.bukrs_list}" var="wa_bukrs"
+										itemLabel="#{wa_bukrs.name}" itemValue="#{wa_bukrs.bukrs}" />
+								</p:selectOneMenu></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.branch']}" /></td>
+							<td><p:selectOneMenu styleClass="branch" id="branchref"
+									value="#{dmsc01Bean.outputTable.searchModel.branch_id}">
+									<p:ajax listener="#{dmsc01Bean.loadDealers}" />
+									<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+										itemValue="0" />
+									<f:selectItems value="#{dmsc01Bean.ref_branch_list}"
+										var="wa_branch" itemLabel="#{wa_branch.text45}"
+										itemValue="#{wa_branch.branch_id}" />
+								</p:selectOneMenu></td>
+						</tr>
+					</table>
+				</div>
+
+				<div style="float: left; margin-left: 15px">
+					<div>
+						<table>
+							<tr>
+								<td><h:outputLabel value="#{msg['dmsc.dealer']}" /></td>
+								<td><p:selectOneMenu id="dealerref"
+										value="#{dmsc01Bean.outputTable.searchModel.dealer}">
+										<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+										<f:selectItems value="#{dmsc01Bean.l_dealer}" var="wa_dealer"
+											itemLabel="#{wa_dealer.firstname}"
+											itemValue="#{wa_dealer.staff_id}" />
+										<f:selectItem itemLabel="#{msg['dmsc.notDealer']}"
+											itemValue="-1" />
+									</p:selectOneMenu></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="#{msg['client']}" /></td>
+								<td><p:inputText id="refCustomerFio" size="25"
+										autocomplete="off"
+										value="#{dmsc01Bean.outputTable.searchModel.customer_fio}"
+										disabled="true" /> <p:commandButton icon="ui-icon-newwin"
+										type="push" oncomplete="PF('customerWidget').show();"
+										actionListener="#{dmsc01Bean.prepareRefDlg}"
+										styleClass="f4button">
+									</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+										actionListener="#{dmsc01Bean.clearCustomerField}"
+										styleClass="f4button" disabled="false" /></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+
+				<div style="float: left; margin-left: 15px">
+					<div>
+						<table>
+							<tr>
+								<td><h:outputLabel value="#{msg['dmsc.dateFrom']} " /></td>
+								<td><p:calendar id="start_date" styleClass="dateField"
+										value="#{dmsc01Bean.outputTable.searchModel.p_start_date}"
+										navigator="true" pattern="dd.MM.yyyy" mask="true"
+										converterMessage="Date is invalid." /> <h:outputLabel
+										value="#{msg['dmsc.dateFrom1']} " /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value=" #{msg['dmsc.dateTo']} " /></td>
+								<td><p:calendar id="end_date" styleClass="dateField"
+										value="#{dmsc01Bean.outputTable.searchModel.p_end_date}"
+										navigator="true" pattern="dd.MM.yyyy" mask="true"
+										converterMessage="Date is invalid." /> #{msg['dmsc.dateTo1']}</td>
+							</tr>
+
+						</table>
+					</div>
+				</div>
+
+				<div style="float: left; margin-left: 15px">
+					<div>
+						<table>
+							<tr>
+								<td><h:outputLabel value="#{msg['dmsc.contractNo']}" /></td>
+								<td><p:inputText id="contr_num" maxlength="20"
+										style="width: 95px;" autocomplete="off"
+										value="#{dmsc01Bean.outputTable.searchModel.contract_number}" /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value="Товар SN " /></td>
+								<td><p:inputText id="tovar_sn" maxlength="20"
+										style="width: 95px;" autocomplete="off"
+										value="#{dmsc01Bean.outputTable.searchModel.tovar_serial}" /></td>
+							</tr>
+						
+							<tr>
+								<td><h:outputLabel value="Старый SN " /></td>
+								<td><p:inputText id="old_SN" maxlength="20"
+										style="width: 95px;" autocomplete="off"
+										value="#{dmsc01Bean.outputTable.searchModel.old_sn}" /></td>
+							</tr>						
+
+						</table>
+					</div>
+				</div>
+				
+				<div style="float: right;">
+					<table>
+						<tr>
+							<td><p:commandButton type="push" style="height:50px"
+									value="#{msg['dmsc.search']}" icon="ui-icon ui-icon-search"
+									actionListener="#{dmsc01Bean.searchRef}" update=":messages">
+								</p:commandButton></td>
+						</tr>
+					</table>
+				</div>
+			</fieldset>
+
+			<div class="wrapRTClass">
+				<p:dataTable value="#{dmsc01Bean.outputTable}" var="o"
+					rowKey="#{o.contract.contract_id}" selectionMode="single"
+					selection="#{dmsc01Bean.selectedRefContr}"
+					emptyMessage="#{msg['dmsc.emptyRec']}" paginator="true" rows="10"
+					lazy="true" widgetVar="50" id="outputTable"
+					styleClass="outputTable-table" style="margin-top: 7px"
+					headerClass="outputTable-table-header"
+					rowClasses="outputTable-table-odd-row,outputTable-table-even-row">
+
+					<f:facet name="header">
+						<p:commandButton process="outputTable"
+							actionListener="#{dmsc01Bean.assignFoundRefContrId}"
+							onclick="PF('referenceWidget').hide();"
+							value="#{msg['dmsc.select']}" />
+					</f:facet>
+
+					<p:column style="text-align:center;" width="12%">
+						<f:facet name="header">
+							<h:outputText value="SN #{msg['dmsc.contractNo']}" />
+						</f:facet>
+						<h:outputText value="#{o.contract.contract_number}" />
+
+						<h:link outcome="/dms/contract/dmsc03" target="_blank"
+							styleClass="urlLinks">
+							<f:param name="contract_number"
+								value="#{o.contract.contract_number}" />
+							<h:graphicImage value="/img/link.png"
+								style="float:right; width:15px; height:15px;" />
+						</h:link>
+
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="#{msg['dmsc.contract_date']}" />
+						</f:facet>
+						<p:calendar id="birthday" styleClass="dateField"
+							pattern="dd.MM.yyyy" autocomplete="off"
+							value="#{o.contract.contract_date}"
+							converterMessage="Date is invalid." disabled="true">
+						</p:calendar>
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="#{msg['dmsc.customer']}" />
+						</f:facet>
+						<h:outputText value="#{o.customer.getFullFIO()}" />
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="#{msg['dmsc.status']}" />
+						</f:facet>
+						<p:selectOneMenu id="contract_status_list"
+							value="#{o.contract.contract_status_id}" disabled="true">
+							<f:selectItem itemLabel="#{msg['dmsc.no']}" itemValue="0" />
+							<f:selectItems
+								value="#{contractStatusF4Bean.getContractStatus_list()}"
+								var="wa_cs" itemLabel="#{wa_cs.name}"
+								itemValue="#{wa_cs.contract_status_id}" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="#{msg['dmsc.dealer']}" />
+						</f:facet>
+						<h:outputText value="#{o.dealer.getLF()}" />
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="#{msg['dmsc.type']}" />
+						</f:facet>
+						<p:selectOneMenu id="contract_type_list"
+							value="#{o.contract.contract_type_id}" disabled="true">
+							<f:selectItem itemLabel="#{msg['dmsc.no']}" itemValue="0" />
+							<f:selectItems
+								value="#{contractTypeF4Bean.getContractType_list()}" var="wa_ct"
+								itemLabel="#{wa_ct.name}" itemValue="#{wa_ct.contract_type_id}" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="#{msg['dmsc.price']}" />
+						</f:facet>
+						<h:outputText value="#{o.price}" />
+					</p:column>
+
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="#{msg['dmsc.remain']}" />
+						</f:facet>
+						<h:outputText value="#{o.remain}" />
+					</p:column>
+
+				</p:dataTable>
+			</div>
+
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

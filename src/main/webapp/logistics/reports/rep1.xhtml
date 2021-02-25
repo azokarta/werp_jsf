@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['logistics.search_matnr_by_ser_number']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="#{msg['breadcrumb.log']} > #{msg['breadcrumb.reports']} > #{msg['logistics.search_matnr_by_ser_number']}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{msg['logistics.search_matnr_by_ser_number']}" />
+			</ui:include>
+
+			<div class="ui-grid-row" style="margin-top: 10px;">
+				<div class="ui-grid-col-3">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel header="#{msg.advanced_search}">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel>#{msg['logistics.ser_num']}</p:outputLabel>
+								<p:inputText value="#{repLog1Bean.barcode}"></p:inputText>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" actionListener="#{repLog1Bean.Search()}"
+									update=":ListForm:datalist,:messages,mlInfo"></p:commandButton>
+							</h:panelGrid>
+
+							<h:panelGrid id="mlInfo" columns="2" cellpadding="5">
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.matnr_info']}" />
+								</f:facet>
+								<p:outputLabel value="#{msg['logistics.matnr_name']}"></p:outputLabel>
+								<p:outputLabel value="#{repLog1Bean.ml.matnrObject.text45}"></p:outputLabel>
+
+								<p:outputLabel value="#{msg['status']}"></p:outputLabel>
+								<p:outputLabel value="#{repLog1Bean.getMlStatusName()}"></p:outputLabel>
+
+								<p:outputLabel rendered="#{repLog1Bean.ml.status == 'RECEIVED'}"
+									value="#{msg['logistics.in_whouse']}"></p:outputLabel>
+								<p:outputLabel rendered="#{repLog1Bean.ml.status == 'RECEIVED'}"
+									value="#{werksF4Bean.getName(repLog1Bean.ml.werks)}"></p:outputLabel>
+
+								<p:outputLabel value="#{msg['logistics.embez_worker']}"></p:outputLabel>
+								<p:outputLabel value="#{repLog1Bean.getCurrentStfName()}"></p:outputLabel>
+
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+
+
+				<div class="ui-grid-col-9">
+					<h:form id="ListForm">
+						<p:dataTable id="datalist" value="#{repLog1Bean.items}" var="item"
+							rowKey="#{item.id}" rows="200">
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.oper_type']}" />
+								</f:facet>
+								<h:outputText value="#{item.actionName}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.sender']}" />
+								</f:facet>
+								<h:outputText value="#{item.sender}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.receiver']}" />
+								</f:facet>
+								<h:outputText value="#{item.receiver}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['date']}" />
+								</f:facet>
+								<h:outputText value="#{item.date}">
+									<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.description']}" />
+								</f:facet>
+								<h:outputText value="#{item.note}">
+								</h:outputText>
+								<p:button target="_blank"
+									outcome="/dms/contract/dmsc03.xhtml?contract_number=#{item.contractNumber}"
+									value="#{msg['contract']} №#{item.contractNumber}" icon="ui-icon-extlink"
+									rendered="#{item.contractNumber > 0}">
+								</p:button>
+							</p:column>
+
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</h:body>
+
+</html>

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>#{logInvoiceListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.activeMenu {
+	
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Подотчет / Отчет" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="Подотчет / Отчет" />
+			</ui:include>
+
+
+			<div class="ui-grid ui-grid-responsive" style="margin-top: 10px;">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<p:tabMenu activeIndex="#{param.i}">
+							<p:menuitem value="#{msg['logistics.new_docs']}" outcome="List.xhtml"
+								icon="ui-icon-document">
+								<f:param name="i" value="0" />
+							</p:menuitem>
+							<p:menuitem value="#{msg['logistics.closed_docs']}" outcome="List.xhtml"
+								icon="ui-icon-document">
+								<f:param name="i" value="1" />
+							</p:menuitem>
+
+							<p:menuitem value="#{msg['logistics.report']}" outcome="Report.xhtml"
+								icon="ui-icon-document">
+								<f:param name="i" value="2" />
+							</p:menuitem>
+
+						</p:tabMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row" style="margin-top: 10px;">
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<h:form id="searchForm">
+							<p:panel header="#{msg.advanced_search}">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="#{msg.company}"></p:outputLabel>
+									<p:selectOneMenu
+										value="#{repAccountabilityBean.searchModel.bukrs}"
+										rendered="#{userinfo.sys_admin or userinfo.main}">
+										<p:ajax update="werks"></p:ajax>
+										<f:selectItem itemLabel="#{msg['select']}" itemValue=""></f:selectItem>
+										<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+											itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+									</p:selectOneMenu>
+									<p:outputLabel
+										rendered="#{!userinfo.sys_admin and !userinfo.main}"
+										value="#{bukrsF4Bean.getNameByBukrs(userinfo.bukrs)}"></p:outputLabel>
+
+									<p:outputLabel value="#{msg['logistics.whouse']}"></p:outputLabel>
+									<p:selectOneMenu id="werks"
+										value="#{repAccountabilityBean.searchModel.werks}">
+										<f:selectItem itemLabel="#{msg['select']}" itemValue="0"></f:selectItem>
+										<f:selectItems
+											value="#{werksBean.getUserWerks(repAccountabilityBean.searchModel.bukrs)}"
+											var="w" itemLabel="#{w.text45}" itemValue="#{w.werks}"></f:selectItems>
+									</p:selectOneMenu>
+
+									<p:outputLabel value="#{msg['logistics.material']}"></p:outputLabel>
+									<p:panel id="selectedMatnrPanel">
+										<h:outputText id="selectedMatnr"
+											value="#{repAccountabilityBean.selectedMatnr.text45}"
+											rendered="#{!empty repAccountabilityBean.selectedMatnr.matnr}"></h:outputText>
+										<p:commandButton icon="ui-icon-close" type="push"
+											update="selectedMatnrPanel"
+											actionListener="#{repAccountabilityBean.removeSelectedMatnr()}"
+											styleClass="f4button">
+										</p:commandButton>
+										<p:commandButton icon="ui-icon-newwin" type="push"
+											oncomplete="PF('MatnrListDialog').show();"
+											styleClass="f4button">
+										</p:commandButton>
+
+									</p:panel>
+
+
+
+									<p:outputLabel value="#{msg['employee']}"></p:outputLabel>
+									<p:panel id="selectedStaffPanel">
+										<h:outputText
+											value="#{repAccountabilityBean.selectedStaff.getLF()}"
+											rendered="#{!empty repAccountabilityBean.selectedStaff.staff_id}"></h:outputText>
+										<p:commandButton icon="ui-icon-close" type="push"
+											update="selectedStaffPanel"
+											actionListener="#{repAccountabilityBean.removeSelectedStaff()}"
+											styleClass="f4button">
+										</p:commandButton>
+										<p:commandButton icon="ui-icon-newwin" type="push"
+											oncomplete="PF('StaffListDialog').show();"
+											styleClass="f4button">
+										</p:commandButton>
+
+									</p:panel>
+
+									<p:outputLabel value=""></p:outputLabel>
+									<p:commandButton value="#{msg.search}"
+										actionListener="#{repAccountabilityBean.generateList()}"
+										update=":messages,:dataForm:dataTable"></p:commandButton>
+								</h:panelGrid>
+							</p:panel>
+						</h:form>
+					</div>
+
+
+
+					<div class="ui-g-12 ui-md-6 ui-lg-3">
+						<h:form id="dataForm">
+							<p:dataTable id="dataTable"
+								value="#{repAccountabilityBean.outputMap.entrySet().toArray()}"
+								var="e" style="width:90%;" scrollable="false">
+
+								<f:facet name="header">#{msg['logistics.embez_worker_list']}</f:facet>
+
+								<p:subTable var="item" value="#{e.getValue()}">
+									<f:facet name="header">
+										<h:outputText
+											value="#{repAccountabilityBean.getStaffName(e.getKey())}" />
+									</f:facet>
+									<p:column style="width:100px;text-align:center;">
+										<h:outputText value="#{item.matnrObject.code}" />
+									</p:column>
+									<p:column>
+										<h:outputText value="#{item.matnrObject.text45}" /><br/>
+										<ui:repeat var="bc" value="#{repAccountabilityBean.getUserMatnrBarcodes(e.getKey(),item.matnr)}">
+											<h:outputLabel value="#{bc}"></h:outputLabel><br/>
+										</ui:repeat>
+									</p:column>
+									<p:column>
+										<h:outputText value="#{item.menge}" />
+									</p:column>
+								</p:subTable>
+
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<p:dialog id="MatnrListDlg" widgetVar="MatnrListDialog" modal="true"
+		resizable="false" appendTo="@(body)" header="#{msg['logistics.matnr_list']}"
+		width="800" height="500">
+
+		<h:form id="MatnrListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="matnrListDlgTable" var="item"
+					rowKey="#{item.matnr}" value="#{repAccountabilityBean.matnrList}"
+					emptyMessage="#{msg.no_records}" selectionMode="single"
+					selection="#{repAccountabilityBean.selectedMatnr}" paginator="true"
+					rows="30">
+					<p:ajax event="rowDblselect"
+						listener="#{repAccountabilityBean.onSelectMatnr}"
+						update=":searchForm" />
+
+					<p:column headerText="#{msg['logistics.material']}" sortBy="#{item.text45}">
+						<h:outputText value="#{item.text45}" />
+					</p:column>
+					<p:column headerText="#{msg['logistics.matnr_code']}" filterBy="#{item.code}">
+						<h:outputText value="#{item.code}" />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+
+	<p:dialog widgetVar="StaffListDialog" modal="true" resizable="false"
+		appendTo="@(body)" header="#{msg['employees']}" width="800" height="500">
+
+		<h:form id="staffSearchForm">
+			<p:panel header="#{msg.advanced_search}">
+				<h:panelGrid columns="4" cellpadding="10">
+					<p:outputLabel value="#{msg['hr.staff.lastname']}"></p:outputLabel>
+					<p:inputText
+						value="#{repAccountabilityBean.staffSearchModel.lastname}"></p:inputText>
+
+					<p:outputLabel value="#{msg['hr.staff.firstname']}"></p:outputLabel>
+					<p:inputText
+						value="#{repAccountabilityBean.staffSearchModel.firstname}"></p:inputText>
+
+
+					<p:outputLabel value=""></p:outputLabel>
+					<p:outputLabel value=""></p:outputLabel>
+					<p:outputLabel value=""></p:outputLabel>
+					<p:commandButton value="#{msg.search}"
+						actionListener="#{repAccountabilityBean.loadStaffList()}"
+						update=":messages,:StaffListDlgForm:staffListDlgTable"></p:commandButton>
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+
+		<h:form id="StaffListDlgForm">
+			<h:panelGroup>
+				<p:dataTable id="staffListDlgTable" var="item"
+					rowKey="#{item.staff_id}"
+					value="#{repAccountabilityBean.staffList}"
+					emptyMessage="#{msg.no_records}" selectionMode="single"
+					paginator="true" rows="500"
+					selection="#{repAccountabilityBean.selectedStaff}">
+					<p:ajax event="rowDblselect"
+						listener="#{repAccountabilityBean.onSelectStaff}"
+						update=":searchForm" />
+
+					<p:column headerText="#{msg['hr.staff.lastname']}">
+						<h:outputText value="#{item.lastname}" />
+					</p:column>
+
+					<p:column headerText="#{msg['hr.staff.firstname']}">
+						<h:outputText value="#{item.firstname}" />
+					</p:column>
+
+					<p:column headerText="#{msg['hr.staff.middlename']}">
+						<h:outputText value="#{item.middlename}" />
+					</p:column>
+				</p:dataTable>
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>

@@ -1,0 +1,51 @@
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Open Sans'), url(css/fonts/OpenSans-Regular.ttf) format('ttf');
+}
+
+#employee{
+	float: left;
+} 
+#salary_position{
+	margin-left: 320px;
+} 
+.ui-selectonemenu-panel { 
+   font-size:14px; 
+}
+.ui-selectonemenu{
+	font-size:14px; 
+}
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled{
+	opacity:.70 !important;
+}
+.ui-datatable tbody td{
+	font-size:14px; 
+}
+#contract{ 
+	display: inline;
+}
+
+#contact{ 
+	display: inline;
+}
+#payment_scheduleDiv{
+	display: block;
+}
+.payment_scheduleFieldSet{
+	height:180px;
+	margin-top: 15px;
+}
+.contractFieldSet{
+	height:480px;
+}
+
+.contactFieldSet{ 
+	width:450px;
+	height:480px;	
+	float:left;
+	margin-left: 10px;
+	display: block;
+}

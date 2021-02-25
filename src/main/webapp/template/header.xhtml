@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:event type="preRenderView" listener="#{goFast.init}" />
+</f:metadata>
+
+<h:head>
+	<title>HEADER</title>
+</h:head>
+
+<h:body>
+	<ui:composition>
+		<p:ajaxStatus id="ajaxStatusPanel">
+			<f:facet name="start">
+
+				<div id="ajax_loading_div">
+					<p>
+						<h:outputLabel value="#{msg.please_wait}..." />
+					</p>
+				</div>
+			</f:facet>
+			<f:facet name="complete">
+				<h:outputText value="" />
+			</f:facet>
+		</p:ajaxStatus>
+		<style>
+.ui-growl-item-container .ui-growl-message p {
+	white-space: pre-line;
+}
+</style>
+		<script>
+			PrimeFaces.locales['ru'] = {
+				closeText : 'Закрыть',
+				prevText : 'Назад',
+				nextText : 'Вперёд',
+				monthNames : [ 'Январь', 'Февраль', 'Март', 'Апрель', 'Май',
+						'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь',
+						'Ноябрь', 'Декабрь' ],
+				monthNamesShort : [ 'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
+						'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек' ],
+				dayNames : [ 'Воскресенье', 'Понедельник', 'Вторник', 'Среда',
+						'Четверг', 'Пятница', 'Субота' ],
+				dayNamesShort : [ 'Воск', 'Пон', 'Вт', 'Ср', 'Четв', 'Пят',
+						'Суб' ],
+				dayNamesMin : [ 'В', 'П', 'Вт', 'С ', 'Ч', 'П ', 'Сб' ],
+				weekHeader : 'Неделя',
+				firstDay : 1,
+				isRTL : false,
+				showMonthAfterYear : false,
+				yearSuffix : '',
+				timeOnlyTitle : 'Только время',
+				timeText : 'Время',
+				hourText : 'Час',
+				minuteText : 'Минута',
+				secondText : 'Секунда',
+				currentText : 'Сегодня',
+				ampm : false,
+				month : 'Месяц',
+				week : 'неделя',
+				day : 'День',
+				allDayText : 'Весь день'
+			};
+		</script>
+
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<h:form
+					style="display:inline-block;margin-left: 70px;margin-top: 5px; height:27px;">
+					<h:inputText id="fast-go" value="#{goFast.transactionCode}" />
+					<p:watermark value="#{msg['go_fast']}" for="fast-go" />
+
+					<h:commandButton value="#{msg['go']}" action="#{goFast.doRedirect}" />
+				</h:form>
+				<span class="ui-separator"> <span
+					class="ui-icon ui-icon-grip-dotted-vertical" />
+				</span>
+				<h:outputLabel value="#{userinfo.baza}: " style="color:red" />
+				<h:outputLabel name="breadcrumb" value="#{pageTitle}" />
+
+			</f:facet>
+
+			<f:facet name="right">
+
+				<h:outputLabel rendered="false"
+					value="#{userinfo.getStaffDisplayName()}" />
+
+
+				<p:panelGrid styleClass="searchPanelGrid2" > 
+							<p:row>
+							<p:column>
+							<p:link outcome="/dit/message/message.xhtml" value="#{messageUnreadCountBean.notReadMessNum}" style="#{messageUnreadCountBean.countMess > 0 ? 'color:red;' : ''}"/>
+
+					</p:column>
+						    	<p:column>
+						    		<h:form>
+					<p:menubar>
+						<p:submenu label="#{userinfo.getStaffDisplayName()}"
+							icon="ui-icon-person">
+							<p:menuitem value="#{msg['settings']}" outcome="/user/profile.xhtml"
+								icon="ui-icon-gear" />
+							<p:menuitem icon="ui-icon-power" value="#{msg['logout']}"
+								action="#{userinfo.logout}" />
+						</p:submenu>
+					</p:menubar>
+				</h:form>
+						    	</p:column>
+    						</p:row>
+    			</p:panelGrid>	
+				<p:commandButton rendered="false" type="push" value="#{msg.logout}"
+					icon="ui-icon ui-icon-check" action="#{userinfo.logout}" />
+			</f:facet>
+		</p:toolbar>
+
+		<p:growl id="messages" sticky="false" showDetail="true" life="3000" />
+
+		<p:dialog id="userAgreementDlg" widgetVar="userAgreementDlg"
+			draggable="false" showHeader="false" modal="true" minWidth="500"
+			resizable="false" width="600" dynamic="false"
+			appendTo="@(body)">
+			<h:form>
+				<p:panel id="panel" header="#{msg['user_agreement']}"
+					style="margin-bottom:10px;"
+					rendered="#{userAgreementBean.showAgreementDialog}"
+					closable="false">
+					<table>
+						<tr>
+							<td colspan="2">
+							<p:panel rendered="#{userinfo.u_language != 'en'}">
+								<p>Пользователь обязуются не разглашать, не предоставлять
+									копий, не публиковать и не раскрывать в какой-либо иной форме
+									третьим лицам Информации без получения предварительного
+									письменного согласия Руководства.</p>
+								<p>Пользователь несет личную ответственность за сохранность
+									конфиденциальности логина и пароля, а также за все действия,
+									выполненные под своим логином.</p>
+								<p>Отмечая галочку, Вы соглашаетесь соблюдать вышеуказанные
+									условия, и, при нарушений этих условии, принять согласованные
+									наказания со стороны Компании.</p>
+							</p:panel>
+							
+							<p:panel rendered="#{userinfo.u_language == 'en'}">
+								<p>The user undertakes not to disclose, make copies, publish and mustn't disclose information in any other form to the third 
+								parties without obtaining prior written agreement of supervisor</p>
+								<p>The user is personally responsible for maintaining the confidentiality of the login and password, 
+								as well as for all actions, executed under your login.</p>
+								<p>By ticking, you are abided by above conditions, and, in case of violations 
+								of these conditions to  accept the agreed penalties by the Company</p>
+							</p:panel>
+							
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2"><p:selectBooleanCheckbox style="font-weight:bold;text-decoration:underline;"
+									id="selectBooleanCheckbox" value="#{userAgreementBean.agree}" 
+									itemLabel="#{msg['i_agree']}">
+										<p:ajax update="agreeBtn"></p:ajax>
+									</p:selectBooleanCheckbox>
+									
+							</td>
+						</tr>
+						
+						<tr>
+							<td colspan="2">
+								<p style="height: 10px;"></p>
+							</td>
+						</tr>
+						
+						<tr>
+							<td><p:commandButton value="#{msg['i_agree']}" id="agreeBtn" disabled="#{!userAgreementBean.agree}"
+									actionListener="#{userAgreementBean.Save()}" update=":messages"></p:commandButton>
+							</td>
+							<td style="text-align:right;"><p:commandButton value="Отклонить" rendered="false"
+									actionListener="#{userAgreementBean.Refuse()}"
+									update=":messages"></p:commandButton></td>
+						</tr>
+					</table>
+				</p:panel>
+			</h:form>
+		</p:dialog>
+	</ui:composition>
+</h:body>
+</html>

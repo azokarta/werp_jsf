@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:viewParam name="customerId" value="#{fcus01Bean.p_searchTable.customer_id}" />
+	<f:event type="preRenderView" listener="#{fcus01Bean.init}" />
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh" content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml"/>
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("form:sc_fiz_yur_input").value == 1) {
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+
+				document.getElementById("form:sc_name").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+			} else if (document.getElementById("form:sc_fiz_yur_input").value == 2) {
+				document.getElementById("form:sc_birthday_input").disabled = false;
+				document.getElementById("form:sc_passport_id").disabled = false;
+				document.getElementById("form:sc_firstname").disabled = false;
+				document.getElementById("form:sc_lastname").disabled = false;
+				document.getElementById("form:sc_middlename").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			} else {
+				document.getElementById("form:sc_iin_bin").value = null;
+				document.getElementById("form:sc_iin_bin").disabled = true;
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			}
+
+		}
+	</script>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	
+	<h:outputStylesheet library="css" name="reports/finance/kreditor/rfklist.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.fcus01']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,fcus01Bean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+							
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<p:panelGrid style="padding:5px; margin:5px; border:0px;" styleClass="searchPanelGrid" >
+											<p:row>
+												<p:column >
+													<h:outputLabel  value="ID: #{fcus01Bean.p_searchTable.customer.id}"/>
+												</p:column>
+												<p:column >
+													<h:outputLabel  value="#{msg['hr.customer.iin_bin']}: #{fcus01Bean.p_searchTable.customer.iin_bin}"/>
+												</p:column>
+												<p:column >
+													<h:outputLabel  style="size:50px;" value="#{fcus01Bean.p_searchTable.customer.getFullFIO()}"/>
+												</p:column>
+										
+											</p:row>
+										</p:panelGrid>
+									</f:facet>
+									<f:facet name="right">
+													<p:button target="_blank" id="updateButton" outcome="/hr/customer/hrc02.xhtml"
+														icon="ui-icon-pencil" title="Update"
+														style="float:right;margin-right:5px;">
+														<f:param name="customerId" value="#{fcus01Bean.p_searchTable.customer_id}" />
+													</p:button>
+																			
+													<p:button target="_blank" outcome="/hr/customer/hrc03.xhtml"
+														icon="ui-icon-zoomin" title="View" id="viewButton"
+														style="float:right;margin-right:5px;">
+														<f:param name="customerId" value="#{fcus01Bean.p_searchTable.customer_id}" />
+													</p:button>
+									</f:facet>
+									
+									
+								</p:toolbar>
+								<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" >
+							        		 <p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column>
+							        		<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{fcus01Bean.p_searchTable.bukrs}">
+							        			<p:ajax listener="#{fcus01Bean.updateBranch}"/>
+							        			<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu></p:column>
+											<p:column><h:outputLabel value = "#{msg.branch}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectCheckboxMenu id="p_branch_id" value="#{fcus01Bean.p_searchTable.selectedBranches}" label="#{msg.select}"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												            <f:selectItems value="#{fcus01Bean.p_searchTable.l_branch}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+												        </p:selectCheckboxMenu>
+														
+														
+														
+												</p:column>
+											<p:column ><h:outputLabel  value="#{msg['bkpf.bldat.long']}"/>: <h:outputLabel  value="#{msg.from}"/></p:column>
+        										<p:column ><p:calendar id="budat_from"
+															styleClass="dateField" 
+															value="#{fcus01Bean.p_searchTable.bldat_from}"
+															navigator="true" pattern="dd.MM.yyyy" mask="true"
+															converterMessage="Date is invalid." /></p:column>
+        										<p:column ><h:outputText value="#{msg.to}" /></p:column>
+        										<p:column ><p:calendar id="budat_to"
+															styleClass="dateField" 
+															value="#{fcus01Bean.p_searchTable.bldat_to}"
+															navigator="true" pattern="dd.MM.yyyy" mask="true"
+															converterMessage="Date is invalid." /></p:column>
+												<p:column style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{fcus01Bean.to_search}" />
+												</p:column>
+											</p:row>
+											
+    									</p:panelGrid>
+								<p:tabView id = "tabView"  cache="false" activeIndex="#{fcus01Bean.tabindex}"  >
+									
+									<p:ajax event="tabChange"  update="bsegScrollPanelSalary bsegScrollPanelClient bsegScrollPanelPodotchet"/>
+							        <p:tab title="#{msg.customer}" id="t1tab">
+							        	
+							        	<div class="wrapRTClass">
+											<p:scrollPanel style="width:100%;height:100%" easing="easeOutElastic" id="bsegScrollPanelClient">
+												<p:dataTable value="#{fcus01Bean.l_rt_client}" var="o" paginator="true" rows="30" widgetVar="1"  id="bsegTableClient"
+												emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+												headerClass="employeeTableHeader"
+												rowClasses="employeeTableOddRow,employeeTableEvenRow">
+												<f:facet name="header">
+													<p:toolbar styleclass="mp_toolbar">
+														<f:facet name="left">
+															<p:commandLink ajax="false" action="#{fcus01Bean.downloadExcelResult(1)}" style="margin-right:10px">
+																<p:graphicImage name="xlsx_export_icon.png" library="img" width="25" />
+															</p:commandLink>
+															<!--  
+															<p:button target="_blank" outcome="/dms/contract/dmsc01.xhtml" value = "#{msg['dmsc.newContract']}" />
+															<p:button target="_blank" outcome="/service/maintenance/service01.xhtml" value = "#{msg['new_service']}" />	
+															<p:button target="_blank" outcome="/finance/cashbankoperations/faci01.xhtml" value = "#{msg['accept_payment']}" />
+															<p:button target="_blank" outcome="/accounting/assess/fkage.xhtml" value = "#{msg['purchase_goods']}" />
+															<p:button target="_blank" outcome="/accounting/assess/fkaae.xhtml" value = "#{msg['service_invoice']}" />	
+															<p:button target="_blank" outcome="/finance/cashbankoperations/faco01.xhtml" value = "#{msg['pay']}" />		-->
+														</f:facet>
+													</p:toolbar>
+											    </f:facet>
+												<p:columnGroup type="header">
+										            <p:row>
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.belnr.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.blart.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.bldat.long']}" sortBy="#{o.bldatYYYYMMDD}" />
+										                <p:column  rowspan="2" headerText="#{msg['bseg.hkont.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.waers.long']}" />
+										                
+										                
+										                <p:column  colspan="2" headerText="#{msg['bseg.wrbtr.long']}" />
+										                <p:column  colspan="2" headerText="#{msg['amount']} USD" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.bktxt.long']}" />
+										            </p:row>
+										            <p:row>
+										                <p:column  headerText="#{msg.debit}" />
+										                <p:column  headerText="#{msg.credit}" />
+										                <p:column  headerText="#{msg.debit}" />
+										                <p:column  headerText="#{msg.credit}" />
+										            </p:row>
+										        </p:columnGroup>
+												<p:column  ><h:outputText value="#{o.branchName}" /></p:column>
+											
+												<p:column  >
+													<h:outputText value="#{o.belnr}" />
+														<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{o.belnr}&#38;gjahr=#{o.gjahr}&#38;bukrs=#{o.bukrs}"
+														icon="ui-icon-zoomin" 
+														title="View" id="viewButton74" rendered="#{o.branchName.equals('Итого') ? 'false' : 'true'}"
+														style="float:right;width: 16px; height: 16px">
+													</p:button>	
+												</p:column>
+												<p:column ><h:outputText value="#{o.blart}" /></p:column>	
+												<p:column ><h:outputText value="#{o.bldat}" /></p:column>
+												<p:column ><h:outputText value="#{o.hkont}" /></p:column>
+												<p:column ><h:outputText value="#{o.waers}" /></p:column>
+											
+												<p:column style="background-color:#afffaa">
+													<h:outputText value="#{o.wrbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">
+											 			<p:column >
+											 				<h:outputText value="#{fcus01Bean.p_searchTable.total_client_wrbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											 			</p:column>		
+											   		 </f:facet>
+												</p:column>
+											
+												<p:column  style="background-color:#ffa0a0">
+													<h:outputText value="#{o.wrbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">
+											 			<p:column>
+											 				<h:outputText value="#{fcus01Bean.p_searchTable.total_client_wrbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											 			</p:column>
+											   		 </f:facet>
+												</p:column>
+											
+												<p:column  style="background-color:#afffaa">
+													<h:outputText value="#{o.dmbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">
+										                <p:column >
+										                	<h:outputText value="#{fcus01Bean.p_searchTable.total_client_dmbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>	
+										                </p:column>	
+											   		 </f:facet>
+												</p:column>
+												
+												<p:column  style="background-color:#ffa0a0">
+													<h:outputText value="#{o.dmbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">	
+											 			<p:column>
+											 				<h:outputText value="#{fcus01Bean.p_searchTable.total_client_dmbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											 			</p:column>
+											   		 </f:facet>
+												</p:column>
+												
+												<p:column><h:outputText value="#{o.bktxt}" /></p:column>
+												</p:dataTable>		
+											</p:scrollPanel>	
+										</div>
+							            
+							        </p:tab>							        
+							        <p:tab title="#{msg.podotchet}" rendered="#{fcus01Bean.p_searchTable.our_staff}">
+										<div class="wrapRTClass">
+											<p:scrollPanel style="width:100%;height:100%" easing="easeOutElastic" id="bsegScrollPanelPodotchet">
+												<p:dataTable value="#{fcus01Bean.l_rt_podotchet}" var="o" paginator="true" rows="30" widgetVar="3"  id="bsegTablePodotchet"
+												emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+												headerClass="employeeTableHeader"
+												rowClasses="employeeTableOddRow,employeeTableEvenRow">
+												<f:facet name="header">
+													<p:toolbar styleclass="mp_toolbar">
+														<f:facet name="left">
+															<p:commandLink ajax="false" action="#{fcus01Bean.downloadExcelResult(2)}" style="margin-right:10px">
+																<p:graphicImage name="xlsx_export_icon.png" library="img" width="25" />
+															</p:commandLink>
+															<p:button target="_blank" outcome="/finance/cashbankoperations/faia.xhtml" value = "#{msg.work_advance_payment}" />
+														</f:facet>
+													</p:toolbar>
+											    </f:facet>
+												
+												<p:columnGroup type="header">
+										            <p:row>
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.belnr.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.blart.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.bldat.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bseg.hkont.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.waers.long']}" />
+										                
+										                <p:column  colspan="2" headerText="#{msg['bseg.wrbtr.long']}" />
+										                <p:column  colspan="2" headerText="#{msg['amount']} USD" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.bktxt.long']}" />
+										            </p:row>
+										            <p:row>
+										                <p:column  headerText="#{msg.debit}" />
+										                <p:column  headerText="#{msg.credit}" />
+										                <p:column  headerText="#{msg.debit}" />
+										                <p:column  headerText="#{msg.credit}" />
+										            </p:row>
+										        </p:columnGroup>
+												<p:column  ><h:outputText value="#{o.branchName}" /></p:column>
+											
+												<p:column  >
+													<h:outputText value="#{o.belnr}" />
+														<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{o.belnr}&#38;gjahr=#{o.gjahr}&#38;bukrs=#{o.bukrs}"
+														icon="ui-icon-zoomin" 
+														title="View" id="viewButton84" rendered="#{o.branchName.equals('Итого') ? 'false' : 'true'}"
+														style="float:right;width: 16px; height: 16px">
+													</p:button>	
+												</p:column>
+												<p:column ><h:outputText value="#{o.blart}" /></p:column>	
+												<p:column ><h:outputText value="#{o.bldat}" /></p:column>
+												<p:column ><h:outputText value="#{o.hkont}" /></p:column>
+												<p:column ><h:outputText value="#{o.waers}" /></p:column>
+											
+												<p:column style="background-color:#afffaa">
+													<h:outputText value="#{o.wrbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">
+											 			<p:column >
+											 				<h:outputText value="#{fcus01Bean.p_searchTable.total_podotchet_wrbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											 			</p:column>		
+											   		 </f:facet>
+												</p:column>
+											
+												<p:column  style="background-color:#ffa0a0">
+													<h:outputText value="#{o.wrbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">
+											 			<p:column>
+											 				<h:outputText value="#{fcus01Bean.p_searchTable.total_podotchet_wrbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											 			</p:column>
+											   		 </f:facet>
+												</p:column>
+											
+												<p:column  style="background-color:#afffaa">
+													<h:outputText value="#{o.dmbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">
+										                <p:column >
+										                	<h:outputText value="#{fcus01Bean.p_searchTable.total_podotchet_dmbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>	
+										                </p:column>	
+											   		 </f:facet>
+												</p:column>
+												
+												<p:column  style="background-color:#ffa0a0">
+													<h:outputText value="#{o.dmbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">	
+											 			<p:column>
+											 				<h:outputText value="#{fcus01Bean.p_searchTable.total_podotchet_dmbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											 			</p:column>
+											   		 </f:facet>
+												</p:column>
+												
+												<p:column><h:outputText value="#{o.bktxt}" /></p:column>
+												
+												</p:dataTable>		
+											</p:scrollPanel>	
+										</div>
+							        </p:tab>
+							        <p:tab title="#{msg.oklad}" rendered="#{fcus01Bean.p_searchTable.our_staff}">
+										<div class="wrapRTClass">
+											<p:scrollPanel style="width:100%;height:100%" easing="easeOutElastic" id="bsegScrollPanelSalary">
+												<p:dataTable value="#{fcus01Bean.l_rt_salary}" var="o" paginator="true" rows="30" widgetVar="4"  id="bsegTableSalary"
+												emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+												headerClass="employeeTableHeader"
+												rowClasses="employeeTableOddRow,employeeTableEvenRow">
+												<f:facet name="header">
+													<p:toolbar styleclass="mp_toolbar">
+														<f:facet name="left">
+															<p:commandLink ajax="false" action="#{fcus01Bean.downloadExcelResult(3)}" style="margin-right:10px">
+																<p:graphicImage name="xlsx_export_icon.png" library="img" width="25" />
+															</p:commandLink>
+															<p:button target="_blank" outcome="/finance/cashbankoperations/hrpp.xhtml" value = "#{msg.wage_payment}" />
+														</f:facet>
+													</p:toolbar>
+											    </f:facet>
+												<p:columnGroup type="header">
+										            <p:row>
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.belnr.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.blart.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.bldat.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bseg.hkont.long']}" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.waers.long']}" />
+										                
+										                <p:column  colspan="2" headerText="#{msg['bseg.wrbtr.long']}" />
+										                <p:column  colspan="2" headerText="#{msg['amount']} USD" />
+										                <p:column  rowspan="2" headerText="#{msg['bkpf.bktxt.long']}" />
+										            </p:row>
+										            <p:row>
+										                <p:column  headerText="#{msg.debit}" />
+										                <p:column  headerText="#{msg.credit}" />
+										                <p:column  headerText="#{msg.debit}" />
+										                <p:column  headerText="#{msg.credit}" />
+										            </p:row>
+										        </p:columnGroup>
+												<p:column  ><h:outputText value="#{o.branchName}" /></p:column>
+											
+												<p:column  >
+													<h:outputText value="#{o.belnr}" />
+														<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{o.belnr}&#38;gjahr=#{o.gjahr}&#38;bukrs=#{o.bukrs}"
+														icon="ui-icon-zoomin" 
+														title="View" id="viewButton94" 
+														style="float:right;width: 16px; height: 16px" rendered="#{o.branchName.equals('Итого') ? 'false' : 'true'}">
+													</p:button>	
+												</p:column>
+												<p:column ><h:outputText value="#{o.blart}" /></p:column>	
+												<p:column ><h:outputText value="#{o.bldat}" /></p:column>
+												<p:column ><h:outputText value="#{o.hkont}" /></p:column>
+												<p:column ><h:outputText value="#{o.waers}" /></p:column>
+											
+												<p:column style="background-color:#afffaa">
+													<h:outputText value="#{o.wrbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">
+											 			<p:column >
+											 				<h:outputText value="#{fcus01Bean.p_searchTable.total_salary_wrbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											 			</p:column>		
+											   		 </f:facet>
+												</p:column>
+											
+												<p:column  style="background-color:#ffa0a0">
+													<h:outputText value="#{o.wrbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">
+											 			<p:column>
+											 				<h:outputText value="#{fcus01Bean.p_searchTable.total_salary_wrbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											 			</p:column>
+											   		 </f:facet>
+												</p:column>
+											
+												<p:column  style="background-color:#afffaa">
+													<h:outputText value="#{o.dmbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">
+										                <p:column >
+										                	<h:outputText value="#{fcus01Bean.p_searchTable.total_salary_dmbtr_s}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>	
+										                </p:column>	
+											   		 </f:facet>
+												</p:column>
+												
+												<p:column  style="background-color:#ffa0a0">
+													<h:outputText value="#{o.dmbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+													<f:facet name="footer">	
+											 			<p:column>
+											 				<h:outputText value="#{fcus01Bean.p_searchTable.total_salary_dmbtr_h}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											 			</p:column>
+											   		 </f:facet>
+												</p:column>
+												
+												<p:column><h:outputText value="#{o.bktxt}" /></p:column>
+												</p:dataTable>		
+											</p:scrollPanel>	
+										</div>
+							        </p:tab>
+							    </p:tabView>
+
+
+
+
+
+
+
+
+ 
+								
+
+
+
+								
+
+
+
+							
+							</h:form>
+
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

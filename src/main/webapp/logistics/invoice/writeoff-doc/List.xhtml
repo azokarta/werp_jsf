@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+<f:metadata>
+	<f:event type="preRenderView"
+		listener="#{logInvoiceListBean.initBean('writeoff_doc')}" />
+</f:metadata>
+<h:head>
+	<title>#{logInvoiceListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.activeMenu {
+	
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{logInvoiceListBean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{logInvoiceListBean.pageHeader}" />
+			</ui:include>
+
+
+			<p:layout fullPage="false">
+
+				<p:layoutUnit position="north" size="50" resizable="true"
+					closable="true" collapsible="true">
+					<p:tabMenu activeIndex="#{param.i}">
+						<p:menuitem value="#{msg['logistics.new_docs']}" outcome="List.xhtml"
+							icon="ui-icon-document">
+							<f:param name="i" value="0" />
+						</p:menuitem>
+						<p:menuitem value="#{msg['logistics.closed_docs']}" outcome="List.xhtml"
+							icon="ui-icon-document">
+							<f:param name="i" value="1" />
+						</p:menuitem>
+
+					</p:tabMenu>
+				</p:layoutUnit>
+
+				<p:layoutUnit position="west" size="250" header="#{msg['search_panel']}"
+					resizable="false" closable="false" collapsible="false">
+					<h:form id="searchForm">
+						<p:panelGrid columns="1">
+							<p:selectOneMenu
+								disabled="#{!userinfo.sys_admin and !userinfo.main}"
+								value="#{logInvoiceListBean.invoiceModel.searchModel.bukrs}">
+								<p:ajax update="searchBranch"></p:ajax>
+								<f:selectItem itemValue="" itemLabel="#{msg['company']}"></f:selectItem>
+								<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+									itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+							</p:selectOneMenu>
+							<p:selectOneMenu id="searchBranch"
+								value="#{logInvoiceListBean.invoiceModel.searchModel.branch_id}">
+								<f:selectItem itemValue="" itemLabel="#{msg['branch']}"></f:selectItem>
+								<f:selectItems
+									value="#{lgHelperBean.getUserBranches(logInvoiceListBean.invoiceModel.searchModel.bukrs)}"
+									var="br" itemLabel="#{br.text45}" itemValue="#{br.branch_id}"></f:selectItems>
+							</p:selectOneMenu>
+							
+							<p:outputLabel>#{msg['logistics.write_off_type']}</p:outputLabel>
+							<p:selectOneMenu value="#{logInvoiceListBean.invoiceModel.searchModel.serviceType}">
+								<f:selectItem itemLabel="#{msg['logistics.write_off_type_0']}" itemValue="0"></f:selectItem>
+								<f:selectItem itemLabel="#{msg['logistics.write_off_type_1']}" itemValue="1"></f:selectItem>
+								<f:selectItem itemLabel="#{msg['logistics.write_off_type_2']}" itemValue="2"></f:selectItem>
+							</p:selectOneMenu>
+
+							<p:outputLabel>#{msg['logistics.service_number']}</p:outputLabel>
+							<p:inputText
+								value="#{logInvoiceListBean.invoiceModel.searchModel.service_number}"></p:inputText>
+
+							<p:outputLabel>#{msg['logistics.contract_number']}</p:outputLabel>
+							<p:inputText
+								value="#{logInvoiceListBean.invoiceModel.searchModel.contract_number}"></p:inputText>
+								
+							<p:outputLabel>#{msg['logistics.serial_number']}</p:outputLabel>
+							<p:inputText
+								value="#{logInvoiceListBean.invoiceModel.barcode}"></p:inputText>
+
+
+
+							<p:commandButton value="#{msg['search']}"
+								update=":dataForm:invoiceDataTable"></p:commandButton>
+						</p:panelGrid>
+					</h:form>
+				</p:layoutUnit>
+
+				<p:layoutUnit position="center">
+					<h:form id="dataForm">
+						<p:dataTable id="invoiceDataTable"
+							value="#{logInvoiceListBean.invoiceModel}" var="item" rows="50"
+							lazy="true" paginatorPosition="bottom" paginator="true">
+							<f:facet name="header" id="tableHeader">
+								<div style="float: left; margin-left: 10px;">#{msg['total']}:
+									#{logInvoiceListBean.invoiceModel.rowCount}</div>
+								<br style="clear: both;" />
+							</f:facet>
+
+							<p:column headerText="№" sortBy="#{item.reg_number}"
+								style="width:50px;text-align:center;">
+							#{item.getFormattedRegNumber()}
+						</p:column>
+
+							<p:column headerText="#{msg['company']}"
+								style="width:150px;text-align:center;">
+								<p:outputLabel value="#{bukrsF4Bean.getNameByBukrs(item.bukrs)}"></p:outputLabel>
+							</p:column>
+
+							<p:column headerText="#{msg['branch']}"
+								style="width:150px;text-align:center;">
+								<p:outputLabel
+									value="#{branchF4Bean.getBranchNameByID(item.branch_id)}"></p:outputLabel>
+							</p:column>
+
+							<p:column headerText="#{msg['logistics.contract_number']}" style="text-align:center;"
+								sortBy="#{item.contract_number}">
+								<p:outputLabel rendered="#{item.contract_number > 0}"
+									value="Договор №#{item.contract_number}"></p:outputLabel>
+							</p:column>
+
+							<p:column headerText="#{msg['logistics.service_number']}" style="text-align:center;"
+								sortBy="#{item.service_number}">
+								<p:outputLabel rendered="#{item.service_number > 0}"
+									value="Сервис №#{item.service_number}"></p:outputLabel>
+							</p:column>
+
+							<p:column headerText="#{msg['logistics.created_at']}" style="text-align:center;">
+								<h:outputText value="#{item.created_at}">
+									<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+							<p:column>
+								<p:button target="_blank" outcome="View.xhtml?id=#{item.id}"
+									icon="ui-icon-search" title="#{msg['logistics.view']}">
+								</p:button>
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</p:layoutUnit>
+
+			</p:layout>
+
+		</div>
+	</div>
+</h:body>
+</html>

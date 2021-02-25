@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<link rel="shortcut icon" type="image" href="resources/img/aura.png" />
+</h:head>
+
+<h:body>
+	<ui:include src="/template/sessionTimeOut.xhtml" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet library="css" name="reports/finance/faglb03.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.faglb03']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,faglb03DBBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+							<p:growl id="messages" showDetail="true" />
+ 
+							<p:toolbar styleclass="mp_toolbar">
+								<f:facet name="right">
+									<p:commandButton value="#{msg.print_out}" type="button"
+										icon="ui-icon-print" ajax="false">
+										<p:printer target="table1" />
+									</p:commandButton>
+
+									<p:commandButton value="Excel" type="push"
+										icon="ui-icon-arrowthickstop-1-s" ajax="false">
+										<p:dataExporter type="xls" target="table1"
+											postProcessor="#{faglb03DBBean.postProcessXLS}"
+											fileName="report" />
+									</p:commandButton>
+								</f:facet>
+							</p:toolbar>
+							<table>
+								<tr>
+									<td><h:outputLabel  value="#{msg.company}"/></td>
+									<td>
+											<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{faglb03DBBean.p_bukrs}" disabled="#{userinfo.main=='true'?'false':'true'}">
+											<p:ajax listener ="#{faglb03DBBean.changeBukrs}" />
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu>
+											
+											
+											</td>
+									<td><h:outputLabel  value="#{msg['bseg.hkont.long']}"/></td>
+									<td><h:inputText id="hkont" styleClass="hkont"
+											autocomplete="off" value="#{faglb03DBBean.p_bseg.hkont}" disabled="true"/>
+										<p:commandButton icon="ui-icon-newwin"
+											onclick="PF('hkontType').show();" type="push"
+											styleClass="hkont_button" /></td>
+
+
+								</tr>
+								<tr>
+									<td><h:outputLabel  value="#{msg['bkpf.gjahr.long']}"/></td>
+									<td><h:inputText value="#{faglb03DBBean.p_gjahr}"
+											maxlength="4" style="width:35px;" /></td>
+									<td></td>
+									<td><p:commandButton type="push" value="#{msg.search}"
+											icon="ui-icon ui-icon-search"
+											actionListener="#{faglb03DBBean.update}" update="messages">
+										</p:commandButton></td>
+								</tr>
+							</table>
+							<div class="tableClass1">
+								<p:dataTable value="#{faglb03DBBean.faglb03_list}" var="o"
+									paginator="false" rows="14" widgetVar="50" id="table1" emptyMessage="#{msg.empty_rows}"
+									styleClass="faglb03-table" headerClass="faglb03-table-header"
+									rowClasses="faglb03-table-odd-row,faglb03-table-even-row">
+
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['bkpf.monat.long']}" />
+										</f:facet>
+										<h:outputText value="#{o.monatName}" />
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['bkpf.gjahr.long']}" />
+										</f:facet>
+										<h:outputText value="#{o.gjahr}" />
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg.company}" />
+										</f:facet>
+										<h:outputText value="#{o.bukrs}" />
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputLabel  value="#{msg['bseg.hkont.long']}"/>
+										</f:facet>
+										<h:outputText value="#{o.glaccount}" />
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg.debit}" />
+										</f:facet>
+										<h:outputText value="#{o.debet}"> <f:convertNumber pattern="#,###,##0.00" /> </h:outputText>
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg.credit}" /> 
+										</f:facet>
+										<h:outputText value="#{o.credit}"> <f:convertNumber pattern="#,###,##0.00" /> </h:outputText>
+									</p:column>
+									<p:column style="text-align:center;">
+										<f:facet name="header">
+											<h:outputText value="#{msg['bkpf.waers.long']}" />
+										</f:facet>
+										<h:outputText value="#{o.currency}" />
+									</p:column>
+
+								</p:dataTable>
+							</div>
+
+
+							<p:dialog header="#{msg['bseg.hkont.long']}" widgetVar="hkontType" dynamic="true"
+								width="500" height="500">
+								<table>
+									<tr>
+										<td>
+											<p:inputText id = "hkont_filter" value="#{faglb03DBBean.hkont_filter}">
+												<p:ajax event="keyup" listener="#{faglb03DBBean.filter_hkont}" />
+											</p:inputText>
+										</td>
+										<td>
+											<p:commandButton
+									actionListener="#{faglb03DBBean.assignSelectedHkont}"
+									onclick="PF('hkontType').hide();" value="#{msg.select}" />
+										</td>
+									</tr>
+								</table>
+								
+								<p:dataTable scrollable="true" scrollHeight="400"
+									id="singleHkont" var="hkont" rowKey="#{hkont.hkont}"
+									value="#{faglb03DBBean.hkont_list}" selectionMode="single"
+									selection="#{faglb03DBBean.selectedHkont}">
+									<p:column headerText="#{msg['bseg.hkont.long']}" >
+										<h:outputText value="#{hkont.hkont}" />
+									</p:column>
+									<p:column headerText="#{msg.name}" >
+										<h:outputText value="#{hkont.text45}" />
+									</p:column>
+									<p:column headerText="#{msg['bkpf.waers.long']}" >
+										<h:outputText value="#{hkont.waers}" />
+									</p:column>
+								</p:dataTable>
+							</p:dialog>
+
+						</h:form>
+					</div> 
+
+		</div>
+	</div>
+</h:body>
+</html>

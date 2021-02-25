@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<!-- EXPENCE -->
+<ui:composition>
+	<h:form id="addressListForm">
+		<f:event listener="#{hrCustomerAddresses.initBean(selectedCustomer)}"
+			type="preRenderView"></f:event>
+		<p:dataTable emptyMessage="#{msg.no_records}" id="addressList"
+			var="item" rowKey="#{item.addr_id}"
+			value="#{hrCustomerAddresses.items}">
+
+			<f:facet name="header">
+				<p:outputLabel value="#{msg['dms.demo.customer_address']}: #{selectedCustomer.name}"
+					rendered="#{selectedCustomer.fiz_yur==1}" style="float:left;"></p:outputLabel>
+				<p:outputLabel
+					value="#{msg['dms.demo.customer_address']}: #{selectedCustomer.lastname} #{selectedCustomer.firstname}"
+					rendered="#{selectedCustomer.fiz_yur==2}" style="float:left;"></p:outputLabel>
+
+				<p:commandButton id="addressCreateButton" icon="ui-icon-plus"
+					title="Create"
+					actionListener="#{hrCustomerAddresses.prepareCreate}"
+					update=":AddressCreateForm"
+					oncomplete="PF('AddressCreateDialog').show()"
+					style="float:right;margin-right:5px;" />
+
+				<div style="clear: both;"></div>
+			</f:facet>
+
+			<p:column style="width:50px;">
+				<f:facet name="header">
+					<h:outputText value="ID" />
+				</f:facet>
+				<h:outputText value="#{item.addr_id}" />
+			</p:column>
+
+			<p:column style="width:100px;">
+				<f:facet name="header">
+					<h:outputText value="#{msg['type']}" />
+				</f:facet>
+				<h:outputText
+					value="#{addrTypeF4Bean.getName(item.addrType,systemLocale.currentLocale)}"></h:outputText>
+			</p:column>
+
+			<p:column>
+				<f:facet name="header">
+					<h:outputText value="#{msg['hr.customer.address']}" />
+				</f:facet>
+				<h:outputText value="#{item.address}"></h:outputText>
+			</p:column>
+
+			<p:column style="width:100px;">
+				<f:facet name="header">
+					<h:outputText value="#{msg.actions}" />
+				</f:facet>
+				<p:commandButton value="#{msg['edit']}"
+					actionListener="#{hrCustomerAddresses.setSelected(item)}"
+					oncomplete="PF('AddressCreateDialog').show()" update=":AddressCreateForm"></p:commandButton>
+			</p:column>
+
+		</p:dataTable>
+	</h:form>
+
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+		<p:commandButton value="Yes" type="button"
+			styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		<p:commandButton value="No" type="button"
+			styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+	</p:confirmDialog>
+
+	<ui:include src="CreateOrUpdate.xhtml">
+		<ui:param name="updateAfterSave" value=":addressListForm:addressList"></ui:param>
+	</ui:include>
+</ui:composition>
+</html>

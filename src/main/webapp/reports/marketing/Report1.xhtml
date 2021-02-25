@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:c="http://java.sun.com/jstl/core">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{repMarketing1.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.logItemsTable .numberColumn {
+	width: 80px;
+	text-align: center;
+}
+
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+
+.demo-report-table .ui-widget-content:hover {
+	/*
+	background: #ffdddd;
+	color: white;
+	*/
+	
+}
+
+.demo-report-table {
+	font-size: 14px;
+	margin-left: 10px;
+}
+
+.demo-report-table .ref-column {
+	background: #DCE6F1;
+}
+
+.demo-report-table .sale-column {
+	margin-bottom: 15px;
+	background: #EBF1DE;
+}
+
+.demo-report-table .sale-green {
+	font-weight: bold;
+	color:green;
+}
+
+.demo-report-table .rep-column {
+	padding: 5px;
+	text-align:center;
+}
+
+.demo-report-table .sum-column {
+	padding: 5px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.demo-report-table .bottom-bordered-td {
+	border-bottom: 2px solid #DCE6F1;
+}
+
+.demo-report-table td.ui-panelgrid-cell{
+	border:1px solid #ddd;
+}
+
+.expand-button .ui-button-text {
+	padding: 1px 6px;
+}
+
+.demo-report-table td.divider-bordered{
+	border-bottom:7px solid #3a87ad;
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{repMarketing1.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{repMarketing1.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid" style="border: 0px solid red; margin: 10px;">
+				<div class="ui-grid-row"
+					style="border: 0px green solid; margin: 10px;">
+					<h:form id="searchForm">
+						<p:panelGrid style="width:99%;margin-top:1px;" columns="8"
+							cellpadding="0">
+							<h:panelGrid columns="2" cellpadding="0">
+								<h:outputLabel>Компания</h:outputLabel>
+								<werp:companySelect elementId="companyId" mode="update"
+									value="#{repMarketing1.bukrs}"
+									onChangeUpdate=":searchForm:branchSelect:branchId">
+								</werp:companySelect>
+							</h:panelGrid>
+
+							<h:panelGrid columns="2" cellpadding="0">
+								<p:outputLabel value="Филиал"></p:outputLabel>
+								<werp:branchSelect id="branchSelect" elementId="branchId"
+									companyValue="#{repMarketing1.bukrs}"
+									value="#{repMarketing1.branchId}" mode="update">
+								</werp:branchSelect>
+							</h:panelGrid>
+
+							<h:panelGrid columns="2" cellpadding="0">
+								<p:outputLabel value="Год"></p:outputLabel>
+								<p:selectOneMenu value="#{repMarketing1.year}">
+									<f:selectItem itemValue="2016" itemLabel="2016"></f:selectItem>
+									<f:selectItem itemValue="2017" itemLabel="2017"></f:selectItem>
+									<f:selectItem itemValue="2018" itemLabel="2018"></f:selectItem>
+									<f:selectItem itemValue="2019" itemLabel="2019"></f:selectItem>
+									<f:selectItem itemValue="2020" itemLabel="2020"></f:selectItem>
+								</p:selectOneMenu>
+							</h:panelGrid>
+
+							<h:panelGrid columns="2" cellpadding="0">
+								<p:outputLabel value="Месяц"></p:outputLabel>
+								<p:selectOneMenu value="#{repMarketing1.month}">
+									<f:selectItem itemValue="0" itemLabel="Январь"></f:selectItem>
+									<f:selectItem itemValue="1" itemLabel="Февраль"></f:selectItem>
+									<f:selectItem itemValue="2" itemLabel="Март"></f:selectItem>
+									<f:selectItem itemValue="3" itemLabel="Апрель"></f:selectItem>
+									<f:selectItem itemValue="4" itemLabel="Май"></f:selectItem>
+									<f:selectItem itemValue="5" itemLabel="Июнь"></f:selectItem>
+									<f:selectItem itemValue="6" itemLabel="Июль"></f:selectItem>
+									<f:selectItem itemValue="7" itemLabel="Август"></f:selectItem>
+									<f:selectItem itemValue="8" itemLabel="Сентябрь"></f:selectItem>
+									<f:selectItem itemValue="9" itemLabel="Октябрь"></f:selectItem>
+									<f:selectItem itemValue="10" itemLabel="Ноябрь"></f:selectItem>
+									<f:selectItem itemValue="11" itemLabel="Декабрь"></f:selectItem>
+								</p:selectOneMenu>
+							</h:panelGrid>
+
+							<p:outputLabel></p:outputLabel>
+							<p:commandButton value="Сформировать"
+								actionListener="#{repMarketing1.generateData(1)}"
+								update=":dataForm, :messages"></p:commandButton>
+
+						</p:panelGrid>
+					</h:form>
+				</div>
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<h:form id="dataForm">
+							<p:breadCrumb rendered="#{repMarketing1.renderType == 2}">
+								<p:menuitem></p:menuitem>
+								<p:menuitem value="Менеджеры (#{branchF4Bean.getBranchNameByID(repMarketing1.branchId)})"
+									actionListener="#{repMarketing1.generateData(1)}"
+									update=":dataForm, :messages"></p:menuitem>
+								<p:menuitem rendered="#{repMarketing1.renderType == 2}"
+								value="#{repMarketing1.firstColumnName}"></p:menuitem>
+							</p:breadCrumb>
+							<p:panelGrid style="margin-top:20px" cellpadding="5"
+								cellspacing="4" styleClass="demo-report-table">
+								<f:facet name="header">
+									<p:row>
+										<p:column>
+										</p:column>
+										<p:column>
+											<h:outputText value="#{repMarketing1.firstColumnName}"></h:outputText>
+										</p:column>
+										<p:column>
+											<h:outputText value="Тип"></h:outputText>
+										</p:column>
+										<c:forEach items="#{repMarketing1.getDayColumns()}" var="day">
+											<p:column>
+												<h:outputText value="#{day}"></h:outputText>
+											</p:column>
+										</c:forEach>
+										<p:column>
+											<h:outputText value="Итого"></h:outputText>
+										</p:column>
+										
+										<p:column>
+											<h:outputText value="*/Дилер"></h:outputText>
+										</p:column>
+
+										<p:column>
+											<h:outputText value="Демо/Прод."></h:outputText>
+										</p:column>
+
+										<p:column>
+											<h:outputText value="Демо/Рек."></h:outputText>
+										</p:column>
+										
+										
+										
+										<p:column>
+											<h:outputText value="Кол. Дил."></h:outputText>
+										</p:column>
+
+									</p:row>
+								</f:facet>
+								<ui:repeat var="item" value="#{repMarketing1.items}">
+									<p:row>
+										<p:column>
+											<p:commandButton rendered="#{repMarketing1.renderType == 1 and item.managerPyramidId > 0}" type="push" styleClass="expand-button"
+												update=":dataForm" value="+"
+												actionListener="#{repMarketing1.expandGroup(item)}" />
+										</p:column>
+										<p:column rowspan="3" styleClass="divider-bordered">
+											<h:outputText value="#{item.staffName}"></h:outputText>
+										</p:column>
+										<p:column styleClass="rep-column">
+											<h:outputText style="font-weight:bold;" value="Демо"></h:outputText>
+										</p:column>
+										<ui:repeat var="day" value="#{repMarketing1.getDayColumns()}">
+											<p:column styleClass="rep-column">
+												<h:outputText value="#{item.getData(1,day)}"></h:outputText>
+											</p:column>
+										</ui:repeat>
+										<p:column styleClass="sum-column">
+											<h:outputText value="#{item.demoSum}"></h:outputText>
+										</p:column>
+										
+										<p:column styleClass="sum-column">
+											<p:outputLabel value="#{item.getDemoPerDealer()}">
+												<f:convertNumber pattern="#0.00" />
+											</p:outputLabel>
+										</p:column>
+
+										<p:column rowspan="3" styleClass="divider-bordered">
+											<p:outputLabel value="#{item.getSalePerDemo()}">
+												<f:convertNumber pattern="#0.00" />
+											</p:outputLabel>
+										</p:column>
+
+										<p:column rowspan="3" styleClass="divider-bordered">
+											<p:outputLabel value="#{item.getReferencePerDemo()}">
+												<f:convertNumber pattern="#0.00" />
+											</p:outputLabel>
+										</p:column>
+										<p:column rowspan="3" styleClass="divider-bordered">
+											<h:outputText value="#{item.staffCount}" />
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column></p:column>
+										<p:column styleClass="rep-column ref-column">
+											<h:outputText style="font-weight:bold;" value="Рек-я"></h:outputText>
+										</p:column>
+										<ui:repeat var="day" value="#{repMarketing1.getDayColumns()}">
+											<p:column styleClass="rep-column ref-column">
+												<h:outputText value="#{item.getData(2,day)}"></h:outputText>
+											</p:column>
+										</ui:repeat>
+										<p:column styleClass="sum-column ref-column">
+											<h:outputText value="#{item.refSum}"></h:outputText>
+										</p:column>
+										<p:column styleClass="sum-column ref-column">
+											<p:outputLabel value="#{item.getRefPerDealer()}">
+												<f:convertNumber pattern="#0.00" />
+											</p:outputLabel>
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column styleClass=""></p:column>
+										<p:column
+											styleClass="rep-column sale-column divider-bordered">
+											<h:outputText style="font-weight:bold;" value="Продажа"></h:outputText>
+										</p:column>
+										<ui:repeat var="day" value="#{repMarketing1.getDayColumns()}">
+											<p:column
+												styleClass="rep-column sale-column divider-bordered #{item.getData(3,day) > 0 ? ' sale-green ':''}">
+												<h:outputText value="#{item.getData(3,day)}"></h:outputText>
+											</p:column>
+										</ui:repeat>
+										<p:column
+											styleClass="sum-column sale-column divider-bordered">
+											<h:outputText value="#{item.saleSum}"></h:outputText>
+										</p:column>
+										<p:column styleClass="sum-column sale-column divider-bordered">
+											<p:outputLabel value="#{item.getSalePerDealer()}">
+												<f:convertNumber pattern="#0.00" />
+											</p:outputLabel>
+										</p:column>
+									</p:row>
+
+								</ui:repeat>
+							</p:panelGrid>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

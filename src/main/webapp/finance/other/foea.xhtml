@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh" content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml"/>
+	
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	
+	<h:outputStylesheet library="css" name="reports/finance/kreditor/rfklist.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.foea']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,foeaBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+							
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:tabView id = "tabView" cache="false" activeIndex="#{foeaBean.tabindex}" >
+									
+							        <p:tab title="#{msg.search_options}">
+							        	<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" id="searchPanelGridId">
+							        		 <p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column colspan="3">
+							        		<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{foeaBean.p_searchTable.bukrs}">
+							        			<p:ajax listener="#{foeaBean.updateBranch}"/>
+							        			<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu>
+											</p:column>
+							        		</p:row>
+										    <p:row>
+        										<p:column><h:outputLabel value = "#{msg.branch}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectCheckboxMenu id="p_branch_id" value="#{foeaBean.p_searchTable.selectedBranches}" label="#{msg['select']}"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												            <f:selectItems value="#{foeaBean.p_searchTable.l_branch}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+												        </p:selectCheckboxMenu>
+														
+														
+														
+												</p:column>
+											</p:row>
+											<p:row>
+        										<p:column><h:outputLabel value = "#{msg['bkpf.bldat.long']} #{msg['from']} "/></p:column>
+												<p:column>
+														
+														<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{foeaBean.p_searchTable.bldat_from}" />	
+														
+												</p:column>
+												<p:column><h:outputLabel value = " #{msg['to']} "/></p:column>
+												<p:column>
+														
+														<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{foeaBean.p_searchTable.bldat_to}" />	
+														
+												</p:column>			
+											</p:row>
+											<p:row>
+        										<p:column><h:outputLabel value = "#{msg.status}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectCheckboxMenu id="p_type_id" value="#{foeaBean.p_searchTable.l_type}" label="#{msg['select']}"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												            
+												            <f:selectItem itemValue="0" itemLabel="#{msg['created']}"/>
+												            <f:selectItem itemValue="1" itemLabel="#{msg['approved']}" />
+												            <f:selectItem itemValue="2" itemLabel="#{msg['rejected']}" />
+
+												        </p:selectCheckboxMenu>
+														
+												</p:column>
+											</p:row>
+											<p:row>
+        										<p:column><h:outputLabel value = "#{msg.type}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectCheckboxMenu id="oper_type" value="#{foeaBean.p_searchTable.oper_type}" label="#{msg['select']}"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												            
+												            <f:selectItem itemValue="0" itemLabel="#{msg['fkaaec']}"/>
+												            <f:selectItem itemValue="1" itemLabel="#{msg['faco01']}" />
+												            <f:selectItem itemValue="2" itemLabel="#{msg['fdcio']}" />
+												            <f:selectItem itemValue="3" itemLabel="#{msg['faci01']}" />
+												            <f:selectItem itemValue="4" itemLabel="#{msg['fksg']}" />
+
+												        </p:selectCheckboxMenu>
+														
+												</p:column>
+											</p:row>
+											<p:row>
+        										<p:column colspan="4" style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{foeaBean.to_search}"/></p:column>
+        									</p:row>
+    									</p:panelGrid>
+							        
+							            
+							        </p:tab>
+							        <p:tab title="#{msg.result}" >
+							        
+							            <div class="wrapRTClass">
+							            <table>
+										<tr>
+										            	<td >
+															<p:commandButton type="push" value = "#{msg['approve']}" actionListener="#{foeaBean.to_save}"> 
+										            			<p:confirm header="#{msg['dmsc.confirmation']}" message="#{msg['approve']}" icon="ui-icon-alert" />
+															</p:commandButton> 
+										            	</td>
+										            	<td >
+										            		<p:commandButton type="push" value = "#{msg['reject']}" actionListener="#{foeaBean.to_cancel}"> 
+										            			<p:confirm header="#{msg['dmsc.confirmation']}" message="#{msg['reject']}" icon="ui-icon-alert" />
+															</p:commandButton>
+										            	</td>
+										            </tr>
+										</table>	
+										
+										<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+									        <p:commandButton value="Да" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+									        <p:commandButton value="Нет" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+									    </p:confirmDialog>
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel">
+															
+										
+										
+										<p:dataTable value="#{foeaBean.l_outputTable}" var="o" widgetVar="505"  id="l_outputTable"
+											emptyMessage="#{msg.empty_rows}"  rowKey="#{o.prebkpf_id}" 
+											 selection="#{foeaBean.l_selected_outputTable}" 
+											 styleClass="employeeTable"
+											headerClass="employeeTableHeader"  rowClasses="employeeTableOddRow,employeeTableEvenRow" 
+											
+											rows="20" paginator="true"  disabledSelection="#{o.status!=0}" >
+											<p:columnGroup type="header">
+										            <p:row>
+										            	<p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+										            	<p:column headerText="ID" />
+										                <p:column headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column headerText="#{msg['bkpf.blart.long']}" />
+														<p:column headerText="#{msg['bkpf.bldat.long']}" />
+										                <p:column headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column headerText="#{msg['amount']}" />
+										                <p:column headerText="#{msg['expense_type']}" />
+										                <p:column headerText="#{msg['cashbank']}" />
+										                <p:column headerText="#{msg['bkpf.usnam.long']}" />						                
+										                <p:column headerText="#{msg['status']}" />
+														<p:column headerText="#{msg['created_at']}" />
+										                <p:column headerText="#{msg['bkpf.bktxt.long']}" />
+										                <p:column headerText="#{msg['customer']}" />
+										                <p:column headerText="#{msg['dmsc.info']}" />
+										                <p:column headerText="#{msg['bkpf.belnr.long']}" />
+										                <p:column headerText="#{msg['detail']}" />
+										                
+											<f:facet name="header">
+											</f:facet>
+										            </p:row>
+										        </p:columnGroup>
+											<p:column selectionMode="multiple" style="width:16px;text-align:center" />
+											<p:column><h:outputText value="#{o.prebkpf_id}" /></p:column>
+											<p:column><h:outputText value="#{o.branchName}" /></p:column>
+											<p:column><h:outputText value="#{o.oper_type_name}" /></p:column>
+											<p:column><h:outputText value="#{o.bldat}" /></p:column>
+											<p:column><h:outputText value="#{o.waers}" /></p:column>
+											<p:column>
+												<h:outputText value="#{o.dmbtr}" ><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											<p:column><h:outputText value="#{o.hkont_d}" /></p:column>
+											<p:column><h:outputText value="#{o.hkont_k}" /></p:column>
+											<p:column><h:outputText value="#{o.uname}" /></p:column>
+											<p:column><h:outputText value="#{o.status_name}" /></p:column>
+											<p:column><h:outputText value="#{o.created_date}" /></p:column>
+											<p:column><h:outputText value="#{o.bktxt}" /></p:column>
+											<p:column><h:outputText value="#{o.cname}" /></p:column>
+											<p:column><h:outputText value="#{o.awkey==null ? '' : msg['reward']}" /></p:column>
+											<p:column>
+												<h:outputText value="#{o.belnr}" />
+												<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{o.belnr}&#38;gjahr=#{o.gjahr}&#38;bukrs=#{foeaBean.p_searchTable.bukrs}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton4" 
+												style="float:right;margin-left:2px;margin-right:2px;">
+											</p:button>	
+											</p:column>
+											<p:column><p:commandButton icon="ui-icon-newwin"  type="push" onclick="PF('detailWidgetVar').show();" styleClass="f4button" actionListener="#{foeaBean.detailInfo(o.prebkpf_id)}" />
+											</p:column>
+										</p:dataTable>
+										
+										
+									</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							        
+							    </p:tabView>
+
+							
+
+									
+
+ 
+							
+								<p:dialog header="#{msg['detail']}" widgetVar="detailWidgetVar" dynamic="true"
+									width="1000" height="300;">
+
+									<p:dataTable scrollable="true" scrollHeight="300"
+										id="detailTable" var="o" 
+										value="#{foeaBean.l_detailTable}" >
+										<p:columnGroup type="header">
+										            <p:row>
+										            	<p:column headerText="#{msg['bseg.hkont.long']}" />
+										                <p:column headerText="#{msg['bseg.shkzg.long']}" />
+										                <p:column headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column headerText="#{msg['amount']} USD" />
+										                <p:column headerText="#{msg['bseg.wrbtr.long']}" />
+										                <p:column headerText="#{msg['bseg.matnr.long']}" />
+										                <p:column headerText="#{msg['bseg.menge.long']}" />
+										                <p:column headerText="#{msg['bseg.werks.long']}" />
+										            </p:row>
+										        </p:columnGroup>
+										    <p:column >
+												<h:inputText id="b_hkont" value="#{o.hkont}"  disabled="true"/>														
+											</p:column>
+										    <p:column >
+												<h:inputText id="b_shkzg" value="#{o.shkzg}" disabled="true"/>														
+											</p:column>
+										    <p:column >
+												<h:inputText id="b_waers" value="#{o.waers}" disabled="true"/>														
+											</p:column>
+											
+																				
+
+											<p:column  >
+												<h:inputText id="b_dmbtr" value="#{o.dmbtr}" size="15" maxlength="15"   disabled = "true">
+												<f:convertNumber pattern="#,###,##0.00" />
+												</h:inputText>
+											</p:column>
+											<p:column  >
+												<h:inputText id="b_wrbtr" value="#{o.wrbtr}" size="15" maxlength="15"  disabled = "true">
+												<f:convertNumber pattern="#,###,##0.00" />
+												</h:inputText>
+											</p:column>
+										    <p:column >
+												<h:inputText id="b_matnr" value="#{o.matnr}"  disabled="true"/>														
+											</p:column>
+										    <p:column >
+												<h:inputText id="b_menge" value="#{o.menge}" size="5" maxlength="15"   disabled = "true">
+												<f:convertNumber pattern="#,###,##0" />
+												</h:inputText>
+											</p:column>
+										    <p:column >
+												<h:inputText id="b_werks" value="#{o.werks}"  disabled="true"/>													
+											</p:column>
+									</p:dataTable>
+								</p:dialog>
+
+
+								
+								
+							</h:form>
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

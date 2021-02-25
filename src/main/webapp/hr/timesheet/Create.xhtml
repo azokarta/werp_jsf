@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>Учет рабочего времени</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.ls01']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg.save}"
+									icon="ui-icon ui-icon-check" actionListener="#{hrTimesheetBean.Save()}"
+									update=":messages,:form,:finDocListForm" />
+							</f:facet>
+						</p:toolbar>
+
+						<p:fieldset legend="Учет рабочего времени"
+							style="margin-bottom:20px">
+							<div class="ui-grid ui-grid-responsive">
+								<div class="ui-grid-row">
+									<div class="ui-grid-col-12">
+										<p:panelGrid style="width:90%;">
+											<f:facet name="header">
+												<p:row>
+													<p:column colspan="4">
+															&nbsp;
+														</p:column>
+												</p:row>
+											</f:facet>
+
+											<p:row>
+												<p:column>
+													<p:outputLabel>#{msg.company}</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:selectOneMenu value="#{hrTimesheetBean.bukrs}">
+														<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+															itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:outputLabel>Отдел</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:selectOneMenu value="#{hrTimesheetBean.departmentId}">
+														<f:selectItems value="#{departmentF4Bean.l_dep}" var="d"
+															itemLabel="#{d.name_ru}" itemValue="#{d.dep_id}" />
+													</p:selectOneMenu>
+												</p:column>
+
+											</p:row>
+											
+											<p:row>
+												<p:column>
+													<p:outputLabel>Год</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:selectOneMenu value="#{hrTimesheetBean.year}">
+														<f:selectItem itemLabel="2016" itemValue="2016"></f:selectItem>
+													</p:selectOneMenu>
+												</p:column>
+
+												<p:column>
+													<p:outputLabel>Месяц</p:outputLabel>
+												</p:column>
+												<p:column>
+													<p:selectOneMenu value="#{hrTimesheetBean.month}">
+														<f:selectItem itemLabel="1" itemValue="1"></f:selectItem>
+														<f:selectItem itemLabel="2" itemValue="2"></f:selectItem>
+													</p:selectOneMenu>
+												</p:column>
+
+											</p:row>
+
+										</p:panelGrid>
+									</div>
+								</div>
+
+
+
+								<div class="ui-grid-row" style="margin-top: 10px;">
+									<div class="ui-grid-col-12">
+										<p:dataTable id="timesheetList"
+											value="#{hrTimesheetBean.timeList}" var="item"
+											rowKey="#{item.id}" rows="200" style="width:90%;">
+
+											<f:facet name="header" id="tableHeader">
+												#{msg['logistics.matnr_list']}
+												<p:commandButton value="#{msg['logistics.show']}"
+													actionListener="#{hrTimesheetBean.generateTimesheet()}"
+													update="timesheetList,:messages"
+													style="float:left;margin-left:5px;">
+												</p:commandButton>
+												<div style="clear: both;"></div>
+											</f:facet>
+
+											<p:column style="width:70px;">
+												<f:facet name="header">
+													<h:outputText value="ФИО" />
+												</f:facet>
+												<h:outputText value="#{item.staff.getLF()}" />
+											</p:column>
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="1" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d1}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="2" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d2}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="3" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d3}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="4" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d4}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="5" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d5}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="6" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d6}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="7" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d7}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="8" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d8}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="9" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d9}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="10" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d10}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="11" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d11}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="12" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d12}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="13" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d13}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+											
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="14" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d14}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="15" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d15}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+											
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="16" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d16}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="17" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d17}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="18" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d18}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="19" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d19}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="20" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d20}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="21" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d21}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="22" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d22}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="23" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d23}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="24" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d24}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="25" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d25}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="26" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d26}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="27" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d27}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="28" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d28}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="29" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d29}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="30" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d30}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+											<p:column style="width:50px;">
+												<f:facet name="header">
+													<h:outputText value="31" />
+												</f:facet>
+												<p:selectOneMenu value="#{item.d31}">
+													<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+													<f:selectItems value="#{item.getShortStatuses().entrySet()}"
+														var="e" itemValue="#{e.key}" itemLabel="#{e.value}"></f:selectItems>
+												</p:selectOneMenu>
+											</p:column>
+
+										</p:dataTable>
+									</div>
+								</div>
+							</div>
+						</p:fieldset>
+					</h:form>
+
+					<p:dialog header="Docs" id="finDocWdg" widgetVar="finDocWidget"
+						dynamic="true" width="500" height="500">
+						<h:form id="finDocListForm">
+							<div id="sc_div">
+								<fieldset class="sc_FieldSet">
+									<legend>#{msg.search}</legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="Номер договора" /></td>
+											<td><h:inputText maxlength="45" autocomplete="off"
+													value="#{ls01Bean.searchModel.contract_number}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Номер Фин. дока" /></td>
+											<td><h:inputText id="s_belnr" maxlength="45"
+													autocomplete="off" value="#{ls01Bean.searchModel.belnr}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Год" /></td>
+											<td><p:selectOneMenu
+													value="#{ls01Bean.searchModel.gjahr}">
+													<f:selectItem itemValue="2016" itemLabel="2016" />
+													<f:selectItem itemValue="2017" itemLabel="2017" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['bkpf.blart.long']}" /></td>
+											<td><p:selectOneMenu
+													value="#{ls01Bean.searchModel.blart}">
+													<f:selectItem itemValue="" itemLabel="Все" />
+													<f:selectItems value="#{blartF4Bean.blart_list}" var="bl"
+														itemLabel="#{bl.text45}" itemValue="#{bl.blart}"></f:selectItems>
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td><p:commandButton value="#{msg.search}"
+													update="finDocTable, :messages"
+													actionListener="#{ls01Bean.searchDocList}" /></td>
+											<td></td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+
+
+							<p:dataTable id="finDocTable" var="doc" rowKey="#{doc.belnr}"
+								value="#{ls01Bean.docList}" emptyMessage="Нет записей"
+								selectionMode="single" selection="#{ls01Bean.selectedDocTemp}">
+
+								<f:facet name="header">
+									<p:commandButton process="finDocTable"
+										actionListener="#{ls01Bean.assignSelectedDoc()}"
+										update=":form" oncomplete="PF('finDocWidget').hide();"
+										value="#{msg.select}" />
+								</f:facet>
+
+								<p:column headerText="Code" footerText="Code" style="width:70px">
+									<h:outputText value="#{doc.belnr}" />
+								</p:column>
+								<p:column headerText="Contract Number"
+									footerText="Contract Number" style="width:70px">
+									<h:outputText value="#{doc.contract_number}" />
+								</p:column>
+								<p:column headerText="Date" footerText="Date"
+									style="width:100px">
+									<h:outputText value="#{doc.budat}">
+										<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+									</h:outputText>
+								</p:column>
+								<p:column headerText="Сумма в долларах"
+									footerText="Сумма в долларах" style="width:100px">
+									<h:outputText value="#{doc.dmbtr}" />
+								</p:column>
+								<p:column headerText="Сумма в валюте"
+									footerText="Сумма в валюте" style="width:100px">
+									<h:outputText value="#{doc.wrbtr}" />
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</p:dialog>
+
+
+					<p:dialog header="Материалы на складе" id="werksMatnrWdg"
+						widgetVar="werksMatnrWidget" dynamic="true" width="500"
+						height="500">
+						<h:form id="werksMatnrListForm">
+							<p:dataTable id="werksMatnrTable" var="item"
+								rowKey="#{item.matnr_list_id}"
+								value="#{ls01Bean.matnrListInWerks}"
+								emptyMessage="#{msg.no_records}" selectionMode="single"
+								selection="#{ls01Bean.selectedMatnr}">
+
+								<f:facet name="header">
+									<p:commandButton process="werksMatnrTable"
+										actionListener="#{ls01Bean.changeSelectedMatnr(ls01Bean.selectedMatnr)}"
+										update=":form" oncomplete="PF('werksMatnrWidget').hide();"
+										value="#{msg.select}" />
+								</f:facet>
+
+								<p:column headerText="#{msg['logistics.barcode']}"
+									footerText="#{msg['logistics.barcode']}" style="width:100px"
+									filterBy="#{item.barcode}">
+									<h:outputText value="#{item.barcode}" />
+								</p:column>
+								<p:column headerText="#{msg['logistics.matnr']}"
+									footerText="#{msg['logistics.matnr']}">
+									<h:outputText value="#{matnrF4Bean.getName(item.matnr)}" />
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</p:dialog>
+				</f:view>
+			</div>
+
+		</div>
+	</div>
+
+	<ui:include src="/hr/staff/ListDialog.xhtml">
+		<ui:param name="formId" value=":form" />
+		<ui:param name="mainFormBean" value="#{ls01Bean}" />
+	</ui:include>
+
+</h:body>
+</html>

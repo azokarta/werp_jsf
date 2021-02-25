@@ -1,0 +1,37 @@
+.bukrs,  .waers
+{
+	width:40px;
+}
+
+.blart, .monat
+{
+	width:12px;
+}
+.leftPanelButton2 {
+	margin-right:10px;
+	border-radius: 0px 5px 5px 0px;
+	background-color: #0cc;
+	-webkit-box-shadow: 2px 2px 3px 0px rgba(50, 50, 50, 0.5);
+	-moz-box-shadow: 2px 2px 3px 0px rgba(50, 50, 50, 0.5);
+	box-shadow: 2px 2px 3px 0px rgba(50, 50, 50, 0.5);
+	z-index: 1000;
+	-webkit-transition: left 0.1s; /* Safari */
+	transition: left 0.1s;
+	cursor: pointer; 
+	cursor: hand;
+}
+.ui-datatable tbody td{
+	font-size:12px; 
+}
+
+.searchPanelGrid.ui-panelgrid>*>tr,
+.searchPanelGrid.ui-panelgrid .ui-panelgrid-cell {
+	background-color: #EBF0FA;
+    border: none;
+    font-size:12px;
+}
+body 
+{
+    background-color: #EBF0FA;
+    font-size:12px;
+}

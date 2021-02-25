@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<!-- Deposit -->
+<ui:composition>
+	<h:panelGroup id="display">
+		<h:form id="StaffFileUploadForm">
+			<p:fileUpload
+				fileUploadListener="#{hrStaffFileBean.handleFileUpload}"
+				label="#{msg['hr.file.select_file']}" mode="advanced" auto="true"
+				dragDropSupport="false"
+				update=":messages,#{parentElementId}:StaffFileList"
+				sizeLimit="2000000" fileLimit="15"
+				invalidSizeMessage="#{msg['hr.file.invalid_file_size']}"
+				fileLimitMessage="#{msg['hr.file.many_attempts']}"
+				allowTypes="/(\.|\/)(pdf|jpg|png|jpeg|rar|zip)$/">
+			</p:fileUpload>
+		</h:form>
+		<h:form id="StaffFileList">
+			<p:panelGrid columns="2" style="width:60%;">
+				<p:dataTable scrollable="true" scrollHeight="200"
+					emptyMessage="#{msg.no_records}" id="fileList" var="file"
+					rowKey="#{file.id}" value="#{hrStaffFileBean.files}">
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg['hr.file.file_name']}" />
+						</f:facet>
+						<h:outputText value="#{file.file_name}" />
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg['hr.file.size']}" />
+						</f:facet>
+						<h:outputText value="#{file.file_size}" />
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg['hr.file.upd_date']}" />
+						</f:facet>
+						<h:outputText value="#{file.created_date}">
+						</h:outputText>
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="#{msg['hr.file.download']}" />
+						</f:facet>
+						<h:commandButton action="#{fileBean.download(file.id)}"
+							value="Скачать"></h:commandButton>
+						&nbsp;&npsp;
+						<p:commandButton type="push" rendered="#{file.isImage()}"
+							actionListener="#{hrStaffFileBean.setPreviewFile(file)}"
+							update="#{parentElementId}:FilePreviewForm"
+							oncomplete="PF('FilePreviewDialog').show()" value="#{msg['hr.file.view']}"></p:commandButton>
+
+						<p:commandButton type="push" rendered="#{file.isPdf()}"
+							onclick="openWindowForPreview('#{request.contextPath}/servlet/file?id=#{file.id}', 'Просмотр файла #{file.file_name}')"
+							value="#{msg['hr.file.view']}"></p:commandButton>
+
+						<p:commandButton value="#{msg['hr.file.delete']}"
+							actionListener="#{hrStaffFileBean.deleteFile(file.id)}" update=":messages, fileList">
+							<p:confirm header="Предупреждение!" message="Действительно хотите удалить файл?"
+								icon="ui-icon-alert" />
+						</p:commandButton>
+					</p:column>
+
+				</p:dataTable>
+			</p:panelGrid>
+		</h:form>
+	</h:panelGroup>
+
+	<script type="text/javascript">
+		function openWindowForPreview(url, title) {
+			window
+					.open(
+							url,
+							title,
+							"toolbar=no, scrollbars=yes, resizable=yes, top=170, left=170, width=800, height=600");
+		}
+	</script>
+
+	<ui:include src="Preview.xhtml" />
+</ui:composition>
+</html>

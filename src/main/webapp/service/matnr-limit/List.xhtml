@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{matnrLimitListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{matnrLimitListBean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{matnrLimitListBean.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel id="horizontal" header="#{msg.advanced_search}"
+							toggleable="true" toggleOrientation="vertical" collapsed="false">
+							<h:panelGrid columns="10" cellpadding="10">
+								<p:outputLabel value="#{msg.company}"
+									rendered="#{userinfo.sys_admin or userinfo.main}"></p:outputLabel>
+								<p:selectOneMenu
+									rendered="#{userinfo.sys_admin or userinfo.main}"
+									value="#{matnrLimitListBean.bukrs}"
+									disabled="#{!userinfo.main}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg.branch}"></p:outputLabel>
+								<p:selectOneMenu id="branch_id"
+									value="#{matnrLimitListBean.branchId}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems
+										value="#{branchBean.getUserBranches(matnrLimitListBean.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel>#{msg['position']}</p:outputLabel>
+								<p:selectOneMenu value="#{matnrLimitListBean.positionId}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems value="#{positionF4Bean.position_list}" var="p"
+										itemLabel="#{p.text}" itemValue="#{p.position_id}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" update=":DataListForm:datalist :messages"
+									actionListener="#{matnrLimitListBean.loadItems()}"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="DataListForm">
+						<p:dataTable id="datalist" value="#{matnrLimitListBean.items}"
+							var="item" paginator="true" paginatorPosition="bottom"
+							rowKey="#{item.id}" rows="50" lazy="false"
+							selectionMode="multiple"
+							selection="#{matnrLimitListBean.selectedItems}">
+
+							<p:ajax event="rowSelect" update="viewButton updateButton" />
+							<p:ajax event="rowUnselect" update="viewButton updateButton" />
+
+							<f:facet name="header" id="tableHeader">
+								<p:outputLabel style="float:left;"
+									value="Всего: #{matnrLimitListBean.totalCount}"></p:outputLabel>
+
+								<p:commandButton type="push" value="#{msg['delete']}"
+									actionListener="#{matnrLimitListBean.delete()}"
+									update=":messages" style="float:right;margin-right:5px;">
+								</p:commandButton>
+
+								<p:button target="_blank" outcome="View.xhtml" value="Просмотр"
+									disabled="#{!matnrLimitListBean.showViewUpdateBtns}"
+									title="View" id="viewButton"
+									style="float:right;margin-right:5px;">
+									<f:param name="id" value="#{matnrLimitListBean.getSelectedId()}" />
+								</p:button>
+
+								<p:button target="_blank" outcome="Update.xhtml"
+									value="Редактировать"
+									disabled="#{!matnrLimitListBean.showViewUpdateBtns}"
+									title="Редактировать" id="updateButton"
+									style="float:right;margin-right:5px;">
+									<f:param name="id" value="#{matnrLimitListBean.getSelectedId()}" />
+								</p:button>
+
+								<p:button outcome="Create.xhtml" value="Добавить"
+									title="Добавить" style="float:right;margin-right:5px;" />
+
+								<div style="clear: both;"></div>
+							</f:facet>
+
+							<p:column style="width:70px;text-align:center;">
+								<f:facet name="header">
+									<h:outputText value="Компания" />
+								</f:facet>
+								<h:outputText value="#{bukrsF4Bean.getNameByBukrs(item.bukrs)}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Филиал" />
+								</f:facet>
+								<h:outputText value="#{branchF4Bean.getName(item.branchId)}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Должнсть" />
+								</f:facet>
+								<h:outputText value="#{positionF4Bean.getName(item.positionId)}" />
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Дата создания" />
+								</f:facet>
+								<h:outputText value="#{item.createdAt}">
+									<f:convertDateTime pattern="dd.MM.yyyy" timeZone="Asia/Almaty"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Создал" />
+								</f:facet>
+								<h:outputText value="#{item.creator.getUsername()}"
+									rendered="#{!empty item.creator}" />
+							</p:column>
+						</p:dataTable>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

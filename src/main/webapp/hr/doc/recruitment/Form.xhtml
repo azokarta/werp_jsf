@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+
+				<ui:repeat var="button" value="#{hrDocRecruitmentBean.actionBean.buttonList}">
+					<p:commandButton type="push" value="#{button.label}"
+						actionListener="#{button.doAction()}" update=":messages,:form">
+					</p:commandButton>
+				</ui:repeat>
+
+				<p:commandButton rendered="#{hrDocRecruitmentBean.mode != 'view'}" type="push"
+					value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check" actionListener="#{hrDocRecruitmentBean.Save()}"
+					update=":messages">
+				</p:commandButton>
+			</f:facet>
+		</p:toolbar>
+		<br />
+		<div class="ui-grid-row" style="background-color: #EBF0FA">
+			<fieldset>
+				<legend>##</legend>
+				<div class="ui-grid-col-3">
+					<table>
+						<tr>
+							<td>#{msg['company']}:</td>
+							<td><werp:companySelect elementId="companyId"
+									mode="#{hrDocRecruitmentBean.mode == 'view' ? 'view':'update'}"
+									value="#{hrDocRecruitmentBean.document.bukrs}"
+									onChangeUpdate=":form:branchSelect:branchId">
+								</werp:companySelect></td>
+						</tr>
+						<tr>
+							<td>#{msg['branch']}:</td>
+							<td><werp:branchSelect id="branchSelect"
+									elementId="branchId" companyValue="#{hrDocRecruitmentBean.document.bukrs}"
+									value="#{hrDocRecruitmentBean.document.branchId}"
+									mode="#{hrDocRecruitmentBean.mode == 'view' ? 'view':'update'}"
+									onChangeUpdate=":form:directorId, :form:itemList">
+								</werp:branchSelect></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['hr.director']}:</td>
+							<td><p:selectOneMenu rendered="#{hrDocRecruitmentBean.mode != 'view'}"
+									id="directorId" value="#{hrDocRecruitmentBean.directorId}">
+									<f:selectItem itemLabel="Выберите директора" itemValue="0"></f:selectItem>
+									<f:selectItems value="#{hrDocRecruitmentBean.directorList}" var="d"
+										itemLabel="#{d.getLF()}" itemValue="#{d.staff_id}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td>#{status}:</td>
+							<td><p:outputLabel
+									value="#{hrDocRecruitmentBean.document.getStatusName()}"></p:outputLabel></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['hr.doc.creator']}:</td>
+							<td><p:outputLabel
+									rendered="#{!empty hrDocRecruitmentBean.document.creator}"
+									value="#{hrDocRecruitmentBean.document.creator.getLF()}"></p:outputLabel></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['hr.doc.responsible']}:</td>
+							<td><p:outputLabel
+									rendered="#{!empty hrDocRecruitmentBean.document.responsible}"
+									value="#{hrDocRecruitmentBean.document.responsible.getLF()}"></p:outputLabel></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['created_at']}:</td>
+							<td><p:outputLabel value="#{hrDocRecruitmentBean.document.createdAt}"></p:outputLabel></td>
+						</tr>
+
+					</table>
+				</div>
+				<div class="ui-grid-col-9">
+					<p:dataTable value="#{hrDocRecruitmentBean.document.hrDocItems}" var="item"
+						id="itemList">
+						<f:facet name="header" id="tableHeader">
+							<p:commandButton rendered="#{hrDocRecruitmentBean.mode != 'view'}"
+								icon="ui-icon-plus" title="Add"
+								onclick="PF('staffWidget').show();" style="float:right;"></p:commandButton>
+							<div style="clear: both;"></div>
+						</f:facet>
+
+						<p:column>
+							<f:facet name="header">#{msg['employee']}</f:facet>
+							<p:outputLabel rendered="#{!empty item.staff}"
+								value="#{item.staff.getLF()}"></p:outputLabel>
+							<p:commandButton rendered="#{hrDocRecruitmentBean.mode != 'view'}"
+								icon="ui-icon-newwin"
+								actionListener="#{hrDocRecruitmentBean.setSelectedItem(item)}"
+								oncomplete="PF('staffWidget').show();"></p:commandButton>
+
+							<p:button target="_blank" outcome="/hr/staff/View.xhtml"
+								icon="ui-icon-extlink" style="float:right;margin-right:5px;"
+								rendered="#{!empty item.staff}">
+								<f:param name="staffId" value="#{item.staff.staff_id}" />
+							</p:button>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">#{msg['department']}</f:facet>
+							<p:outputLabel rendered="#{hrDocRecruitmentBean.mode == 'view'}"
+								value="#{departmentF4Bean.getName(item.departmentId,userinfo.u_language)}"></p:outputLabel>
+
+							<p:selectOneMenu rendered="#{hrDocRecruitmentBean.mode != 'view'}"
+								value="#{item.departmentId}">
+								<f:selectItem itemLabel="#{msg.select}" itemValue="0"></f:selectItem>
+								<f:selectItems value="#{departmentF4Bean.l_dep}" var="dep"
+									itemLabel="#{departmentF4Bean.getName(dep.dep_id,userinfo.u_language)}" itemValue="#{dep.dep_id}"></f:selectItems>
+							</p:selectOneMenu>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">#{msg['position']}</f:facet>
+							<p:outputLabel rendered="#{hrDocRecruitmentBean.mode == 'view'}"
+								value="#{positionF4Bean.getName(item.positionId,userinfo.u_language)}"></p:outputLabel>
+
+							<p:selectOneMenu value="#{item.positionId}"
+								rendered="#{hrDocRecruitmentBean.mode != 'view'}">
+								<f:selectItem itemLabel="#{msg.select}" itemValue="0"></f:selectItem>
+								<f:selectItems value="#{positionF4Bean.position_list}" var="pos"
+									itemLabel="#{pos.getName(userinfo.u_language)}" itemValue="#{pos.position_id}"></f:selectItems>
+							</p:selectOneMenu>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">#{msg['hr.salary.beg_date']}</f:facet>
+							<p:outputLabel rendered="#{hrDocRecruitmentBean.mode == 'view'}"
+								value="#{item.beginDate}">
+								<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+							</p:outputLabel>
+
+							<p:calendar rendered="#{hrDocRecruitmentBean.mode != 'view'}"
+								value="#{item.beginDate}" pattern="dd.MM.yyyy">
+
+							</p:calendar>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">#{msg['hr.doc.manager']}</f:facet>
+							<p:selectOneMenu id="managerId" value="#{item.managerId}"
+								disabled="#{hrDocRecruitmentBean.mode == 'view'}">
+								<f:selectItem itemLabel="#{msg['select']}" itemValue="0"></f:selectItem>
+								<f:selectItems value="#{hrDocRecruitmentBean.getManagers()}" var="m"
+									itemLabel="#{m.getLF()}" itemValue="#{m.staff_id}"></f:selectItems>
+							</p:selectOneMenu>
+						</p:column>
+
+						<p:column headerText="#{msg['hr.doc.salary']}">
+							<h:outputText value="#{item.amount}">
+								<f:convertNumber currencySymbol="#{item.currency}"
+									type="currency"></f:convertNumber>
+							</h:outputText>
+							<h:outputText value=" #{item.currency}"></h:outputText>
+						</p:column>
+
+						<p:column style="width:60px;">
+							<f:facet name="header"></f:facet>
+							<p:commandButton icon="ui-icon-close"
+								rendered="#{hrDocRecruitmentBean.mode != 'view'}"
+								actionListener="#{hrDocRecruitmentBean.removeItemRow(item)}"
+								update="itemList"></p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</div>
+			</fieldset>
+		</div>
+
+		<div class="ui-grid-row" style="margin-bottom: 7px; margin-top: 10px;">
+			<div class="ui-grid-col-5" style="display: block; float: left;">
+				<p:dataTable value="#{hrDocRecruitmentBean.document.routes}" var="r"
+					id="routeList" rendered="#{hrDocRecruitmentBean.mode == 'view'}">
+					<f:facet name="header" id="tableHeader">
+							#{msg['hr.approvers']}
+							<div style="clear: both;"></div>
+					</f:facet>
+
+					<p:column>
+						<f:facet name="header">#{msg['fio']}</f:facet>
+						<p:outputLabel value="#{r.staff.getLF()}"
+							rendered="#{!empty r.staff}"></p:outputLabel>
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">#{msg['position']}</f:facet>
+						<p:outputLabel value="#{r.title}" rendered="#{r.positionId == 0}"></p:outputLabel>
+						<p:outputLabel value="#{positionF4Bean.getName(r.positionId)}"
+							rendered="#{r.positionId > 0}"></p:outputLabel>
+					</p:column>
+
+
+
+					<p:column>
+						<f:facet name="header">#{msg['actions']}</f:facet>
+						<h:outputText value="#{r.getStatusName()}"></h:outputText>
+					</p:column>
+				</p:dataTable>
+			</div>
+
+			<div class="ui-grid-col-5"
+				style="display: block; float: left; margin-left: 10px;"></div>
+		</div>
+
+	</h:form>
+
+
+	<p:dialog header="#{msg['hr.emp_list_title']}" widgetVar="staffWidget"
+		minHeight="40" width="700">
+		<h:form id="staffListForm">
+			<p:dataTable value="#{hrDocRecruitmentBean.staffList}" var="stf" id="staffList"
+				rowKey="#{stf.staff_id}" selectionMode="single" paginator="true"
+				paginatorPosition="bottom" rows="30">
+				<p:ajax event="rowDblselect" listener="#{hrDocRecruitmentBean.onSelectStaff}"
+					update=":form:itemList, :messages" global="false" />
+
+				<p:column filterBy="#{stf.lastname}">
+					<f:facet name="header">#{msg['hr.staff.lastname']}</f:facet>
+					<h:outputText value="#{stf.lastname}"></h:outputText>
+				</p:column>
+
+				<p:column filterBy="#{stf.firstname}">
+					<f:facet name="header">#{msg['hr.staff.firstname']}</f:facet>
+					<h:outputText value="#{stf.firstname}"></h:outputText>
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">#{msg['hr.staff.middlename']}</f:facet>
+					<h:outputText value="#{stf.middlename}"></h:outputText>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+	</p:dialog>
+</ui:composition>
+</html>

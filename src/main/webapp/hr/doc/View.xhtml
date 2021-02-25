@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{hrDocViewBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="HR > #{msg['hr.documents']} > #{hrDocViewBean.pageHeader} " />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{hrDocViewBean.pageHeader}" />
+			</ui:include>
+
+			<div id="content" class="container">
+				<h:form id="form" rendered="#{!empty hrDocViewBean.document}">
+					<p:toolbar styleclass="mp_toolbar">
+						<f:facet name="left">
+							<ui:repeat var="button"
+								value="#{hrDocViewBean.actionBean.buttonList}">
+								<p:commandButton type="push" value="#{button.label}"
+									actionListener="#{button.doAction()}" update=":messages,:form">
+								</p:commandButton>
+							</ui:repeat>
+						</f:facet>
+					</p:toolbar>
+					<br />
+
+					<div class="ui-grid-row">
+						<div class="ui-grid-col-3">
+							<p:panel header="#{msg['hr.doc.info']}">
+								<h:panelGrid columns="2" cellpadding="5">
+									<p:outputLabel value="#{msg['hr.doc.number']}:"></p:outputLabel>
+									<p:outputLabel
+										value="№#{hrDocViewBean.document.getFormattedRegNumber()}"></p:outputLabel>
+
+									<p:outputLabel value="#{msg['hr.doc.type']}:"></p:outputLabel>
+									<p:outputLabel
+										value="#{hrDocViewBean.document.getDocTypeName()}"></p:outputLabel>
+
+									<p:outputLabel value="#{msg['company']}:"></p:outputLabel>
+									<p:outputLabel
+										value="#{bukrsF4Bean.getNameByBukrs(hrDocViewBean.document.bukrs)}"></p:outputLabel>
+
+									<p:outputLabel value="#{msg['branch']}:"></p:outputLabel>
+									<p:outputLabel
+										value="#{branchF4Bean.getBranchNameByID(hrDocViewBean.document.branchId)}"></p:outputLabel>
+
+									<p:outputLabel value="#{msg['created_at']}:"></p:outputLabel>
+									<p:outputLabel value="#{hrDocViewBean.document.createdAt}"></p:outputLabel>
+
+									<p:outputLabel value="#{msg['status']}:"></p:outputLabel>
+									<p:outputLabel
+										value="#{hrDocViewBean.document.getStatusName()}"></p:outputLabel>
+
+									<p:outputLabel value="#{msg['hr.doc.responsible']}:"></p:outputLabel>
+									<p:outputLabel
+										value="#{hrDocViewBean.document.responsible.getLF()}"
+										rendered="#{!empty hrDocViewBean.document.responsible}"></p:outputLabel>
+
+									<p:outputLabel value="#{msg['hr.doc.creator']}:"></p:outputLabel>
+									<p:outputLabel
+										value="#{hrDocViewBean.document.creator.getLF()}"
+										rendered="#{!empty hrDocViewBean.document.creator}"></p:outputLabel>
+								</h:panelGrid>
+							</p:panel>
+
+							<p:dataTable id="approversList" style="margin-top:10px;"
+								var="approver" value="#{hrDocViewBean.document.hrDocApprovers}">
+								<f:facet name="header">
+									<p:outputLabel style="float:left;" value="#{msg['hr.approvers']}"></p:outputLabel>
+									<div style="clear: both;"></div>
+								</f:facet>
+
+								<p:column headerText="#{msg['fio']}">
+									<p:outputLabel value="#{approver.title}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['position']}">
+									<p:outputLabel
+										value="#{positionF4Bean.getName(approver.positionId,userinfo.u_language)}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['actions']}">
+									<p:outputLabel value="#{approver.getStatusName()}"></p:outputLabel>
+								</p:column>
+
+								<p:column style="width:20px;">
+									<p:commandButton
+										rendered="#{approver.createdBy == userinfo.userid}"
+										icon="ui ui-icon-close" title="Удалить" update=":messages"
+										actionListener="#{hrDocViewBean.actionBean.removeApprover(approver.id)}" />
+								</p:column>
+
+							</p:dataTable>
+						</div>
+
+						<div class="ui-grid-col-7" style="margin-left: 5px;">
+							<ui:fragment rendered="#{hrDocViewBean.document.typeId == 5}">
+								<ui:include src="./bypass-sheet/itemList.xhtml"></ui:include>
+							</ui:fragment>
+							<ui:fragment rendered="#{hrDocViewBean.document.typeId == 4}">
+								<ui:include src="./change-salary/itemList.xhtml"></ui:include>
+							</ui:fragment>
+
+							<ui:fragment rendered="#{hrDocViewBean.document.typeId == 3}">
+								<ui:include src="./dismiss/itemList.xhtml"></ui:include>
+							</ui:fragment>
+
+							<ui:fragment rendered="#{hrDocViewBean.document.typeId == 2}">
+								<ui:include src="./transfer/itemList.xhtml"></ui:include>
+							</ui:fragment>
+
+							<ui:fragment rendered="#{hrDocViewBean.document.typeId == 1}">
+								<ui:include src="./recruitment/itemList.xhtml"></ui:include>
+							</ui:fragment>
+
+						</div>
+					</div>
+
+					<ui:include src="ActionLogList.xhtml"></ui:include>
+				</h:form>
+
+				<p:dialog header="Действие отказ" widgetVar="refuseWidget"
+					minHeight="100" width="300" style="padding:10px;"
+					appendTo="@(body)" modal="true">
+					<h:form id="refuse-widget-form">
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg['dmsc.save']}"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{hrDocViewBean.actionBean.refuse()}"
+									update=":messages">
+								</p:commandButton>
+							</f:facet>
+						</p:toolbar>
+						<br />
+						<div class="ui-grid-row"
+							style="margin-bottom: 7px; margin-top: 10px;">
+							<div class="ui-grid-col-12" style="display: block; float: left;">
+								<p:outputLabel value="Примечание"></p:outputLabel>
+								<p:inputTextarea rows="4" cols="30"
+									value="#{hrDocViewBean.actionBean.refuseNote}"></p:inputTextarea>
+							</div>
+						</div>
+					</h:form>
+				</p:dialog>
+
+				<ui:include src="amountDialog.xhtml">
+				</ui:include>
+
+				<ui:fragment rendered="#{hrDocViewBean.document.typeId == 3}">
+					<ui:include src="./dismiss/dismissDialog.xhtml"></ui:include>
+				</ui:fragment>
+
+				<ui:include src="/hr/salary/ListDialog2.xhtml">
+					<ui:param name="salaryModel"
+						value="#{hrDocViewBean.actionBean.salaryModel}"></ui:param>
+					<ui:param name="mainFormBean" value="#{hrDocViewBean.actionBean}"></ui:param>
+					<ui:param name="formId" value=":form:approversList"></ui:param>
+				</ui:include>
+
+				<h:form rendered="#{empty hrDocViewBean.document}">
+					<div style="margin: auto; width: 400px; padding: 50px; color: red;">
+						<h2>Документ не найден!</h2>
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

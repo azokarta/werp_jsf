@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:tx="http://www.springframework.org/schema/tx" 
+  xmlns:p="http://www.springframework.org/schema/p"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context-4.0.xsd 
+  http://www.springframework.org/schema/tx 
+  http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+  <tx:annotation-driven />
+
+  <context:component-scan base-package="general.dao" />
+   	<context:component-scan base-package="general.services" />
+    <context:component-scan base-package="general.validators" />
+  	<context:component-scan base-package="general.tables" />	
+  	<context:component-scan base-package="general.dao2" />
+  	<context:component-scan base-package="general.tables2" />
+  	<context:component-scan base-package="general.springservice" />
+  	<context:component-scan base-package="crm.dao" />
+    <context:component-scan base-package="crm.services" />
+    <context:component-scan base-package="crm.validators" />
+    <context:component-scan base-package="general.util"/>
+  
+  <context:component-scan base-package="loadOldData" />
+
+
+
+
+  
+     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" >
+        <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@192.168.0.20:1521:Orcl"/>
+        <property name="username" value="testload" />
+	    <property name="password" value="testload" />
+	    <property name="testOnBorrow" value="true" />
+	    <property name="validationQuery" value="select 1 from dual" />
+	    
+	    <!--
+	    <property name="username" value="testload" />
+	    <property name="password" value="testload" />
+	    <property name="username" value="erp" />
+	    <property name="password" value="erpaura20172030" />
+	    -->
+	    
+    </bean>
+    
+
+
+
+  <bean id="entityManagerFactory"
+    class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <property name="persistenceUnitName" value="werp" />
+    <property name="dataSource" ref="dataSource" />
+  </bean>
+
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
+  
+<tx:annotation-driven transaction-manager="transactionManager"/>
+
+  <context:property-placeholder location="classpath:app-prod.properties"/>
+
+</beans>

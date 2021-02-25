@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>#{dmsdListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+
+	<style>
+.activeMenu {
+	
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+
+
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{dmsdListBean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/template/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{dmsdListBean.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm">
+							<p:panel header="Фильтр поиска" id="searchPanel" reflow="true">
+								<p:panelGrid columns="2">
+									<p:outputLabel value="Компания" />
+									<p:selectOneMenu
+										value="#{dmsdListBean.demoModel.searchModel.bukrs}"
+										rendered="#{userinfo.sys_admin or userinfo.main}">
+										<p:ajax update="searchBranchId"></p:ajax>
+										<f:selectItem itemLabel="Выберите компанию"></f:selectItem>
+										<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+											itemValue="#{b.bukrs}" itemLabel="#{b.name}"></f:selectItems>
+									</p:selectOneMenu>
+									<p:outputLabel
+										value="#{bukrsF4Bean.getNameByBukrs(userinfo.bukrs)}"
+										rendered="#{!userinfo.main and !userinfo.sys_admin}"></p:outputLabel>
+
+									<p:outputLabel value="Филиал" />
+									<p:selectOneMenu id="searchBranchId"
+										value="#{dmsdListBean.demoModel.searchModel.branchId}"
+										rendered="#{userinfo.sys_admin or userinfo.main}">
+										<f:selectItem itemLabel="Выберите филиал"></f:selectItem>
+										<f:selectItems
+											value="#{branchF4Bean.getAllBranchByBukrs(dmsdListBean.demoModel.searchModel.bukrs)}"
+											var="br" itemValue="#{br.branch_id}" itemLabel="#{br.text45}"></f:selectItems>
+									</p:selectOneMenu>
+
+									<p:selectOneMenu
+										value="#{dmsdListBean.demoModel.searchModel.branchId}"
+										rendered="#{!userinfo.sys_admin and !userinfo.main}">
+										<f:selectItem itemLabel="Выберите филиал"></f:selectItem>
+										<f:selectItems value="#{dmsdListBean.userBranches}" var="br"
+											itemValue="#{br.branch_id}" itemLabel="#{br.text45}"></f:selectItems>
+									</p:selectOneMenu>
+
+									<p:outputLabel value="Статус" />
+									<p:selectOneMenu
+										value="#{dmsdListBean.demoModel.searchModel.statusId}">
+										<f:selectItem itemLabel="Не выбрано"></f:selectItem>
+										<f:selectItems
+											value="#{dmsdListBean.demoModel.searchModel.getStatuses().entrySet()}"
+											var="e" itemLabel="#{e.value}" itemValue="#{e.key}" />
+									</p:selectOneMenu>
+
+									<p:outputLabel value="Дата с" />
+									<p:calendar
+										value="#{dmsdListBean.demoModel.searchModel.fromDate}"
+										pattern="dd.MM.yyyy" />
+
+									<p:outputLabel value="Дата по" />
+									<p:calendar
+										value="#{dmsdListBean.demoModel.searchModel.toDate}"
+										pattern="dd.MM.yyyy" />
+
+									<p:outputLabel value="Клиент" />
+									<p:inputText
+										value="#{dmsdListBean.demoModel.searchModel.customerName}" />
+
+									<p:outputLabel value="Моб. тел" />
+									<p:inputText
+										value="#{dmsdListBean.demoModel.searchModel.customerMobile}" />
+
+									<p:outputLabel></p:outputLabel>
+									<p:commandButton update=":messages,:DemoListForm:datalist"
+										value="Поиск">
+									</p:commandButton>
+								</p:panelGrid>
+							</p:panel>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="DemoListForm" reflow="true">
+							<p:dataTable reflow="true" value="#{dmsdListBean.demoModel}"
+								var="item" id="datalist" rows="50" paginator="true" lazy="true"
+								paginatorAlwaysVisible="false"
+								selection="#{dmsdListBean.selected}" selectionMode="single"
+								rowKey="#{item.id}">
+								<f:facet name="header" id="tableHeader">
+
+									<p:commandButton id="updateButton"
+										style="float:right;margin-right:5px;" value="Редактировать"
+										update=":DemoCreateDlg"
+										disabled="#{empty dmsdListBean.selected}"
+										oncomplete="PF('DemoCreateDlg').show();"></p:commandButton>
+
+									<p:commandButton style="float:right;margin-right:5px;"
+										value="Добавить"
+										actionListener="#{dmsdListBean.prepareCreate}"
+										update=":DemoCreateDlg"
+										oncomplete="PF('DemoCreateDlg').show();"></p:commandButton>
+
+									<div style="float: left; margin-left: 10px;">Всего:
+										#{dmsdListBean.demoModel.rowCount}</div>
+									<br style="clear: both;" />
+									<div style="clear: both;"></div>
+								</f:facet>
+
+								<p:ajax event="rowSelect"
+									update="updateButton" />
+								<p:ajax event="rowUnselect"
+									update="updateButton" />
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Филиал" />
+									</f:facet>
+									<p:outputLabel value="#{branchF4Bean.getName(item.branchId)}"></p:outputLabel>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Дилер" />
+									</f:facet>
+									<p:outputLabel value="#{item.dealerStaff.getLF()}"
+										rendered="#{!empty item.dealerStaff}"></p:outputLabel>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Демо секр." />
+									</f:facet>
+									<p:outputLabel value="#{item.demosecStaff.getLF()}"
+										rendered="#{!empty item.demosecStaff}"></p:outputLabel>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Клиент" />
+									</f:facet>
+									<p:outputLabel value="#{item.customerName}"></p:outputLabel>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Моб. номер клиента" />
+									</f:facet>
+									<p:outputLabel value="#{item.customerMobile}"></p:outputLabel>
+								</p:column>
+
+								<p:column sortBy="#{item.dateTime}">
+									<f:facet name="header">
+										<h:outputText value="Дата/время" />
+									</f:facet>
+									<p:outputLabel value="#{item.dateTime}">
+										<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+									</p:outputLabel>
+								</p:column>
+
+								<p:column style="width:100px;">
+									<f:facet name="header">
+										<h:outputText value="Статус" />
+									</f:facet>
+									<p:outputLabel value="#{item.getStatusName()}"></p:outputLabel>
+								</p:column>
+
+								<p:column style="width:100px;text-align:center;">
+									<f:facet name="header">
+										<h:outputText value="Кол. рек." />
+									</f:facet>
+									<p:outputLabel value="#{item.refCount}"></p:outputLabel>
+								</p:column>
+
+								<p:column rendered="false">
+									<f:facet name="header">
+										<h:outputText value="Дата создания" />
+									</f:facet>
+									<h:outputText value="#{item.createdAt}">
+										<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+			</div>
+
+
+		</div>
+	</div>
+
+	<ui:include src="CreateOrUpdate.xhtml"></ui:include>
+</h:body>
+</html>

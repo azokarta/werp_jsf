@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP');
+                                $(this).toggleClass('shiftLeft');
+                                $('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{faf01Bean.breadcrumb}" />
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+				<f:view>
+					<h:form id="form">
+						<p:toolbar>
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg.save}"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{faf01Bean.toSave()}" update="form,:messages">
+								</p:commandButton>
+							</f:facet>
+						</p:toolbar>
+						<br />
+
+						<div class="ui-grid-row">
+							<div id="contract" class="ui-grid-col-5"
+								style="display: block; float: left;">
+								<fieldset class="contractFieldSet" style="height: 500px;">
+									<legend>#{msg['finance.fixed_assets']}</legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg.company}" /></td>
+											<td><p:selectOneMenu id="bukrs"
+													value="#{faf01Bean.newFixedAsset.bukrs}">
+													<p:ajax update="branch" />
+													<f:selectItem itemLabel="#{msg.select_company}"
+														itemValue="" />
+													<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+														var="bukrs" itemLabel="#{bukrs.name}"
+														itemValue="#{bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.branch}" /></td>
+											<td><p:selectOneMenu id="branch"
+													value="#{faf01Bean.newFixedAsset.branch_id}">
+													<f:selectItem itemLabel="#{msg.select_branch}"
+														itemValue="0" />
+													<f:selectItems value="#{branchBean.getItemsByBukrs(faf01Bean.newFixedAsset.bukrs)}"
+														var="branch" itemLabel="#{branch.text45}"
+														itemValue="#{branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel
+													value="#{msg['finance.fa.responsible_officer']}" /></td>
+											<td><p:inputText id="staff_fio" size="35"
+													autocomplete="off"
+													value="#{hrsDialogBean.selected.getLF()}" disabled="true" />
+												<p:commandButton icon="ui-icon-newwin" type="push"
+													oncomplete="PF('StaffListDialog').show();">
+												</p:commandButton> <p:commandButton icon="ui-icon-closethick" type="push"
+													action="#{hrsDialogBean.Reset}" update=":form">
+												</p:commandButton></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['finance.fa.name']}" /></td>
+											<td><p:inputText id="fa_name" size="45"
+													autocomplete="off"
+													value="#{faf01Bean.newFixedAsset.fa_name}">
+												</p:inputText></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel
+													value="#{msg['finance.fa.first_cost']}" /></td>
+											<td><p:inputText id="init_amount" size="10"
+													autocomplete="off"
+													value="#{faf01Bean.newFixedAsset.init_amount}">
+												</p:inputText></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel
+													value="#{msg['finance.fa.liquid_cost']}" /></td>
+											<td><p:inputText id="left_amount" size="10"
+													autocomplete="off"
+													value="#{faf01Bean.newFixedAsset.left_amount}">
+												</p:inputText></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['finance.fa.faga']}" /></td>
+											<td><p:selectOneMenu id="asset_catalog_id"
+													value="#{faf01Bean.newFixedAsset.asset_catalog_id}">
+													<f:selectItem itemLabel="#{msg.not_chosen}" itemValue="0" />
+													<f:selectItems value="#{refAssetCatalog.recordList}"
+														var="ac" itemLabel="#{ac.name_ru}" itemValue="#{ac.ac_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel
+													value="#{msg['finance.fa.useful_life']}" /></td>
+											<td><p:inputText id="asset_life" size="10"
+													autocomplete="off"
+													value="#{faf01Bean.newFixedAsset.asset_life}">
+												</p:inputText></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel
+													value="#{msg['finance.fa.operation_date']}" /></td>
+											<td><p:calendar id="operation_date"
+													styleClass="dateField"
+													value="#{faf01Bean.newFixedAsset.operation_date}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['finance.fa.comment']}" /></td>
+											<td><p:inputTextarea
+													value="#{faf01Bean.newFixedAsset.comment}"></p:inputTextarea>
+											</td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+						</div>
+					</h:form>
+
+					<ui:include src="/hr/staff/ListDialog.xhtml">
+						<ui:param name="formId" value=":form" />
+						<ui:param name="mainFormBean" value="#{faf01Bean}" />
+					</ui:include>
+				</f:view>
+			</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

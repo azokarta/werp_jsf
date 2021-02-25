@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<p:commandButton rendered="#{kpiCrudBean.mode != 'view'}"
+					type="push" value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check" actionListener="#{kpiCrudBean.Save()}"
+					update=":messages">
+				</p:commandButton>
+				<p:button outcome="/kpi/Update.xhtml?id=#{kpiCrudBean.selected.id}"
+					value="Редактировть" rendered="#{kpiCrudBean.mode == 'view'}">
+				</p:button>
+
+				<p:button rendered="#{kpiCrudBean.mode == 'view'}"
+					outcome="/kpi/List.xhtml" value="В список">
+				</p:button>
+
+			</f:facet>
+		</p:toolbar>
+		<br />
+
+		<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+			<div class="ui-grid-col-5" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>Инфо</legend>
+					<table>
+						<tr>
+							<td>Компания</td>
+							<td><h:outputText rendered="#{kpiCrudBean.mode == 'view'}"
+									value="#{bukrsF4Bean.getNameByBukrs(kpiCrudBean.selected.bukrs)}"></h:outputText>
+								<p:selectOneMenu rendered="#{kpiCrudBean.mode != 'view'}"
+									value="#{kpiCrudBean.selected.bukrs}">
+									<p:ajax update="branch_id"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+						<tr>
+							<td>Филиал</td>
+							<td><h:outputText rendered="#{kpiCrudBean.mode == 'view'}"
+									value="#{branchF4Bean.getName(kpiCrudBean.selected.branchId)}"></h:outputText>
+
+								<p:selectOneMenu id="branch_id"
+									rendered="#{kpiCrudBean.mode != 'view'}"
+									value="#{kpiCrudBean.selected.branchId}">
+									<f:selectItem itemValue="0" itemLabel="Для всех филиалов"></f:selectItem>
+									<f:selectItems value="#{branchF4Bean.branch_list}" var="b"
+										itemValue="#{b.branch_id}" itemLabel="#{b.text45}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+						<tr>
+							<td>Должность</td>
+							<td><h:outputText rendered="#{kpiCrudBean.mode == 'view'}"
+									value="#{positionF4Bean.getName(kpiCrudBean.selected.positionId)}" />
+								<p:selectOneMenu rendered="#{kpiCrudBean.mode != 'view'}"
+									value="#{kpiCrudBean.selected.positionId}">
+									<f:selectItem itemValue="0" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems value="#{positionF4Bean.position_list}" var="p"
+										itemValue="#{p.position_id}" itemLabel="#{p.text}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td>Дата начало</td>
+							<td><h:outputText rendered="#{kpiCrudBean.mode == 'view'}"
+									value="#{kpiCrudBean.selected.fromDate}">
+									<f:convertDateTime pattern="dd.MM.YYYY"></f:convertDateTime>
+								</h:outputText> <p:calendar rendered="#{kpiCrudBean.mode != 'view'}"
+									pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{kpiCrudBean.selected.fromDate}"
+									converterMessage="Wrong Date" navigator="true">
+								</p:calendar></td>
+						</tr>
+
+						<tr>
+							<td>Дата окончания</td>
+							<td><h:outputText rendered="#{kpiCrudBean.mode == 'view'}"
+									value="#{kpiCrudBean.selected.toDate}">
+									<f:convertDateTime pattern="dd.MM.YYYY"></f:convertDateTime>
+								</h:outputText> <p:calendar rendered="#{kpiCrudBean.mode != 'view'}"
+									pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{kpiCrudBean.selected.toDate}"
+									converterMessage="Wrong Date" navigator="true">
+								</p:calendar></td>
+						</tr>
+
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="2"></td>
+						</tr>
+					</table>
+				</fieldset>
+			</div>
+
+
+			<div class="ui-grid-col-7" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>Список индикаторов</legend>
+					<p:toolbar styleclass="mp_toolbar">
+						<f:facet name="left">
+							<p:commandButton rendered="#{invoiceBean.mode != 'view'}"
+								type="push" value="Добавить индикатор" align="right"
+								actionListener="#{kpiCrudBean.addItemRow()}"
+								update=":messages,itemsListTable">
+							</p:commandButton>
+
+						</f:facet>
+					</p:toolbar>
+
+					<p:dataTable id="itemsListTable"
+						value="#{kpiCrudBean.selected.kpiItems}" var="item"
+						emptyMessage="#{msg.no_records}"
+						rowClasses="employeeTableOddRow,employeeTableEvenRow">
+						<p:column>
+							<f:facet name="header">Индикатор</f:facet>
+							<p:selectOneMenu value="#{item.indicatorId}"  disabled="#{kpiCrudBean.mode == 'view'}">
+								<f:selectItem itemValue="0" itemLabel="Не выбрано" />
+								<f:selectItems value="#{kpiCrudBean.indicators.entrySet()}"
+									var="e" itemValue="#{e.key}" itemLabel="#{e.value}" />
+							</p:selectOneMenu>
+						</p:column>
+						<p:column>
+							<f:facet name="header">Значение</f:facet>
+							<p:inputText disabled="#{kpiCrudBean.mode == 'view'}" value="#{item.value}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">Баллы</f:facet>
+							<p:inputText disabled="#{kpiCrudBean.mode == 'view'}" value="#{item.point}" />
+						</p:column>
+
+						<p:column style="width:60px;"
+							rendered="#{kpiCrudBean.mode != 'view'}">
+							<p:commandButton icon="ui-icon-close">
+								<p:ajax listener="#{kpiCrudBean.deleteItemRow(item)}"
+									update="itemsListTable"></p:ajax>
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</fieldset>
+			</div>
+
+		</div>
+	</h:form>
+
+</ui:composition>
+</html>

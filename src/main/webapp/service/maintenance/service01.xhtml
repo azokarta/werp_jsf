@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>Новый сервис</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Сервис > Новый сервис" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Новый сервис" />
+				</ui:include>
+			</ui:insert>
+			<div id="content" class="container">
+				<f:view>
+
+					<h:form id="form">
+
+						<p:growl id="messages" sticky="false" showDetail="true" />
+
+						<div class="ui-grid-row" style="padding-bottom: 10px;">
+
+							<fieldset style="border: 1px solid #ddd;">
+								<legend>Заголовок сервиса</legend>
+
+								<div style="display: inline; float: left; padding-right: 25px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="Компания" /></td>
+											<td><p:selectOneMenu id="bukrs"
+													value="#{service01Bean.p_service.bukrs}">
+													<p:ajax listener="#{service01Bean.loadBranch}" />
+													<f:selectItem itemLabel="Выберите компанию" itemValue="0" />
+													<f:selectItems value="#{service01Bean.bukrs_list}"
+														var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+														itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Сервис-филиал " /></td>
+											<td><p:selectOneMenu id="branch"
+													value="#{service01Bean.p_service.branch_id}">
+													<p:ajax listener="#{service01Bean.assignBranchObject}" />
+													<f:selectItem itemLabel="Выберите филиал" itemValue="0" />
+													<f:selectItems value="#{service01Bean.branch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Категория " /></td>
+											<td><p:selectOneMenu id="category"
+													value="#{service01Bean.p_service.category}">
+													<p:ajax listener="#{service01Bean.loadByCategory}" />
+													<f:selectItem itemLabel="Выберите категорию" itemValue="9" />
+													<f:selectItem itemLabel="Уборочная система"
+														itemValue="1" />
+													<f:selectItem itemLabel="Система очистки воды"
+														itemValue="2" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><p:outputLabel value="Дата" /></td>
+											<td><p:calendar id="contract_date"
+													styleClass="dateField"
+													value="#{service01Bean.p_service.date_open}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+										</tr>
+
+										<tr>
+											<td><p:outputLabel value="Статус " /></td>
+											<td><p:selectOneMenu id="order_status_id"
+													value="#{service01Bean.p_service.serv_status}"
+													disabled="true">
+													<f:selectItem itemLabel="Новый" itemValue="1" />
+													<f:selectItem itemLabel="В обработке" itemValue="2" />
+													<f:selectItem itemLabel="Обработан" itemValue="3" />
+													<f:selectItem itemLabel="Выполнен" itemValue="4" />
+													<f:selectItem itemLabel="Отменен" itemValue="5" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<!-- 
+										<tr>
+											<td><h:outputLabel value="Номер сервиса " /></td>
+											<td><h:inputText id="order-num" size="12"
+													autocomplete="off" value="#{service01Bean.p_service.serv_num}"
+													disabled="true" /></td>
+										</tr> -->
+										<tr>
+											<td><h:outputLabel value="Вид сервиса" /></td>
+											<td><p:selectOneMenu id="serv_type"
+													value="#{service01Bean.p_service.serv_type}"
+													disabled="#{service01Bean.dis_selectServType}">
+													<f:selectItem itemLabel="Выберите вид сервиса"
+														itemValue="0" />
+													<f:selectItems value="#{service01Bean.st_l}" var="wa_st"
+														itemLabel="#{wa_st.n}" itemValue="#{wa_st.v}" />
+													<p:ajax listener="#{service01Bean.prepareTable}" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Мастер " /></td>
+											<td><p:inputText id="stuff_master" size="30"
+													autocomplete="off"
+													value="#{service01Bean.p_master.fullFIO}" disabled="true" />
+												<p:commandButton icon="ui-icon-newwin" type="push"
+													actionListener="#{service01Bean.setSearchPositionId(17)}"
+													oncomplete="PF('employeeWidget').show();"
+													styleClass="f4button">
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{service01Bean.clearStaffField(17)}"
+													styleClass="f4button" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Оператор " /></td>
+											<td><p:inputText id="stuff_oper" size="30"
+													autocomplete="off" value="#{service01Bean.p_oper.fullFIO}"
+													disabled="true" /> <p:commandButton icon="ui-icon-newwin"
+													type="push" disabled="#{service01Bean.dis_oper}"
+													actionListener="#{service01Bean.setSearchPositionId(18)}"
+													oncomplete="PF('employeeWidget').show();"
+													id="oper_select_btn" styleClass="f4button">
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{service01Bean.clearStaffField(18)}"
+													id="oper_clear_btn" styleClass="f4button"
+													disabled="#{service01Bean.dis_oper}" /></td>
+										</tr>
+
+									</table>
+								</div>
+
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+
+										<tr>
+											<td><h:outputLabel value="Заявка " for="application" /></td>
+											<td><p:inputText id="application" size="30"
+													disabled="true"
+													value="#{service01Bean.p_service.serv_app_num} - #{service01Bean.selectedSA.applicant_name}"
+													title="Заявка" /> <p:commandButton icon="ui-icon-newwin"
+													type="push"
+													actionListener="#{service01Bean.prepareContractSelect}"
+													oncomplete="PF('ServAppListWidget').show();"
+													styleClass="f4button">
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{service01Bean.clearServAppField}"
+													styleClass="f4button" /></td>
+										</tr>
+
+										<tr>
+											<td><p:commandButton type="push"
+													actionListener="#{service01Bean.withoutCOntract}"
+													id="noContrBtn" value="#{service01Bean.noConBtnTxt}"
+													disabled="#{service01Bean.p_disConBtn}" /></td>
+											<td>
+											
+											<h:panelGrid columns="1" cellpadding="0" rendered="#{service01Bean.noContract}">
+													<p:selectOneMenu id="contract_type_id"
+														value="#{service01Bean.p_contract.contract_type_id}">
+														<p:ajax listener="#{service01Bean.assignContractType}" />
+														<f:selectItem itemLabel="#{msg['dmsc.select_contr_type']}"
+															itemValue="0" />
+														<f:selectItems value="#{service01Bean.contractType_list}"
+															var="wa_contractType" itemLabel="#{wa_contractType.name}"
+															itemValue="#{wa_contractType.contract_type_id}" />
+													</p:selectOneMenu>
+											</h:panelGrid>
+											
+											<h:panelGrid columns="3" cellpadding="0" rendered="#{!service01Bean.noContract}">
+													<p:inputText id="contract" size="30" disabled="true"
+														value="#{service01Bean.p_service.contract_info}"
+														title="Договор" />
+													<p:commandButton icon="ui-icon-newwin" type="push"
+														disabled="#{service01Bean.p_disConBtn}"
+														actionListener="#{service01Bean.prepareContractSelect}"
+														oncomplete="PF('ContractWidget').show();" id="contrBtn"
+														styleClass="f4button">
+													</p:commandButton>
+													<p:commandButton icon="ui-icon-close" type="push"
+														actionListener="#{service01Bean.clearContractField}"
+														id="contrXBtn" styleClass="f4button"
+														disabled="#{service01Bean.p_disConBtn}" />
+												</h:panelGrid></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Товар " /></td>
+											<td><p:inputText id="tovar" size="30" disabled="true"
+													value="#{service01Bean.p_tovar_name}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Серийный №" /></td>
+											<td><p:inputText id="tovar_sn" size="30" disabled="#{!service01Bean.noContract}"
+													value="#{service01Bean.p_service.tovar_sn}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Ф.И.О. клиента " /></td>
+											<td><p:inputText id="cusLastName" size="35"
+													disabled="#{!service01Bean.noContract}" 
+													value="#{service01Bean.p_service.customer_firstname}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Адрес" /></td>
+											<td><p:inputText id="cusAddr" size="35" 
+													disabled="#{!service01Bean.noContract}"
+													value="#{service01Bean.p_service.addr}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Тел.:" /></td>
+											<td><p:inputText id="cusTel" size="35" 
+													disabled="#{!service01Bean.noContract}"
+													value="#{service01Bean.p_service.tel}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Примечание &nbsp;" /></td>
+											<td><p:inputText id="info" size="35" autocomplete="off"
+													value="#{service01Bean.p_service.info}" disabled="false" />
+												<h:outputLabel id="mainCurRateToLocalCurrency"
+													rendered="false"
+													value=" &nbsp; #{service01Bean.p_mcRatetext}"
+													style="margin-bottom:10px;" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Сервис пакет &nbsp;"
+													rendered="#{!service01Bean.disServPacket}" /></td>
+											<td><p:selectOneMenu id="ServicePacket"
+													rendered="#{!service01Bean.disServPacket}"
+													value="#{service01Bean.selectedSPId}">
+													<p:ajax listener="#{service01Bean.loadSpDetails}" />
+													<f:selectItem itemLabel="Выберите пакет" itemValue="0" />
+													<f:selectItems value="#{service01Bean.spList}" var="wa_sp"
+														itemLabel="#{wa_sp.name}" itemValue="#{wa_sp.id}" />
+												</p:selectOneMenu></td>
+										</tr>
+									</table>
+								</div>
+
+
+
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="Срок гарантии " /></td>
+											<td><p:inputText id="conWarMon" size="5" disabled="true"
+													value="#{service01Bean.p_contract.warranty}" /> <p:outputLabel
+													value=" months" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Дата покупки " /></td>
+											<td><p:calendar id="conDate" styleClass="dateField"
+													disabled="true"
+													value="#{service01Bean.p_contract.contract_date}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Дата выдачи " /></td>
+											<td><p:calendar id="conDateIssue" styleClass="dateField"
+													disabled="true"
+													value="#{service01Bean.p_contract.matnr_release_date}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+										</tr>
+
+									</table>
+								</div>
+
+
+							</fieldset>
+
+						</div>
+						
+						
+						
+						
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								
+						
+								<p:commandButton type="push" value="Сохранить" id="save_button"
+									align="right"
+									disabled="#{service01Bean.p_disabled_save_button}"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{service01Bean.to_save}" update="messages">
+									<p:confirm header="Confirmation"
+										message="Сохранить новый сервис?" icon="ui-icon-alert" />
+								</p:commandButton>
+							</f:facet>
+
+							<f:facet name="right">
+								<p:commandButton actionListener="#{service01Bean.checkAll}" id="sform_button"
+									value="Сформировать" styleClass="add_button"
+									icon="ui-icon-arrowrefresh-1-s" update="messages" />
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+								<p:commandButton actionListener="#{service01Bean.addRow}" 
+									value="Добавить" styleClass="add_button" icon="ui-icon-plus"
+									id="add_button"
+									disabled="#{service01Bean.p_disabled_add_button}" />
+							</f:facet>
+						</p:toolbar>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+							align="center">
+							<p:commandButton value="Да" type="button" align="center"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Нет" type="button" align="center"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<div class="wrapRTClass">
+								<p:scrollPanel style="width: 100%; height:100%"
+									easing="easeOutElastic" id="olScrollPanel">
+
+									<p:dataTable value="#{service01Bean.servPosListTable}" var="o"
+										widgetVar="dataTableWidgetVar" id="olTable"
+										emptyMessage="Нет записей" styleClass="employeeTable"
+										headerClass="employeeTableHeader" sortBy="#{o.group}"
+										rowClasses="employeeTableOddRow,employeeTableEvenRow"
+										update="messages">
+
+										<p:column>
+											<f:facet name="header">#</f:facet>
+											<h:outputText id="b_index" value="#{o.index}"
+												styleClass="index" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Операция</f:facet>
+											<p:selectOneMenu id="serv_oper"
+												value="#{o.servPos.operation}"
+												disabled="#{service01Bean.dis_selOperType}">
+												<p:ajax
+													listener="#{service01Bean.updateByOperType(o.index)}" />
+												<f:selectItems value="#{service01Bean.ot_l}" var="wa_ot"
+													itemLabel="#{wa_ot.operName}" itemValue="#{wa_ot.operType}" />
+											</p:selectOneMenu>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Материал</f:facet>
+											<h:inputText id="b_matnr" value="#{o.matnr.text45}" size="35"
+												maxlength="35" styleClass="input1" disabled="true" />
+											<p:commandButton icon="ui-icon-newwin" type="push" id="mat"
+												onclick="PF('matnrWidget').show();" styleClass="f4button"
+												disabled="#{o.dis_mat}">
+												<f:setPropertyActionListener
+													target="#{service01Bean.p_spTableRow}" value="#{o}" />
+											</p:commandButton>
+										</p:column>
+										<p:column>
+											<f:facet name="header">FNo</f:facet>
+											<p:selectOneMenu id="fno" value="#{o.servPos.fno}"
+												disabled="#{service01Bean.dis_selectFNO}">
+												<f:selectItem itemLabel="0" itemValue="0" />
+												<f:selectItem itemLabel="1" itemValue="1" />
+												<f:selectItem itemLabel="2" itemValue="2" />
+												<f:selectItem itemLabel="3" itemValue="3" />
+												<f:selectItem itemLabel="4" itemValue="4" />
+												<f:selectItem itemLabel="5" itemValue="5" />
+											</p:selectOneMenu>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Описание</f:facet>
+											<h:inputText value="#{o.servPos.info2}" size="35"
+												disabled="#{!service01Bean.disServPacket}" maxlength="145"
+												styleClass="input50" id="infoText" />
+										</p:column>
+
+										<p:column rendered="false">
+											<f:facet name="header">В гарантии</f:facet>
+											<p:selectOneMenu id="warranty" value="#{o.servPos.warranty}"
+												disabled="#{!service01Bean.disServPacket}">
+												<f:selectItem itemLabel="Вне гарантии" itemValue="0" />
+												<f:selectItem itemLabel="В гарантии" itemValue="1" />
+											</p:selectOneMenu>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Новая<br />гарантия</f:facet>
+											<h:inputText value="#{o.servPos.new_war_inm}" size="3"
+												disabled="true" id="newWar" maxlength="5"
+												styleClass="input50" />
+											<h:outputLabel value=" мес." />
+										</p:column>
+
+
+										<p:column>
+											<f:facet name="header">Гар.</f:facet>
+											<p:selectBooleanCheckbox id="warrantyCheckBox"
+												value="#{o.warranty}"
+												disabled="#{!service01Bean.disServPacket}">
+												<p:ajax listener="#{service01Bean.checkWarranty(o.index)}"
+													update=":messages" />
+											</p:selectBooleanCheckbox>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Цена <h:outputLabel
+													value=" #{service01Bean.p_currency}" />
+											</f:facet>
+											<h:inputText id="unitPrice" value="#{o.servPos.matnr_price}"
+												size="10" maxlength="10" styleClass="input1"
+												disabled="#{o.dis_pr}" label="Unit Price">
+												<p:ajax event="change"
+													listener="#{service01Bean.calcRow(o.index)}" />
+												<f:convertNumber pattern="#0.00" />
+											</h:inputText>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Количество</f:facet>
+											<h:inputText id="b_menge" value="#{o.servPos.quantity}"
+												size="8" maxlength="10" styleClass="input1"
+												disabled="#{o.dis_qq}">
+												<p:ajax event="change"
+													listener="#{service01Bean.quantityChange(o.index)}" />
+												<f:convertNumber pattern="#0" />
+											</h:inputText>
+											<h:outputLabel> шт.</h:outputLabel>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Сумма в <h:outputLabel
+													value="#{service01Bean.p_main_currency}" />
+											</f:facet>
+											<h:inputText id="b_dmbtr" value="#{o.sum}" size="15"
+												maxlength="15" styleClass="input1" disabled="true">
+												<f:convertNumber pattern="#0.00" />
+											</h:inputText>
+										</p:column>
+
+										<p:column rendered="true">
+											<f:facet name="header">Сумма в <h:outputText
+													id="bkpf_waers2" styleClass="waers"
+													value="#{service01Bean.p_currency}" />
+											</f:facet>
+											<h:inputText id="b_wrbtr" value="#{o.sum_sc}" size="15"
+												maxlength="15" styleClass="input1" disabled="true">
+												<f:convertNumber pattern="#0.00" />
+											</h:inputText>
+										</p:column>
+
+										<p:column>
+											<p:commandButton icon="ui-icon-close" type="push"
+												disabled="#{service01Bean.dis_delServPosBtn}"
+												actionListener="#{service01Bean.deleteTableRow(o.index)}"
+												styleClass="f4button" />
+										</p:column>
+
+										<p:summaryRow id="summaryRow">
+											<p:column colspan="9" style="text-align:right">
+												<h:outputText value="Итоги:" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{service01Bean.sum_dmbtr}"
+													id="summaryMC">
+													<f:convertNumber type="currency"
+														currencySymbol="#{service01Bean.p_main_currency}" />
+												</h:outputText>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{service01Bean.sum_wrbtr}"
+													id="summarySC">
+													<f:convertNumber type="currency"
+														currencySymbol="#{service01Bean.p_currency}" />
+												</h:outputText>
+											</p:column>
+										</p:summaryRow>
+
+									</p:dataTable>
+								</p:scrollPanel>
+
+							</div>
+						</div>
+
+
+
+
+						<p:outputPanel rendered="#{!service01Bean.disServPacket}">
+							<h4>Список запчастей к которым присваиваются гарантии</h4>
+						</p:outputPanel>
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<div class="wrapRTClass">
+								<p:scrollPanel style="height:100%" easing="easeOutElastic"
+									id="spWarScrollPanel"
+									rendered="#{!service01Bean.disServPacket}">
+
+									<p:dataTable value="#{service01Bean.spWarL}" var="o"
+										widgetVar="warTableWidgetVar" id="spWarTable"
+										emptyMessage="Нет записей" styleClass="employeeTable"
+										headerClass="employeeTableHeader" sortBy="#{o.group}"
+										rowClasses="employeeTableOddRow,employeeTableEvenRow"
+										update="messages">
+
+										<p:column>
+											<f:facet name="header">#</f:facet>
+											<h:outputText id="b_index" value="#{o.index}"
+												styleClass="index" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Описание</f:facet>
+											<h:inputText id="infoText" value="#{o.spWar.info}" size="50"
+												maxlength="145" styleClass="input1" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Гарантия<br />(в мес.)</f:facet>
+											<h:inputText value="#{o.spWar.war_months}" size="5"
+												maxlength="5" id="war_mon" disabled="true" />
+										</p:column>
+
+									</p:dataTable>
+								</p:scrollPanel>
+
+							</div>
+						</div>
+
+
+
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<fieldset style="border: 1px solid #ddd;">
+								<legend>Подзаголовок сервиса</legend>
+
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="Сумма:" /></td>
+											<td><p:inputText id="summTotal" size="15"
+													disabled="true"
+													value="#{service01Bean.p_service.summTotal}" /> <p:outputLabel
+													id="totalCurrency"
+													value=" #{service01Bean.p_service.currency}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Скидка:" /></td>
+											<td><p:inputText id="discountTotal" size="15"
+													disabled="true" value="#{service01Bean.p_service.discount}" />
+												<p:outputLabel id="discCurrency"
+													value=" #{service01Bean.p_service.currency}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Сумма к оплате:" /></td>
+											<td><p:inputText id="paymentDue" size="15"
+													disabled="true"
+													value="#{service01Bean.p_service.payment_due}" /> <p:outputLabel
+													id="paymnetCurrency"
+													value=" #{service01Bean.p_service.currency}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Оплачено " /></td>
+											<td><p:inputText id="paid" size="15" disabled="true"
+													value="#{service01Bean.p_service.paid}" /> <p:outputLabel
+													id="paidCurrency"
+													value=" #{service01Bean.p_service.currency}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Премия мастера " /></td>
+											<td><p:inputText id="masterPremi" size="15"
+													disabled="true"
+													value="#{service01Bean.p_service.master_premi}" /> <p:outputLabel
+													id="masterCurrency"
+													value=" #{service01Bean.p_service.master_currency}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Премия оператора " /></td>
+											<td><p:inputText id="operPremi" size="15"
+													disabled="true"
+													value="#{service01Bean.p_service.oper_premi}" /> <p:outputLabel
+													id="operCurrency"
+													value=" #{service01Bean.p_service.oper_currency}" /></td>
+										</tr>
+
+									</table>
+								</div>
+
+							</fieldset>
+						</div>
+					</h:form>
+
+					<p:dialog header="Материал" widgetVar="matnrWidget" dynamic="true"
+						width="600" height="535" id="matnrTableWidget">
+
+						<h:form id="matnrForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('matnrForm:selectMatnrBtn').click();return false;}">
+
+							<div class="ui-grid-row">
+								<table>
+									<tr height="40px">
+										<td width="200px"><p:outputLabel value=" Code: " /> <p:inputText
+												value="#{service01Bean.matnrSearch.code}">
+												<p:ajax event="keyup"
+													listener="#{service01Bean.refreshMatnrList}" />
+											</p:inputText></td>
+										<td><p:outputLabel value=" Name: " /> <p:inputText
+												value="#{service01Bean.matnrSearch.text45}">
+												<p:ajax event="keyup"
+													listener="#{service01Bean.refreshMatnrList}" />
+											</p:inputText></td>
+									</tr>
+								</table>
+							</div>
+
+							<p:dataTable scrollable="true" scrollHeight="400"
+								id="singleMatnr" var="matnr" rowKey="#{matnr.index}"
+								value="#{service01Bean.p_matnr_list}" selectionMode="single"
+								selection="#{service01Bean.selectedMatnr}">
+								
+								<p:ajax event="rowDblselect" listener="#{service01Bean.assignSelectedMatnr}" 
+    								update=":messages" global="false" />
+    								
+								<f:facet name="header">
+									<p:commandButton id="selectMatnrBtn"
+										actionListener="#{service01Bean.assignSelectedMatnr}"
+										value="Выбрать" />
+								</f:facet>
+
+								<p:column headerText="Code" footerText="Code" style="width:50px">
+									<h:outputText value="#{matnr.matnr.code}" />
+								</p:column>
+								<p:column headerText="Название" footerText="Название"
+									style="width:200px">
+									<h:outputText value="#{matnr.matnr.text45}" />
+								</p:column>
+								<p:column headerText="Цена" footerText="Цена" style="width:50px">
+									<h:outputText value="#{matnr.price}" />
+								</p:column>
+								<p:column headerText="Валюта" footerText="Валюта"
+									style="width:50px">
+									<h:outputText value="#{matnr.currency}" />
+								</p:column>
+								<p:column headerText="Кол." footerText="Кол." style="width:50px">
+									<h:outputText value="#{matnr.menge}">
+										<f:convertNumber pattern="¤#,##0" currencySymbol="" />
+									</h:outputText>
+								</p:column>
+
+							</p:dataTable>
+						</h:form>
+					</p:dialog>
+
+
+					<ui:include src="contractlist.xhtml">
+						<ui:param name="formBean" value="#{service01Bean}" />
+					</ui:include>
+
+					<ui:include src="customerWidget.xhtml">
+						<ui:param name="formBean" value="#{service01Bean}" />
+					</ui:include>
+
+					<ui:include src="salistdlg.xhtml">
+						<ui:param name="formBean" value="#{service01Bean}" />
+					</ui:include>
+
+
+					<ui:include src="staffdlg.xhtml">
+						<ui:param name="formBean" value="#{service01Bean}" />
+					</ui:include>
+				</f:view>
+
+			</div>
+		</div>
+	</div>
+
+</h:body>
+</html>

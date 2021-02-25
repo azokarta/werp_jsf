@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['hr.customer.new_customer']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css" />
+	<h:outputStylesheet name="main-form.css" library="css" />
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				 	<ui:param name="pageTitle" value="#{msg['breadcrumb.hrc01']}" />
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+				<f:view>
+
+					<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg.save}"
+									icon="ui-icon ui-icon-check" actionListener="#{hrc01Bean.save}"
+									update="form, :messages" />
+							</f:facet>
+						</p:toolbar>
+						<br />
+						<div class="ui-grid ui-grid-responsive">
+							<div class="ui-grid-col-4" id="primaryInfo">
+								<fieldset class="primaryInfoFieldSet">
+									<legend>#{msg['hr.customer.main_data']}</legend>
+									<table class="form-table1">
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.customer_type']}" /></td>
+											<td class="value"><p:selectOneMenu id="fiz_yur"
+													value="#{hrc01Bean.customer.fiz_yur}">
+													<p:ajax update="form"></p:ajax>
+													<f:selectItem itemLabel="#{msg['fiz_lico']}" itemValue="2" />
+													<f:selectItem itemLabel="#{msg['yur_lico']}" itemValue="1" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.iin_bin']}" /></td>
+											<td class="value"><h:inputText id="iin_bin"
+													autocomplete="off" value="#{hrc01Bean.customer.iin_bin}" /></td>
+										</tr>
+
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.name']}" /></td>
+											<td class="value"><h:inputText id="name" maxlength="45"
+													autocomplete="off" value="#{hrc01Bean.customer.name}"
+													disabled="#{hrc01Bean.customer.fiz_yur == 2}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.director']}" /></td>
+											<td class="value"><h:inputText id="director"
+													autocomplete="off"
+													value="#{hrc01Bean.customer.director}"
+													disabled="#{hrc01Bean.customer.fiz_yur == 2}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['accountant']}" /></td>
+											<td class="value"><h:inputText id="buh" maxlength="45"
+													autocomplete="off" value="#{hrc01Bean.customer.buh}"
+													disabled="#{hrc01Bean.customer.fiz_yur == 2}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.firstname']}" /></td>
+											<td class="value"><h:inputText id="firstname"
+													autocomplete="off"
+													value="#{hrc01Bean.customer.firstname}"
+													disabled="#{hrc01Bean.customer.fiz_yur == 1}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.lastname']}" /></td>
+											<td class="value"><h:inputText id="lastname"
+													autocomplete="off"
+													value="#{hrc01Bean.customer.lastname}"
+													disabled="#{hrc01Bean.customer.fiz_yur == 1}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.middlename']}" /></td>
+											<td class="value"><h:inputText id="middlename"
+													autocomplete="off"
+													value="#{hrc01Bean.customer.middlename}"
+													disabled="#{hrc01Bean.customer.fiz_yur == 1}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.birthday']}" /></td>
+											<td class="value"><p:calendar id="birthday"
+													styleClass="bldat" pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{hrc01Bean.customer.birthday}"
+													converterMessage="Date is invalid." navigator="true"
+													locale="#{systemLocale.currentLanguage}"
+													yearRange="1930:2015"
+													disabled="#{hrc01Bean.customer.fiz_yur == 1}">
+
+												</p:calendar></td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+
+							<div class="ui-grid-col-4" id="contactInfo">
+								<fieldset class="contactInfoFieldSet">
+									<legend>#{msg['hr.customer.contact_data']}</legend>
+									<table class="form-table1">
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.telephone']}" /></td>
+											<td class="value"><h:inputText id="telephone"
+													autocomplete="off"
+													value="#{hrc01Bean.customer.telephone}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.mobile']}" /></td>
+											<td class="value"><h:inputText id="mobile"
+													maxlength="45" autocomplete="off"
+													value="#{hrc01Bean.customer.mobile}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.mobile2']}" /></td>
+											<td class="value"><h:inputText id="mobile2"
+													autocomplete="off" value="#{hrc01Bean.customer.mobile2}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.email']}" /></td>
+											<td class="value"><h:inputText id="email" maxlength="45"
+													autocomplete="off" value="#{hrc01Bean.customer.email}" />
+											</td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.address']}" /></td>
+											<td class="value"><h:inputText id="address"
+													autocomplete="off" value="#{hrc01Bean.customer.address}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['hr.customer.address_reg']}" /></td>
+											<td class="value"><h:inputText id="address_reg"
+													autocomplete="off"
+													value="#{hrc01Bean.customer.address_reg}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.address_work']}" /></td>
+											<td class="value"><h:inputText id="address_work"
+													autocomplete="off"
+													value="#{hrc01Bean.customer.address_work}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.country']}" /></td>
+											<td class="value"><p:selectOneMenu id="country"
+													value="#{hrc01Bean.customer.country_id}">
+													<f:selectItem itemLabel="#{msg['hr.customer.select']}" itemValue="0" />
+													<f:selectItems value="#{countryF4Bean.country_list}"
+														var="wa_country" itemLabel="#{wa_country.country}"
+														itemValue="#{wa_country.country_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+
+							<div class="ui-grid-col-4" id="passportInfo">
+								<fieldset class="passportInfoFieldSet">
+									<legend>#{msg['hr.customer.passport_data']}</legend>
+									<table class="form-table1">
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.passport_id']}" /></td>
+											<td class="value"><h:inputText id="passport_id"
+													autocomplete="off"
+													value="#{hrc01Bean.customer.passport_id}"
+													disabled="#{hrc01Bean.customer.fiz_yur == 1}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.passport_given_by']}" /></td>
+											<td class="value"><h:inputText id="passport_given_by"
+													autocomplete="off"
+													value="#{hrc01Bean.customer.passport_given_by}"
+													disabled="#{hrc01Bean.customer.fiz_yur == 1}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel value="#{msg['hr.customer.passport_given_date']}" /></td>
+											<td class="value"><p:calendar id="passport_given_date"
+													styleClass="bldat" pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{hrc01Bean.customer.passport_given_date}"
+													converterMessage="Date is invalid." navigator="true"
+													locale="#{systemLocale.currentLanguage}"
+													yearRange="1930:2015"
+													disabled="#{hrc01Bean.customer.fiz_yur == 1}">
+												</p:calendar></td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+
+							<div class="ui-grid-row">
+								<div class="ui-grid-col-6">
+									<fieldset class="passportInfoFieldSet">
+										<legend>#{msg['hr.customer.bank_account']}</legend>
+										<p:commandButton type="push" value="#{msg['hr.customer.add_account']}"
+											icon="ui-icon ui-icon-plus"
+											actionListener="#{hrc01Bean.addBankAccount}"
+											update="hrc-bank-account">
+										</p:commandButton>
+										<p:dataTable value="#{hrc01Bean.baList}" var="ba"
+											rowKey="#{ba.ba_id}" id="hrc-bank-account">
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="IBAN" />
+												</f:facet>
+												<p:inputText value="#{ba.iban}" style="width:200px;"></p:inputText>
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="#{msg['hr.customer.currency']}" />
+												</f:facet>
+												<p:selectOneMenu value="#{ba.currency}">
+													<f:selectItem itemLabel="#{msg['hr.customer.select']}" itemValue="" />
+													<f:selectItems value="#{currencyF4Bean.currency_list}"
+														var="wa_currency" itemLabel="#{wa_currency.text20}"
+														itemValue="#{wa_currency.currency}" />
+												</p:selectOneMenu>
+											</p:column>
+											<p:column>
+												<f:facet name="header">
+													<h:outputText value="#{msg['hr.customer.bank']}" />
+												</f:facet>
+												<p:selectOneMenu value="#{ba.bank_id}">
+													<f:selectItem itemLabel="#{msg['hr.customer.select']}" itemValue="0" />
+													<f:selectItems value="#{refBank.recordList}" var="bank"
+														itemLabel="#{bank.name_ru}" itemValue="#{bank.b_id}" />
+												</p:selectOneMenu>
+											</p:column>
+											<p:column style="width:50px;">
+												<p:commandButton title="#{msg['hr.customer.delete']}"
+													icon="ui-icon ui-icon-circle-close"
+													update="hrc-bank-account"
+													actionListener="#{hrc01Bean.removeBankAccount(ba)}">
+												</p:commandButton>
+											</p:column>
+										</p:dataTable>
+									</fieldset>
+								</div>
+							</div>
+						</div>
+					</h:form>
+				</f:view>
+			</div>
+		</div>
+	</div>
+
+
+</h:body>
+</html>

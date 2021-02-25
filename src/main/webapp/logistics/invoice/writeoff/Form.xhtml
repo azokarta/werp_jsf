@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+
+				<ui:repeat var="button"
+					value="#{logWriteoffCrudBean.actionBean.buttonList}">
+					<p:commandButton type="push" value="#{button.label}"
+						actionListener="#{button.doAction()}" update=":messages,:form">
+					</p:commandButton>
+				</ui:repeat>
+
+				<p:commandButton rendered="#{logWriteoffCrudBean.mode != 'view'}"
+					type="push" value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check"
+					actionListener="#{logWriteoffCrudBean.Save()}" update=":messages">
+				</p:commandButton>
+			</f:facet>
+		</p:toolbar>
+		<br />
+
+		<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+			<div class="ui-grid-col-5" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>#{msg['logistics.doc_info']}</legend>
+					<table>
+						<tr>
+							<td>№</td>
+							<td><h:outputText value="№#{logWriteoffCrudBean.invoice.id}"></h:outputText></td>
+						</tr>
+						<tr>
+							<td>#{msg['logistics.invoice.type']}</td>
+							<td><h:outputText
+									value="#{logWriteoffCrudBean.invoice.getTypeName()}"></h:outputText></td>
+						</tr>
+						<tr>
+							<td>#{msg['company']}</td>
+							<td><h:outputText
+									rendered="#{logWriteoffCrudBean.mode == 'view' or (!userinfo.sys_admin and !userinfo.main)}"
+									value="#{bukrsF4Bean.getNameByBukrs(logWriteoffCrudBean.invoice.bukrs)}"></h:outputText>
+
+								<p:selectOneMenu
+									rendered="#{logWriteoffCrudBean.mode != 'view' and (userinfo.sys_admin or userinfo.main)}"
+									value="#{logWriteoffCrudBean.invoice.bukrs}">
+									<p:ajax update="from_werks"></p:ajax>
+									<f:selectItem itemValue="" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.con_ser_number']}</td>
+							<td><p:outputLabel
+									value="#{msg['contract']} №#{logWriteoffCrudBean.invoice.contract_number}"
+									rendered="#{logWriteoffCrudBean.invoice.contract_number > 0}"></p:outputLabel>
+
+								<p:outputLabel
+									value="#{msg['service']} №#{logWriteoffCrudBean.invoice.service_number}"
+									rendered="#{logWriteoffCrudBean.invoice.service_number > 0}"></p:outputLabel>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.parent_doc']}</td>
+							<td><p:panel id="parentDocPanel">
+									<h:link rendered="#{!empty logWriteoffCrudBean.parentInvoice}"
+										outcome="/logistics/invoice/writeoff-doc/View" target="_blank"
+										value="№#{logWriteoffCrudBean.parentInvoice.id} Документ на списание">
+										<f:param name="id"
+											value="#{logWriteoffCrudBean.parentInvoice.id}" />
+									</h:link>
+
+									<p:commandButton rendered="false" icon="ui-icon-newwin"
+										type="push" update=":messages"
+										oncomplete="PF('MdDocsDialog').show();" styleClass="f4button" />
+								</p:panel></td>
+						</tr>
+
+						<tr>
+							<td><h:outputText value="#{msg['logistics.sender_whouse']}"></h:outputText></td>
+							<td><h:outputText
+									rendered="#{logWriteoffCrudBean.mode == 'view'}"
+									value="#{werksF4Bean.getName(logWriteoffCrudBean.invoice.from_werks)}"></h:outputText>
+
+								<p:selectOneMenu
+									rendered="#{logWriteoffCrudBean.mode != 'view'}"
+									id="from_werks"
+									value="#{logWriteoffCrudBean.invoice.from_werks}">
+									<f:selectItem itemValue="0" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems
+										value="#{lgHelperBean.getUserWerks(logWriteoffCrudBean.invoice.bukrs)}"
+										var="w" itemLabel="#{w.text45}" itemValue="#{w.werks}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['date']}</td>
+							<td><h:outputText
+									rendered="#{logWriteoffCrudBean.mode == 'view'}"
+									value="#{logWriteoffCrudBean.invoice.invoice_date}">
+									<f:convertDateTime pattern="dd.MM.YYYY"></f:convertDateTime>
+								</h:outputText> <p:calendar rendered="#{logWriteoffCrudBean.mode != 'view'}"
+									pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{logWriteoffCrudBean.invoice.invoice_date}"
+									converterMessage="Wrong Date" navigator="true">
+								</p:calendar></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['department']}</td>
+							<td><h:outputText
+									rendered="#{logWriteoffCrudBean.mode == 'view'}"
+									value="#{departmentF4Bean.getName(logWriteoffCrudBean.invoice.department_id,userinfo.u_language)}"></h:outputText>
+								<p:selectOneMenu
+									rendered="#{logWriteoffCrudBean.mode != 'view'}"
+									value="#{logWriteoffCrudBean.invoice.department_id}">
+									<f:selectItem itemValue="0" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems value="#{departmentF4Bean.l_dep}" var="dep"
+										itemValue="#{dep.dep_id}"
+										itemLabel="#{dep.getName(userinfo.u_language)}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.description']}</td>
+							<td><p:inputTextarea
+									value="#{logWriteoffCrudBean.invoice.note}"
+									rendered="#{logWriteoffCrudBean.mode != 'view'}"></p:inputTextarea>
+								<p:panel rendered="#{logWriteoffCrudBean.mode == 'view'}">
+									#{logWriteoffCrudBean.invoice.note}
+								</p:panel></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.embez_worker']}</td>
+							<td><p:panel id="responsibleStaffPanel">
+									<h:outputText
+										rendered="#{!empty logWriteoffCrudBean.invoice.responsible}"
+										value="#{logWriteoffCrudBean.invoice.responsible.getLF()}"></h:outputText>
+
+									<p:commandButton
+										rendered="#{logWriteoffCrudBean.mode != 'view'}"
+										icon="ui-icon-newwin" type="push" update=":messages"
+										oncomplete="PF('SalaryListDialog').show();"
+										styleClass="f4button" />
+										
+									<p:commandButton
+										rendered="#{logWriteoffCrudBean.mode != 'view'}"
+										icon="ui-icon-closethick" type="push" update=":messages,responsibleStaffPanel"
+										actionListener="#{logWriteoffCrudBean.removeResponsible()}"
+										styleClass="f4button" />
+								</p:panel></td>
+						</tr>
+
+
+						<tr>
+							<td>#{msg['logistics.creator']}</td>
+							<td><h:outputText
+									rendered="#{logWriteoffCrudBean.mode == 'create' and !empty logWriteoffCrudBean.userData.staff.staff_id}"
+									value="#{logWriteoffCrudBean.userData.staff.getLF()}"></h:outputText>
+
+								<h:outputText rendered="#{logWriteoffCrudBean.mode != 'create'}"
+									value="#{logWriteoffCrudBean.invoice.creator.getLF()}"></h:outputText>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.created_at']}</td>
+							<td><h:outputText
+									value="#{logWriteoffCrudBean.invoice.created_at}">
+									<f:convertDateTime pattern="dd.MM.YYYY kk:mm"></f:convertDateTime>
+								</h:outputText></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['status']}</td>
+							<td><h:outputText
+									value="#{logWriteoffCrudBean.invoice.getStatusName()}">
+								</h:outputText></td>
+						</tr>
+
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+
+						<tr>
+							<td colspan="2"></td>
+						</tr>
+
+					</table>
+
+					<div class="ui-grid-col-12" style="margin-top: 20px;"></div>
+				</fieldset>
+			</div>
+
+
+			<div class="ui-grid-col-7" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>#{msg['logistics.matnr_list']}</legend>
+
+					<p:dataTable id="itemsListTable"
+						value="#{logWriteoffCrudBean.invoiceItems}" var="item"
+						emptyMessage="#{msg.no_records}"
+						rowClasses="employeeTableOddRow,employeeTableEvenRow">
+						<p:column>
+							<f:facet name="header">#{msg['logistics.matnr_code']}</f:facet>
+							<h:outputText value="#{item.matnrObject.code}"></h:outputText>
+						</p:column>
+						<p:column style="width: 25%;">
+							<f:facet name="header">#{msg['logistics.matnr_name']}</f:facet>
+							<h:outputText value="#{item.matnrObject.text45}"></h:outputText>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">#{msg['logistics.quantity']}</f:facet>
+							<h:inputText disabled="#{item.quantity == 1}"
+								value="#{item.quantity}" onfocus="this.select();" maxlength="10"
+								styleClass="input1"
+								rendered="#{logWriteoffCrudBean.mode != 'view'}">
+							</h:inputText>
+							<h:outputText value="#{item.quantity}"
+								rendered="#{logWriteoffCrudBean.mode == 'view'}">
+							</h:outputText>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">#{msg['logistics.ser_num']}</f:facet>
+							<ui:repeat var="b" value="#{item.getParsedBarcodesAsList()}">
+								<h:outputText value="#{b}"></h:outputText>
+								<br />
+							</ui:repeat>
+						</p:column>
+
+						<p:column style="width:60px;"
+							rendered="#{logWriteoffCrudBean.mode != 'view'}">
+							<p:commandButton icon="ui-icon-close" rendered="false">
+								<p:ajax listener="#{logWriteoffCrudBean.deleteItemsRow(item)}"
+									update="itemsListTable"></p:ajax>
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+				</fieldset>
+			</div>
+
+		</div>
+	</h:form>
+</ui:composition>
+</html>

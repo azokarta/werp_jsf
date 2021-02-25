@@ -1,0 +1,46 @@
+.bukrs,  .waers
+{
+	width:40px;
+}
+
+.blart, .monat
+{
+	width:23px;
+}
+.budat .ui-inputfield, .bldat .ui-inputfield{
+	font-size:12px;
+	width:75px;
+}
+
+
+.outputTable{   
+	border-collapse:collapse;
+	 
+}
+ 
+.outputTableHeader{
+	text-align:center;
+	background:none repeat scroll 0 0 #E5E5E5;
+	border-bottom:1px solid #BBBBBB;
+	padding:14px;
+}
+ 
+.outputTableOddRow{
+	text-align:center;
+	background:none repeat scroll 0 0 #FFFFFFF;
+	border-top:1px solid #BBBBBB;
+}
+ 
+.outputTableEvenRow{
+	text-align:center;
+	background:none repeat scroll 0 0 #F9F9F9;
+	border-top:1px solid #BBBBBB;
+}
+
+.wrapRTClass .ui-datatable table{
+	width: auto;
+}
+body 
+{
+    font-size:12px;
+}

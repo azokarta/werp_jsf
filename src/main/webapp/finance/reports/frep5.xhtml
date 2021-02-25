@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("form:sc_fiz_yur_input").value == 1) {
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+
+				document.getElementById("form:sc_name").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+			} else if (document.getElementById("form:sc_fiz_yur_input").value == 2) {
+				document.getElementById("form:sc_birthday_input").disabled = false;
+				document.getElementById("form:sc_passport_id").disabled = false;
+				document.getElementById("form:sc_firstname").disabled = false;
+				document.getElementById("form:sc_lastname").disabled = false;
+				document.getElementById("form:sc_middlename").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			} else {
+				document.getElementById("form:sc_iin_bin").value = null;
+				document.getElementById("form:sc_iin_bin").disabled = true;
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			}
+
+		}
+	</script>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<ui:include src="/template/sessionTimeOut.xhtml" />
+	<h:outputStylesheet library="css" name="reports/finance/kreditor/rfklist.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.frep5']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,frep5Bean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+							
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:tabView id = "tabView" cache="false" activeIndex="#{frep5Bean.tabindex}" >
+									<p:ajax event="tabChange"  update="bsegScrollPanel bsegScrollPanel2"/>
+							        <p:tab title="#{msg.search_options}">
+							        	<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" id="searchPanelGridId">
+							        		 <p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column colspan="3">
+							        		<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{frep5Bean.p_searchTable.bukrs}">
+							        			<p:ajax listener="#{frep5Bean.updateBranch}"/>
+							        			<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu>
+											</p:column>
+							        		</p:row>
+										    <p:row>
+        										<p:column><h:outputLabel value = "#{msg.branch}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectCheckboxMenu id="p_branch_id" value="#{frep5Bean.p_searchTable.selectedBranches}" label="#{msg.select}"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												            <f:selectItems value="#{frep5Bean.p_searchTable.l_branch}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}" />
+												        </p:selectCheckboxMenu>
+														
+														
+														
+												</p:column>
+											</p:row>
+											<p:row>
+        										<p:column><h:outputLabel value = "#{msg['dmsc.contract_date']} #{msg['from']} "/></p:column>
+												<p:column>
+														
+														<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{frep5Bean.p_searchTable.con_date_from}" />	
+														
+												</p:column>
+												<p:column><h:outputLabel value = " #{msg['to']} "/></p:column>
+												<p:column>
+														
+														<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{frep5Bean.p_searchTable.con_date_to}" />	
+														
+												</p:column>			
+											</p:row>
+ 											<p:row>
+        										<p:column><h:outputLabel value = "#{msg.type}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectCheckboxMenu id="p_type_id" value="#{frep5Bean.p_searchTable.l_type}" label="#{msg.select}"
+												                              filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+												            
+												            <f:selectItem itemValue="0" itemLabel="#{msg.frep5_ct_standard}"/>
+												            <f:selectItem itemValue="1" itemLabel="#{msg.frep5_ct_bu}" />
+												            <f:selectItem itemValue="2" itemLabel="#{msg.frep5_ct_present}" />
+												            <f:selectItem itemValue="3" itemLabel="#{msg.frep5_ct_service}" />
+
+												        </p:selectCheckboxMenu>
+														
+												</p:column>
+											</p:row>
+											<p:row>
+        										<p:column colspan="4" style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{frep5Bean.to_search}"/></p:column>
+        									</p:row>
+    									</p:panelGrid>
+							        
+							            
+							        </p:tab>
+							        <p:tab title="#{msg.result}" >
+							        
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel">
+										<p:toolbar styleclass="mp_toolbar">
+											<f:facet name="left">
+												<p:commandButton value="Excel" type="push"
+													icon="ui-icon-arrowthickstop-1-s" ajax="false">
+													<p:dataExporter type="xls" target="l_outputTable"
+														postProcessor="#{frep5Bean.postProcessXLS}" fileName="report" />
+												</p:commandButton>
+											</f:facet>
+										</p:toolbar>
+										
+										<p:dataTable value="#{frep5Bean.l_outputTable}" var="o" widgetVar="505"  id="l_outputTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											 
+											<p:columnGroup type="header">				
+													<p:row>
+										                <p:column  rowspan = "2" headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column  rowspan = "2" headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column  colspan = "3" headerText="#{msg['incash']}" />
+										                <p:column  colspan = "3" headerText="#{msg['installments']}" />
+										                <p:column  colspan = "3" headerText="#{msg['overallsum']}" />
+										            </p:row>									
+										            <p:row>
+										                <p:column headerText="#{msg['quantity']}" />
+										                <p:column headerText="#{msg['amount']} USD" />
+										                <p:column headerText="#{msg['bseg.wrbtr.long']}" />
+										                <p:column headerText="#{msg['quantity']}" />
+										                <p:column headerText="#{msg['amount']} USD" />
+										                <p:column headerText="#{msg['bseg.wrbtr.long']}" />
+										                <p:column headerText="#{msg['quantity']}" />
+										                <p:column headerText="#{msg['amount']} USD" />
+										                <p:column headerText="#{msg['bseg.wrbtr.long']}" />
+										            </p:row>
+										        </p:columnGroup>
+											
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.branchName}" style="#{o.branchName==null ? 'font-weight:bold;color:#07E' : ''}"/>
+											</p:column>
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.waers}" style="#{o.branchName==null ? 'font-weight:bold;color:#07E' : ''}"/>
+											</p:column>
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.nal_kol}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}" />
+												<p:commandButton type="push" value = "#{msg['detail']}" actionListener="#{frep5Bean.getDetail(o.branch_id,o.waers,1)}" 
+												rendered = "#{o.branchName==null ? 'false' : 'true'}"
+												style="float:right"/>
+											</p:column>
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.nal_dmbtr}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.nal_wrbtr}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>				
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.ras_kol}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}" />
+												<p:commandButton type="push" value = "#{msg['detail']}" actionListener="#{frep5Bean.getDetail(o.branch_id,o.waers,2)}" 
+												rendered = "#{o.branchName==null ? 'false' : 'true'}"
+												style="float:right"/>
+											</p:column>
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.ras_dmbtr}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.ras_wrbtr}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.tot_kol}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}" />
+											</p:column>
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.tot_dmbtr}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>
+											
+											<p:column style="#{o.branchName==null ? 'background-color:#ffff00' : ''}">
+												<h:outputText value="#{o.tot_wrbtr}" style="#{o.branchName==null ? 'font-weight:bold;color:black' : ''}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+											</p:column>	
+											
+											
+										</p:dataTable>
+										
+									</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							        <p:tab title="#{msg['detail']}">
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel2"
+										>
+							        <p:toolbar styleclass="mp_toolbar">
+											<f:facet name="left">
+												<p:commandButton value="Excel" type="push"
+													icon="ui-icon-arrowthickstop-1-s" ajax="false">
+													<p:dataExporter type="xls" target="l_detailTable"
+														postProcessor="#{frep5Bean.postProcessXLSDetail}" fileName="report" />
+												</p:commandButton>
+											</f:facet>
+										</p:toolbar>
+							        <p:dataTable value="#{frep5Bean.l_detailTable}" var="o" widgetVar="506"  id="l_detailTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											 
+											<p:columnGroup type="header">													
+										            <p:row>
+										            	<p:column headerText="#{msg['bkpf.belnr.long']}" />
+										                <p:column headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column headerText="#{msg['amount']} USD" />
+										                <p:column headerText="#{msg['bseg.wrbtr.long']}" />
+										                <p:column sortBy="#{o.con_date}" headerText="#{msg['dmsc.contract_date']}" />
+										                <p:column sortBy="#{o.contract_number}" headerText="SN" />
+										                <p:column sortBy="#{o.old_sn}" headerText="#{msg['old']} SN" />
+										            </p:row>
+										        </p:columnGroup>
+											
+											<p:column>
+												<h:outputText value="#{o.belnr}"/>
+												<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{o.belnr}&#38;gjahr=#{o.gjahr}&#38;bukrs=#{o.bukrs}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton4" 
+												style="float:right;margin-left:2px;margin-right:2px;">
+											</p:button>	
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.branchName}"/>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.waers}"/>
+												<f:facet name="footer">
+													<h:outputText value="#{frep5Bean.detailKolTotal}"  />
+												</f:facet>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.dmbtr}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+												<f:facet name="footer">
+													<h:outputText value="#{frep5Bean.detailDmbtrTotal}"  >
+														<f:convertNumber pattern="#,###,##0.00" />
+													</h:outputText>
+												</f:facet>
+											</p:column>
+											
+											<p:column>
+												<h:outputText value="#{o.wrbtr}"><f:convertNumber pattern="#,###,##0.00" /></h:outputText>
+												<f:facet name="footer">
+													<h:outputText value="#{frep5Bean.detailWrbtrTotal}"  >
+														<f:convertNumber pattern="#,###,##0.00" />
+													</h:outputText>
+												</f:facet>
+											</p:column>		
+											<p:column>
+												<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{o.con_date}" disabled="true"/>	
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.contract_number}"/>
+												<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{o.contract_number}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton1"  rendered="#{o.contract_number>0}"
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.old_sn}" rendered="#{o.old_sn>0}"/>
+												<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{o.contract_number}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton2"  rendered="#{o.old_sn>0}"
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+											</p:column>
+											
+										</p:dataTable>
+										
+										
+										</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							    </p:tabView>
+
+
+
+
+
+
+
+
+ 
+							
+
+
+
+								
+								
+							</h:form>
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

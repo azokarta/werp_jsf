@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<p:dataTable value="#{hrDocViewBean.document.hrDocItems}" var="item"
+		id="itemList">
+		<p:column>
+			<f:facet name="header">#{msg['employee']}</f:facet>
+			<p:outputLabel rendered="#{!empty item.staff}"
+				value="#{item.staff.getLF()}"></p:outputLabel>
+				
+			<p:button target="_blank" outcome="/hr/staff/View.xhtml"
+				icon="ui-icon-extlink" style="float:right;margin-right:5px;"
+				rendered="#{!empty item.staff}">
+				<f:param name="staffId" value="#{item.staff.staff_id}" />
+			</p:button>
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">#{msg['department']}</f:facet>
+			<p:outputLabel
+				value="#{departmentF4Bean.getName(item.departmentId,userinfo.u_language)}"></p:outputLabel>
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">#{msg['position']}</f:facet>
+			<p:outputLabel
+				value="#{positionF4Bean.getName(item.positionId,userinfo.u_language)}"></p:outputLabel>
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">#{msg['hr.salary.beg_date']}</f:facet>
+			<p:outputLabel
+				value="#{item.beginDate}">
+				<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+			</p:outputLabel>
+		</p:column>
+
+		<p:column>
+			<f:facet name="header">#{msg['hr.doc.manager']}</f:facet>
+			<p:outputLabel rendered="#{!empty item.manager}"
+				value="#{item.manager.getLF()}"></p:outputLabel>
+		</p:column>
+
+		<p:column headerText="#{msg['hr.doc.salary']}">
+			<h:outputText value="#{item.amount}">
+				<f:convertNumber currencySymbol="#{item.currency}"
+					type="currency"></f:convertNumber>
+			</h:outputText>
+			<h:outputText value=" #{item.currency}"></h:outputText>
+		</p:column>
+	</p:dataTable>
+</ui:composition>
+</html>

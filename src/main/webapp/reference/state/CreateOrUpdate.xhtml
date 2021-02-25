@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="StateCreateDlg" widgetVar="StateCreateDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Create State">
+		<h:form id="StateCreateForm" rendered="#{!empty refState.selected}">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2">
+					<p:outputLabel value="#{msg['reference.state.statename']}" />
+					<p:inputText value="#{refState.selected.statename}"/>
+
+					<p:outputLabel value="#{msg['reference.state.countryid']}" />
+					<p:selectOneMenu value="#{refState.selected.countryid}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue="0"></f:selectItem>
+						<f:selectItems value="#{countryF4Bean.country_list}" var="country"
+							itemLabel="#{country.country}" itemValue="#{country.country_id}"></f:selectItems>
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="Код" />
+					<p:inputText value="#{refState.selected.statecode}"/>
+					
+					<p:outputLabel value="Код тел" />
+					<p:inputText value="#{refState.selected.phonecode}"/>
+
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{refState.Save}" value="Save"
+					update=":StateListForm:datalist,:messages" />
+				<p:commandButton actionListener="#{refState.Reset}" value="Cancel"
+					onclick="PF('StateCreateDialog').hide()"
+					update="display,:StateListForm" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

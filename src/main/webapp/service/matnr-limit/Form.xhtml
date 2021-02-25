@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<p:button
+					outcome="Update.xhtml?id=#{matnrLimitCrudBean.selected.id}"
+					rendered="#{matnrLimitCrudBean.mode=='view'}" value="Редактировать">
+				</p:button>
+
+				<p:button outcome="List.xhtml"
+					rendered="#{matnrLimitCrudBean.mode=='view'}" value="В список">
+				</p:button>
+
+				<p:commandButton rendered="#{matnrLimitCrudBean.mode != 'view'}"
+					type="push" value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check"
+					actionListener="#{matnrLimitCrudBean.Save()}" update=":messages">
+				</p:commandButton>
+			</f:facet>
+		</p:toolbar>
+		<br />
+
+		<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+			<div class="ui-grid-col-5" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>Инфо</legend>
+					<table>
+						<tr>
+							<td>Компания</td>
+							<td><h:outputText
+									rendered="#{matnrLimitCrudBean.mode == 'view'}"
+									value="#{bukrsF4Bean.getNameByBukrs(matnrLimitCrudBean.selected.bukrs)}"></h:outputText>
+
+								<p:selectOneMenu rendered="#{matnrLimitCrudBean.mode != 'view'}"
+									value="#{matnrLimitCrudBean.selected.bukrs}">
+									<p:ajax update="branch_id branchIds"></p:ajax>
+									<f:selectItem itemValue="" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td>Филиал</td>
+							<td><h:outputText
+									rendered="#{matnrLimitCrudBean.mode == 'view'}"
+									value="#{branchF4Bean.getName(matnrLimitCrudBean.selected.branchId)}"></h:outputText>
+
+								<p:selectOneMenu id="branch_id"
+									rendered="#{matnrLimitCrudBean.mode == 'update'}"
+									value="#{matnrLimitCrudBean.selected.branchId}">
+									<f:selectItem itemValue="" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems
+										value="#{branchBean.getUserBranches(matnrLimitCrudBean.selected.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectOneMenu> 
+								
+								<p:selectCheckboxMenu id="branchIds" rendered="#{matnrLimitCrudBean.mode == 'create'}"
+									value="#{matnrLimitCrudBean.branchIds}" label="Филиалы"
+									multiple="true" filter="true" filterMatchMode="startsWith"
+									panelStyle="width:250px">
+									<f:selectItems
+										value="#{branchBean.getUserBranches(matnrLimitCrudBean.selected.bukrs)}"
+										var="branch" itemLabel="#{branch.text45}"
+										itemValue="#{branch.branch_id}" />
+								</p:selectCheckboxMenu></td>
+						</tr>
+
+						<tr>
+							<td>Должность</td>
+							<td><h:outputText
+									rendered="#{matnrLimitCrudBean.mode == 'view'}"
+									value="#{positionF4Bean.getName(matnrLimitCrudBean.selected.positionId)}"></h:outputText>
+
+								<p:selectOneMenu
+									value="#{matnrLimitCrudBean.selected.positionId}"
+									rendered="#{matnrLimitCrudBean.mode != 'view'}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems value="#{positionF4Bean.position_list}" var="p"
+										itemLabel="#{p.text}" itemValue="#{p.position_id}" />
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+
+						<tr>
+							<td colspan="2"></td>
+						</tr>
+
+					</table>
+				</fieldset>
+			</div>
+
+
+			<div class="ui-grid-col-7" style="display: block; float: left;">
+				<ui:include src="MatnrList.xhtml" />
+			</div>
+
+		</div>
+	</h:form>
+
+</ui:composition>
+</html>

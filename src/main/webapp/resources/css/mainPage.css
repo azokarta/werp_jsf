@@ -1,0 +1,61 @@
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(http://themes.googleusercontent.com/static/fonts/lato/v7/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff) format('woff');
+}
+
+body 
+{
+    background: #448ed3 ;
+	font-family: "Open Sans", Sans-serif;    
+}
+
+.ui-helper-clearfix, .ui-tree-node-content, .ui-corner-all
+{
+padding:0px;
+  
+}
+.logoutButton .ui-menu-list{
+  float:right;
+}
+
+
+
+input:focus {
+    border-color: #C9C9C9;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.15) 0 0 8px;
+}  
+
+span {
+	padding-bottom: 4px;
+}
+
+.ui-button {
+    height: 40px;
+    width: 275px;
+    border: solid 1px #E5E5E5;
+    outline: 0;
+    background: #FFFFFF url('bg_form.png') left top repeat-x;
+    background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
+    background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+    box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+}
+
+.ui-toolbar {
+	font-family: "Lato" ;
+    height: 40px;
+    width: 100%;
+    border: solid 1px #E5E5E5;
+    outline: 0;
+    background: #FFFFFF url('bg_form.png') left top repeat-x;
+    background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));
+    background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);
+    box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+    -moz-box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 0 8px;
+} 
+
+

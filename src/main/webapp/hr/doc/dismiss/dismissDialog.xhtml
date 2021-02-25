@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<p:dialog header="Сотрудники для увольнения" widgetVar="dismissWidget"
+		minHeight="100" width="700" style="padding:10px;" appendTo="@(body)"
+		modal="true">
+		<h:form id="dismiss-employee-form">
+			<p:toolbar styleclass="mp_toolbar">
+				<f:facet name="left">
+					<p:commandButton type="push" value="#{msg['dmsc.save']}"
+						icon="ui-icon ui-icon-check"
+						actionListener="#{hrDocViewBean.actionBean.dismissEmployees()}"
+						update=":messages">
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+			<br />
+			<div class="ui-grid-row"
+				style="margin-bottom: 7px; margin-top: 10px;">
+				<div class="ui-grid-col-12" style="display: block; float: left;">
+					<p:dataTable value="#{hrDocViewBean.document.hrDocItems}" var="item"
+						id="amountListTable">
+						<p:column>
+							<f:facet name="header">ФИО</f:facet>
+							<p:outputLabel value="#{item.staff.getLF()}"
+								rendered="#{!empty item.staff}"></p:outputLabel>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">Снимается с должности</f:facet>
+							<p:outputLabel
+								value="#{positionF4Bean.getName(item.salary.position_id)}"></p:outputLabel>
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">Дата начало</f:facet>
+							<p:outputLabel value="#{item.salary.beg_date}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">Дата увольнения</f:facet>
+							<p:calendar	value="#{item.endDate}" pattern="dd.MM.yyyy">
+							</p:calendar>
+						</p:column>
+
+					</p:dataTable>
+				</div>
+			</div>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

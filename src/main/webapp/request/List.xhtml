@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+
+
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['logistics.material_requests']}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<style>
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+</style>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.log']} > #{msg['logistics.material_requests']}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/request/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{msg['logistics.material_requests']}" />
+			</ui:include>
+
+
+			<p:layout fullPage="false">
+
+				<p:layoutUnit position="north" size="50" resizable="true"
+					closable="true" collapsible="true">
+					<p:tabMenu activeIndex="#{param.i}">
+						<p:menuitem value="#{msg['logistics.new_docs']}" outcome="List.xhtml"
+							icon="ui-icon-document">
+							<f:param name="i" value="0" />
+						</p:menuitem>
+						<p:menuitem value="#{msg['logistics.closed_docs']}" outcome="List.xhtml"
+							icon="ui-icon-document">
+							<f:param name="i" value="1" />
+						</p:menuitem>
+					</p:tabMenu>
+				</p:layoutUnit>
+
+				<p:layoutUnit position="west" size="300" header="#{msg['search_panel']}"
+					resizable="false" closable="false" collapsible="false">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<h:panelGrid columns="2" cellpadding="5">
+							<p:outputLabel value="#{msg['company']}"></p:outputLabel>
+							<p:selectOneMenu value="#{requestListBean.bukrs}"
+								rendered="#{userinfo.sys_admin or userinfo.main}">
+								<p:ajax update="branchId"></p:ajax>
+								<f:selectItem itemValue="" itemLabel="#{msg['select']}"></f:selectItem>
+								<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="buk"
+									itemLabel="#{buk.name}" itemValue="#{buk.bukrs}"></f:selectItems>
+							</p:selectOneMenu>
+							<p:outputLabel
+								rendered="#{!userinfo.sys_admin and !userinfo.main}"
+								value="#{bukrsF4Bean.getNameByBukrs(userinfo.bukrs)}"></p:outputLabel>
+
+
+							<p:outputLabel value="#{msg['branch']}"></p:outputLabel>
+							<p:selectOneMenu id="branchId"
+								value="#{requestListBean.branchId}"
+								rendered="#{userinfo.sys_admin or userinfo.main}">
+								<f:selectItem itemValue="0" itemLabel="#{msg['select']}"></f:selectItem>
+								<f:selectItems
+									value="#{branchF4Bean.getAllBranchByBukrs(requestListBean.bukrs)}"
+									var="br" itemLabel="#{br.text45}" itemValue="#{br.branch_id}"></f:selectItems>
+							</p:selectOneMenu>
+
+							<p:selectOneMenu value="#{requestListBean.branchId}"
+								rendered="#{!userinfo.sys_admin and !userinfo.main}">
+								<f:selectItem itemValue="0" itemLabel="#{msg['select']}"></f:selectItem>
+								<f:selectItems value="#{requestListBean.userBranches}" var="br"
+									itemLabel="#{br.text45}" itemValue="#{br.branch_id}"></f:selectItems>
+							</p:selectOneMenu>
+
+
+							<p:outputLabel></p:outputLabel>
+							<p:commandButton
+								actionListener="#{requestListBean.loadReqList()}"
+								value="#{msg.search}" icon="ui-icon-search" id="searchBtn"
+								update=":ListForm:datalist,:messages"></p:commandButton>
+						</h:panelGrid>
+					</h:form>
+				</p:layoutUnit>
+
+				<p:layoutUnit position="center">
+					<h:form id="ListForm">
+						<p:dataTable id="datalist" value="#{requestListBean.items}"
+							var="item" rowKey="#{item.id}" rows="200"
+							tableStyleClass="logItemsTable">
+
+							<f:facet name="header">
+								<p:button title="Create" outcome="Create.xhtml" value="#{msg['add']}"
+									style="float:right;margin-right:5px;" />
+								<div style="clear: both;"></div>
+							</f:facet>
+							<p:column style="width:25px;" sortBy="#{item.id}">
+								<f:facet name="header">
+									<h:outputText value="№" />
+								</f:facet>
+								<h:outputText value="#{item.id}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.doc']}" />
+								</f:facet>
+								<h:outputText value="#{msg['logistics.material_requests']}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.created_at']}" />
+								</f:facet>
+								<h:outputText value="#{item.created_at}">
+									<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['branch']}" />
+								</f:facet>
+								<h:outputText
+									value="#{branchF4Bean.getBranchNameByID(item.branch_id)}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.resp_branch']}" />
+								</f:facet>
+								<h:outputText
+									value="#{branchF4Bean.getBranchNameByID(item.res_branch_id)}">
+								</h:outputText>
+							</p:column>
+
+
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{msg['logistics.creator']}" />
+								</f:facet>
+								<h:outputText value="#{item.creator.getLF()}">
+								</h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="" />
+								</f:facet>
+								<p:button target="_blank" outcome="/request/View.xhtml" title="#{msg['view']}"
+									icon="ui-icon-search">
+									<f:param name="id" value="#{item.id}" />
+								</p:button>
+
+								<p:button rendered="false" outcome="/request/Update.xhtml"
+									title="#{msg['edit']}" icon="ui-icon-pencil">
+									<f:param name="id" value="#{item.id}" />
+								</p:button>
+
+							</p:column>
+
+						</p:dataTable>
+					</h:form>
+				</p:layoutUnit>
+
+			</p:layout>
+
+		</div>
+	</div>
+
+</h:body>
+
+</html>

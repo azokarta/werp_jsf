@@ -1,0 +1,65 @@
+org.quartz.scheduler.instanceName = ErpScheduler
+org.quartz.threadPool.threadCount = 3
+org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore
+org.quartz.plugin.jobInitializer.class =org.quartz.plugins.xml.XMLSchedulingDataProcessorPlugin 
+org.quartz.plugin.jobInitializer.fileNames = quartz-config.xml 
+org.quartz.plugin.jobInitializer.failOnFileNotFound = true
+
+pom.xml
+<!-- Quartz scheduler framework -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.1.5</version>
+		</dependency>
+ 
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+		</dependency>
+		
+web.xml		
+<listener>
+		<listener-class>
+			org.quartz.ee.servlet.QuartzInitializerListener
+		</listener-class>
+  </listener>		
+  
+  <!--  <h1>All Quartz Jobs</h1>
+		<p:column> 
+		  <f:facet name="header">Job Name</f:facet> 
+    		  #{quartz.jobName}
+    	</p:column>
+ 
+		<p:column>
+		  <f:facet name="header">Job Group</f:facet>
+    		  #{quartz.jobGroup}
+    	</p:column>
+    	
+    	<p:column>
+		  <f:facet name="header">Status</f:facet>
+    		  #{quartz.status}
+    	</p:column>
+    	
+    	<p:column>
+		  <f:facet name="header">Last Run time</f:facet> 
+    		  <h:outputText value="#{quartz.job_run_time}">
+		      <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+		  </h:outputText>
+    	</p:column>
+ 
+		<p:column>
+		  <f:facet name="header">Next Fire Time</f:facet>
+		  <h:outputText value="#{quartz.nextFireTime}">
+		      <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+		  </h:outputText>
+		</p:column>
+ 
+		<p:column>
+		  <f:facet name="header">Action</f:facet>  
+		  <p:commandButton type="push" value="Fire now"  action="#{scheduler.fireNow}">
+		  	<f:setPropertyActionListener target="#{scheduler.p_quartzJob}" value="#{quartz}" />
+         </p:commandButton>
+		</p:column>
+ 		-->

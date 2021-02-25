@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<ui:include src="/template/sessionTimeOut.xhtml" />
+	<h:outputStylesheet library="css" name="reports/finance/kreditor/rfklist.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.frep2']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,frep2Bean.getTransactionId())}"/>
+									</f:facet>
+									
+									
+								</p:toolbar>
+								
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<p:tabView id = "tabView" cache="false" activeIndex="#{frep2Bean.tabindex}" >
+									<p:ajax event="tabChange"  update="searchPanelGridId bsegScrollPanel"/>
+							        <p:tab title="#{msg.search_options}">
+							        	<p:panelGrid style="margin-top:20px; border:0px;" styleClass="searchPanelGrid" id="searchPanelGridId">
+							        		 <p:row>
+							        		 
+							        		 <p:column ><h:outputLabel  value="#{msg.company}"/>: </p:column>
+							        		 <p:column colspan="3">
+							        		<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{frep2Bean.p_searchTable.bukrs}">
+							        			<p:ajax update="p_branch_id" />
+							        			<f:selectItem itemLabel="" itemValue="0" />
+												<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+												
+												itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu>
+											</p:column>
+							        		</p:row>
+										    <p:row>
+        										<p:column><h:outputLabel value = "#{msg.branch}:"/></p:column>
+												<p:column colspan="3">
+													<p:selectOneMenu id="p_branch_id"
+														value="#{frep2Bean.p_searchTable.branch_id}">
+														<f:selectItem itemLabel="" itemValue="0" />
+														<f:selectItem itemLabel="#{msg.all}" itemValue="-1" itemDisabled="#{branchF4Bean.getAllEnabled(frep2Bean.p_searchTable.bukrs,userinfo.branch_id)}" />
+														
+														
+														<f:selectItems value="#{branchF4Bean.getByBukrsOrBusinessAreaOfficesOnly(frep2Bean.p_searchTable.bukrs,userinfo.bukrs,'','', 0,userinfo.branch_id)}"
+															var="wa_branch" itemLabel="#{wa_branch.text45}"
+															itemValue="#{wa_branch.branch_id}">
+														</f:selectItems>
+													</p:selectOneMenu>
+												</p:column>
+											</p:row>
+											<!-- <p:row>
+												<p:column>
+													<p:outputLabel value="#{msg['bkpf.waers.long']} " />
+												</p:column>
+        										<p:column colspan="3">
+        											<p:selectOneMenu id="p_waers"
+														value="#{frep2Bean.p_searchTable.waers}">
+														<f:selectItem itemLabel="" itemValue="0" />	
+														<f:selectItems value="#{currencyF4Bean.currency_list}"
+															var="wa" itemLabel="#{wa.currency}"
+															itemValue="#{wa.currency}">
+														</f:selectItems>
+													</p:selectOneMenu>
+        										</p:column>
+        									</p:row> -->
+											<p:row>
+												<p:column>
+													<p:outputLabel value="#{msg['dmsc.contract_date']} " />
+													<p:outputLabel value="#{msg.from} " />
+												</p:column>
+												<p:column>
+													
+													<p:calendar size="10"
+													id="fdate" pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{frep2Bean.p_searchTable.s_date_from}"
+													converterMessage="Date is invalid.">
+													</p:calendar>
+        											
+        										</p:column>
+												<p:column>
+													<p:outputLabel value="#{msg.to} " /> 
+												</p:column>
+											
+											
+												
+        										<p:column>
+        											
+												<p:calendar id="tdate" size="10"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{frep2Bean.p_searchTable.s_date_to}"
+													converterMessage="Date is invalid.">
+												</p:calendar>
+        										</p:column>
+        									</p:row>
+        									<p:row>
+												<p:column>
+													<p:outputLabel value="SN #{msg['dmsc.newContract']} " />
+												</p:column>
+												<p:column colspan="3">
+													<h:inputText value="#{frep2Bean.p_searchTable.conNum}" maxSize="10"/>        											
+        										</p:column>
+        									</p:row>
+        									<p:row>
+												<p:column>
+													<p:outputLabel value="SN  #{msg['dmsc.referender']}" />
+												</p:column>
+												<p:column colspan="3">
+													<h:inputText value="#{frep2Bean.p_searchTable.refConNum}" maxSize="10"/>        											
+        										</p:column>
+        									</p:row>
+        									
+
+											<p:row>
+        										<p:column colspan="4" style="font-weight: bold;"><p:commandButton type="push" value = "#{msg.search}" actionListener="#{frep2Bean.to_search}"/></p:column>
+        									</p:row>
+    									</p:panelGrid>
+							        
+							            
+							        </p:tab>
+							        <p:tab title="#{msg.result}">
+							            <div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:100%"
+										easing="easeOutElastic" id="bsegScrollPanel"
+										>
+										<p:toolbar styleclass="mp_toolbar">
+											<f:facet name="right">
+												<p:commandButton value="Excel" type="push"
+													icon="ui-icon-arrowthickstop-1-s" ajax="false">
+													<p:dataExporter type="xls" target="l_outputTable"
+														postProcessor="#{frep2Bean.postProcessXLS}" fileName="report" />
+												</p:commandButton>
+											</f:facet>
+										</p:toolbar>
+										
+									
+										<p:dataTable value="#{frep2Bean.l_outputTable}" var="o" paginator="true" rows="15" widgetVar="50"  id="l_outputTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+											
+											<p:columnGroup type="header">
+													<p:row>
+										                <p:column rowspan = "2" sortBy="#{o.belnr}" headerText="#{msg['bkpf.belnr.long']}" />
+										                <p:column rowspan = "2" sortBy="#{o.branchName}" headerText="#{msg['bkpf.brnch.long']}" />
+										                <p:column rowspan = "2" sortBy="#{o.summa}" headerText="#{msg.amount}" />
+										                <p:column rowspan = "2" sortBy="#{o.waers}" headerText="#{msg['bkpf.waers.long']}" />
+										                
+										                <p:column rowspan = "2" sortBy="#{o.conDate}" headerText="#{msg['dmsc.contract_date']}" />
+										                <p:column rowspan = "2" sortBy="#{o.vydachaDate}" headerText="#{msg['dmsc.date_issued']}" />
+										                
+										                <p:column colspan = "4" headerText="#{msg['dmsc.newContract']}" />
+										                <p:column colspan = "4" headerText="#{msg['dmsc.referender']}" />
+										                
+										                <p:column rowspan = "2" headerText="#{msg['bkpf.bktxt.long']}" />
+										                <p:column rowspan = "2" headerText="" />
+										        
+	
+
+
+										            </p:row>
+										            <p:row>
+										                
+										                <p:column sortBy="#{o.cusFIO}" headerText="#{msg.client}" />
+										                <p:column sortBy="#{o.conNum}" headerText="#{msg['bkpf.contract_number.long']}" />
+										                <p:column sortBy="#{o.conWaers}" headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column sortBy="#{o.conKursf}" headerText="#{msg['bkpf.kursf.long']}" />
+										                
+										                <p:column sortBy="#{o.refCusFIO}" headerText="#{msg['dmsc.referender']}" />
+										                <p:column sortBy="#{o.refConNum}" headerText="#{msg['bkpf.contract_number.long']}" />
+										                <p:column sortBy="#{o.refConWaers}" headerText="#{msg['bkpf.waers.long']}" />
+										                <p:column sortBy="#{o.refConKursf}" headerText="#{msg['bkpf.kursf.long']}" />
+										                
+										                
+										        
+
+										            </p:row>
+										        </p:columnGroup>
+											
+											<p:column>
+												<h:outputText value="#{o.belnr}" />
+												<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{o.belnr}&#38;gjahr=#{o.gjahr}&#38;bukrs=#{o.bukrs}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton4" 
+												style="float:right;margin-left:2px;margin-right:2px;">
+											</p:button>	
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.branchName}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.summa}" ><f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>												
+												<f:facet name="footer">
+													<h:outputText value="#{frep2Bean.total.summa}"  >
+														<f:convertNumber pattern="#,###,##0.00" />
+													</h:outputText>
+												</f:facet>
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.waers}" />
+											</p:column>
+											
+											<p:column>
+												<p:calendar  styleClass="bldat" pattern="dd.MM.yyyy" autocomplete="off" value="#{o.conDate}" disabled="true" />	
+											</p:column>
+											<p:column>
+												<p:calendar  styleClass="bldat" pattern="dd.MM.yyyy" autocomplete="off" value="#{o.vydachaDate}" disabled="true" />	
+											</p:column>
+											
+											
+											
+											<p:column><h:outputText value="#{o.cusFIO}"/>
+												<p:button target="_blank" outcome="/hr/customer/hrc03.xhtml?customerId=#{o.cusId}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton3" 
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+											</p:column>
+											<p:column>
+												<h:outputText value="#{o.conNum}" />
+												<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{o.conNum}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton1" 
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+											</p:column>
+											<p:column><h:outputText value="#{o.conWaers}"/></p:column>
+											<p:column><h:outputText value="#{o.conKursf}"><f:convertNumber pattern="#,###,##0.00"/></h:outputText></p:column>
+										                
+										    <p:column><h:outputText value="#{o.refCusFIO}"/>
+										    	<p:button target="_blank" outcome="/hr/customer/hrc03.xhtml?customerId=#{o.refCusId}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton6" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+												<p:commandButton value="#{msg['payments']}" actionListener="#{frep2Bean.getPaymentDetails(o.refCusId)}" style="float:right;margin-left:2px;margin-right:2px;" 
+												onclick="PF('detInfoWidget').show();"/>
+												<p:link outcome="/finance/cashbankoperations/faco01" target="_blank"	value="#{msg['pay']}" rendered = "#{o.closed==0 and o.belnr!=null}" style="float:right;margin-left:2px;margin-right:2px;">
+													<f:param name="belnr" value="#{o.belnr}" />
+													<f:param name="gjahr" value="#{o.gjahr}" />
+													<f:param name="bukrs" value="#{o.bukrs}" /> 
+													<f:param name="blart" value="VZ" /> 
+												</p:link>
+												
+												<p:link outcome="/finance/cashbankoperations/faco01" target="_blank"	value="#{msg['pay']}" rendered = "#{o.belnr==null}" style="float:right;margin-left:2px;margin-right:2px;">
+													
+												</p:link>
+										    </p:column>
+											<p:column>
+												<h:outputText value="#{o.refConNum}" />
+												<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{o.refConNum}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton2" 
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+											</p:column>
+											<p:column><h:outputText value="#{o.refConWaers}"/></p:column>
+											<p:column><h:outputText value="#{o.refConKursf}"><f:convertNumber pattern="#,###,##0.00"/></h:outputText></p:column> 
+
+											<p:column>
+												<h:outputText value="#{o.bktxt}" />
+											</p:column>
+											
+											<p:column>
+												<p:commandButton value="Акт" ajax="false"  rendered = "#{o.closed==1}" actionListener="#{frep2Bean.downloadAct(o.bukrs,o.conNum,o.refConNum,o.summa,o.waers)}"/>
+											</p:column>
+										</p:dataTable>
+
+									</p:scrollPanel>
+
+
+								</div>
+							        </p:tab>
+							       
+							    </p:tabView>
+
+
+								<p:dialog header="Оплаты" widgetVar="detInfoWidget" 
+							 dynamic="true"  width="1100" height="500">
+							
+							<div class="wrapRTClass">
+
+							<p:dataTable id="detInfoTable" var="o" rowKey="#{o.belnr}" rows="15"  scrollable="true" scrollHeight="220"
+                         					paginator="true" tableStyle="width:auto"
+								value="#{frep2Bean.l_pd}" emptyMessage="#{msg['dmsc.emptyRec']}">
+								
+								<p:column headerText="#{msg['bkpf.belnr.long']}" >
+												<h:outputText value="#{o.belnr}" />
+												<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{o.belnr}&#38;gjahr=#{o.gjahr}&#38;bukrs=#{o.bukrs}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton7" 
+												style="float:right;margin-left:2px;margin-right:2px;">
+											</p:button>	
+								</p:column>		
+								
+								<p:column headerText="#{msg['bkpf.brnch.long']}" >
+									<h:outputText value="#{o.branchName}" />
+								</p:column>
+								<p:column headerText="#{msg['bkpf.budat.long']}" >
+									<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{o.budat}" disabled="true" />	
+								</p:column>					
+								<p:column headerText="#{msg['bkpf.bldat.long']}" >
+									<p:calendar styleClass="budat"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{o.bldat}" disabled="true" />	
+								</p:column>
+								<p:column headerText="#{msg.amount}" ><h:outputText value="#{o.summa}"><f:convertNumber pattern="#,###,##0.00"/></h:outputText></p:column> 
+								
+								<p:column headerText="#{msg['bkpf.waers.long']}" >
+									<h:outputText value="#{o.waers}" />
+								</p:column>
+								
+								<p:column headerText="#{msg['bkpf.bktxt.long']}" >
+									<h:outputText value="#{o.bktxt}" />
+								</p:column>					
+													
+
+
+
+
+
+							</p:dataTable>
+							</div>
+						</p:dialog>
+
+						
+
+ 
+								
+
+
+
+								
+
+
+
+								
+								
+							</h:form>
+
+
+						</f:view>
+					</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>#{userinfo.conreqpath}</title>
+		<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="-1" />
+        <meta http-equiv="cache-control" content="no-store" />
+        <h:outputStylesheet library="css" name="main.css" />
+        <h:outputStylesheet library="css" name="main-form.css" />
+    </h:head>
+
+    <h:body>
+        <div class="ui-grid-row">
+            <div id="leftPanel" class="leftPanel">
+                <ui:insert name="sidebar">
+                    <ui:include src="/template/sidebar.xhtml" />
+                </ui:insert>
+            </div>
+            <div class="leftPanelButton"
+                 onclick="$('#leftPanel').toggleClass('shiftLeftP');
+                                $(this).toggleClass('shiftLeft');
+                                $('.rightContainer').toggleClass('shiftLeftMain');">
+                <span style="color: white;"><b>#{msg.menu}</b></span>
+            </div>
+            <div class="rightContainer">
+                <ui:insert name="header">
+                    <ui:include src="/template/header.xhtml" >
+                        <ui:param name="pageTitle" value="#{faf02Bean.breadcrumb}"/>
+                    </ui:include>
+                </ui:insert>
+
+
+                <div id="content" class="container">
+
+                    <!--  MAIN PAGE CONTENT GOES HERE  -->
+                    <f:view>
+                        <h:form id="form">
+                            <p:toolbar>
+                                <f:facet name="left">
+                                    <p:commandButton type="push" value="#{msg.save}"
+                                                     icon="ui-icon ui-icon-check"
+                                                     actionListener="#{faf02Bean.toUpdate}" update="form,:messages">
+                                    </p:commandButton>
+                                </f:facet>
+                            </p:toolbar>
+                            <div class="ui-grid-row">
+                                <div class=" ui-grid-col-5">
+                                    <fieldset>
+                                        <legend>#{msg.search_options}</legend>
+                                        <div style="float: left;">
+                                            <table>
+                                                <tr>
+                                                    <td><h:outputLabel value="#{msg['finance.fa.sn_number']}" /></td>
+                                                    <td><p:inputText id="search-sn"
+                                                                     value="#{faf02Bean.searchSn}">
+                                                        </p:inputText></td>
+                                                    <td><p:commandButton type="push" value="#{msg.search}"
+                                                                         icon="ui-icon ui-icon-search"
+                                                                         actionListener="#{faf02Bean.search}" update="form,:messages">
+                                                        </p:commandButton></td>
+
+
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <div class="ui-grid-row">
+                                <div id="contract" class="ui-grid-col-5"
+                                     style="display: block; float: left;">
+                                    <fieldset class="contractFieldSet" style="height: 500px;">
+                                        <legend>#{msg['finance.fixed_assets']}</legend>
+                                        <table>
+                                            <tr>
+                                                <td><h:outputLabel value="#{msg.company}" /></td>
+                                                <td><p:selectOneMenu id="bukrs"
+                                                                     value="#{faf02Bean.fixedAsset.bukrs}" disabled="#{empty faf02Bean.fixedAsset.fa_id}">
+                                                        <p:ajax update="branch" />
+                                                        <f:selectItem itemLabel="#{msg.select_company}" itemValue="" />
+                                                        <f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+                                                                       var="bukrs" itemLabel="#{bukrs.name}"
+                                                                       itemValue="#{bukrs.bukrs}" />
+                                                    </p:selectOneMenu></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputLabel value="#{msg.branch}" /></td>
+                                                <td><p:selectOneMenu id="branch"
+                                                                     value="#{faf02Bean.fixedAsset.branch_id}" disabled="#{empty faf02Bean.fixedAsset.fa_id}">
+                                                        <f:selectItem itemLabel="#{msg.select_branch}" itemValue="0" />
+                                                        <f:selectItems value="#{branchBean.getItemsByBukrs(faf02Bean.fixedAsset.bukrs)}"
+                                                                       var="branch" itemLabel="#{branch.text45}"
+                                                                       itemValue="#{branch.branch_id}" />
+                                                    </p:selectOneMenu></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputLabel value="#{msg['finance.fa.responsible_officer']}" /></td>
+                                                <td><p:inputText id="staff_fio" size="35"
+                                                                 autocomplete="off" value="#{faf02Bean.staffFio}"
+                                                                 disabled="true" /> <p:commandButton icon="ui-icon-newwin"
+                                                                 type="push" oncomplete="PF('staffWidget').show();"
+                                                                 styleClass="f4button">
+                                                    </p:commandButton></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputLabel value="#{msg['finance.fa.name']}" /></td>
+                                                <td><p:inputText id="fa_name" size="45"
+                                                                 autocomplete="off"
+                                                                 value="#{faf02Bean.fixedAsset.fa_name}"   disabled="#{empty faf02Bean.fixedAsset.fa_id}">
+                                                    </p:inputText></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputLabel value="#{msg['finance.fa.first_cost']}" /></td>
+                                                <td><p:inputText id="init_amount" size="10"
+                                                                 autocomplete="off"
+                                                                 value="#{faf02Bean.fixedAsset.init_amount}" disabled="#{empty faf02Bean.fixedAsset.fa_id}">
+                                                    </p:inputText></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputLabel value="#{msg['finance.fa.liquid_cost']}" /></td>
+                                                <td><p:inputText id="left_amount" size="10"
+                                                                 autocomplete="off"
+                                                                 value="#{faf02Bean.fixedAsset.left_amount}" disabled="#{empty faf02Bean.fixedAsset.fa_id}">
+                                                    </p:inputText></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><h:outputLabel value="#{msg['finance.fa.faga']}" /></td>
+                                                <td><p:selectOneMenu id="asset_catalog_id"
+                                                                     value="#{faf02Bean.fixedAsset.asset_catalog_id}" disabled="#{empty faf02Bean.fixedAsset.fa_id}">
+                                                        <f:selectItem itemLabel="#{msg.not_chosen}" itemValue="0" />
+                                                        <f:selectItems value="#{refAssetCatalog.recordList}"
+                                                                       var="ac" itemLabel="#{ac.name_ru}"
+                                                                       itemValue="#{ac.ac_id}" />
+                                                    </p:selectOneMenu></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputLabel
+                                                        value="#{msg['finance.fa.useful_life']}" /></td>
+                                                <td><p:inputText id="asset_life" size="10"
+                                                                 autocomplete="off"
+                                                                 value="#{faf02Bean.fixedAsset.asset_life}" disabled="#{empty faf02Bean.fixedAsset.fa_id}">
+                                                    </p:inputText></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputLabel value="#{msg['finance.fa.operation_date']}" /></td>
+                                                <td><p:calendar id="operation_date"
+                                                                styleClass="dateField"
+                                                                value="#{faf02Bean.fixedAsset.operation_date}"
+                                                                navigator="true" pattern="dd.MM.yyyy" mask="true"  disabled="#{empty faf02Bean.fixedAsset.fa_id}"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputLabel value="#{msg['finance.fa.comment']}" /></td>
+                                                <td><p:inputTextarea
+                                                        value="#{faf02Bean.fixedAsset.comment}" disabled="#{empty faf02Bean.fixedAsset.fa_id}"></p:inputTextarea>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                            <p:dialog header="Сотрудник" widgetVar="staffWidget"
+                                      dynamic="true" width="900" height="500">
+                                <div id="se_div">
+                                    <fieldset class="se_FieldSet">
+                                        <legend>Поиск</legend>
+                                        <table>
+                                            <tr>
+                                                <td><h:outputLabel value="Имя" /></td>
+                                                <td><h:inputText id="se_firstname" maxlength="45"
+                                                                 autocomplete="off"
+                                                                 value="#{faf02Bean.searchingStaff.firstname}" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputLabel value="Фамилия" /></td>
+                                                <td><h:inputText id="se_lastname" maxlength="45"
+                                                                 autocomplete="off"
+                                                                 value="#{faf02Bean.searchingStaff.lastname}" /></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td><h:outputLabel value="Отчество" /></td>
+                                                <td><h:inputText id="se_middlename" maxlength="45"
+                                                                 autocomplete="off"
+                                                                 value="#{faf02Bean.searchingStaff.middlename}" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td><p:commandButton
+                                                        actionListener="#{faf02Bean.searchStaff}" value="Искать"
+                                                        update="staffTable" /></td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+
+                                    </fieldset>
+                                </div>
+                                <br />
+
+
+                                <p:dataTable id="staffTable" var="emp" rowKey="#{emp.staff_id}"
+                                             value="#{faf02Bean.staffList}" emptyMessage="Нет записей"
+                                             selectionMode="single" selection="#{faf02Bean.selectedStaff}">
+                                    <f:facet name="header">
+                                        <p:commandButton update=":form:staff_fio"
+                                                         actionListener="#{faf02Bean.assignStaff}"
+                                                         oncomplete="PF('staffWidget').hide();" value="Выбрать" />
+                                    </f:facet>
+                                    <p:column headerText="ИИН/БИН">
+                                        <h:outputText value="#{emp.iin_bin}" />
+                                    </p:column>
+                                    <p:column headerText="Номер паспорта">
+                                        <h:outputText value="#{emp.passport_id}" />
+                                    </p:column>
+                                    <p:column headerText="Имя">
+                                        <h:outputText value="#{emp.firstname}" />
+                                    </p:column>
+                                    <p:column headerText="Фамилия">
+                                        <h:outputText value="#{emp.lastname}" />
+                                    </p:column>
+                                    <p:column headerText="Отчество">
+                                        <h:outputText value="#{emp.middlename}" />
+                                    </p:column>
+                                    <p:column headerText="День рождения">
+                                        <p:calendar id="birthday" styleClass="bldat"
+                                                    pattern="dd.MM.yyyy" mask="true" autocomplete="off"
+                                                    value="#{emp.birthday}" converterMessage="Date is invalid."
+                                                    disabled="true">
+                                        </p:calendar>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:dialog>
+                        </h:form>
+                    </f:view>
+                </div>
+
+            </div>
+        </div>
+    </h:body>
+</html>

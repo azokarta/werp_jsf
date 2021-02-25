@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="SodCreateDlg" widgetVar="SodCreateDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="#{msg['hr.official_data.add_off_data']}">
+		<h:form id="SodCreateForm">
+			<h:panelGroup id="display">
+				
+				<p:panelGrid columns="2" rendered="#{hrsSodListBean.selected != null}">
+					
+					<p:outputLabel value="#{msg['hr.official_data.salary']}" />
+					<p:inputText value="#{hrsSodListBean.selected.salary}" />
+					
+					<p:outputLabel value="#{msg['hr.official_data.currency']}" />
+					<p:selectOneMenu
+						value="#{hrsSodListBean.selected.currency}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+						<f:selectItems value="#{currencyF4Bean.currency_list}"
+							var="currency" itemLabel="#{currency.text20}"
+							itemValue="#{currency.currency}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="#{msg['hr.official_data.pension']}" />
+					<p:inputText value="#{hrsSodListBean.selected.pension}" />
+					
+					<p:outputLabel value="#{msg['hr.official_data.ipn']}" />
+					<p:inputText value="#{hrsSodListBean.selected.ipn}" />
+					
+					<p:outputLabel value="#{msg['hr.official_data.social_contribution']}" />
+					<p:inputText value="#{hrsSodListBean.selected.social_contribution}" />
+					
+					<p:outputLabel value="ОСМС" />
+					<p:inputText value="#{hrsSodListBean.selected.osms}" />
+					
+					<p:outputLabel value="#{msg['hr.official_data.post']}" />
+					<p:inputText value="#{hrsSodListBean.selected.post}" />
+					
+					<p:outputLabel value="#{msg['hr.official_data.sub_company_id']}" />
+					<p:selectOneMenu
+						value="#{hrsSodListBean.selected.sub_company_id}">
+						<f:selectItem itemLabel="Выберите" itemValue="0" />
+						<f:selectItems value="#{refSubCompany.recordList}"
+							var="company" itemLabel="#{company.name_ru}"
+							itemValue="#{company.sc_id}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="#{msg['hr.official_data.salary_type']}" />
+					<p:selectOneMenu value="#{hrsSodListBean.selected.salary_type}">
+						<f:selectItem itemLabel="#{msg['hr.salary.monthly']}" itemValue="monthly" />
+						<f:selectItem itemLabel="#{msg['hr.salary.daily']}" itemValue="daily" />
+						<f:selectItem itemLabel="#{msg['hr.salary.hourly']}" itemValue="hourly" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="#{msg['hr.official_data.comment']}" />
+					<p:inputTextarea value="#{hrsSodListBean.selected.comment}"></p:inputTextarea>
+					
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{hrsSodListBean.Create}"
+					value="#{msg.save}" update=":SodListForm:sodList,:messages" />
+				<p:commandButton actionListener="#{hrsSodListBean.Reset}"
+					value="#{msg.cancel}" oncomplete="PF('SodCreateDialog').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

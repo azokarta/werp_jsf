@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{repLog6Bean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.logItemsTable .numberColumn {
+	width: 80px;
+	text-align: center;
+}
+
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{repLog6Bean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{repLog6Bean.pageHeader}" />
+			</ui:include>
+
+			<div class="ui-grid">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm">
+							<p:panelGrid columns="2" style="width:99%;margin-top:1px;">
+								<f:facet name="header">Панель для поиска</f:facet>
+								
+								<p:outputLabel value="Компания"></p:outputLabel>
+									<werp:companySelect elementId="companyId" mode="update"
+										value="#{repLog6Bean.bukrs}"
+										onChangeUpdate=":searchForm:branchSelect:branchId">
+									</werp:companySelect>
+								
+								<p:outputLabel value="Филиал"></p:outputLabel>	
+								<werp:branchSelect id="branchSelect"
+									elementId="branchId" companyValue="#{repLog6Bean.bukrs}"
+									value="#{repLog6Bean.branchId}"
+									mode="update">
+								</werp:branchSelect>
+
+								<p:outputLabel value="Дата с"></p:outputLabel>
+								<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{repLog6Bean.fromDate}"
+									converterMessage="Wrong Date" navigator="true">
+								</p:calendar>
+
+								<p:outputLabel value="Дата по"></p:outputLabel>
+								<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{repLog6Bean.toDate}"
+									converterMessage="Wrong Date" navigator="true">
+								</p:calendar>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="Сформировать"
+									actionListener="#{repLog6Bean.generateData()}"
+									update=":dataForm, :messages"></p:commandButton>
+
+							</p:panelGrid>
+						</h:form>
+						
+						<hr/>
+						<h:form id="resultForm">
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="dataForm">
+							<p:dataTable value="#{repLog6Bean.items}" var="item" rowIndexVar="rowId"
+								tableStyleClass="logItemsTable" id="reportDataTable">
+								
+								<p:column headerText="№" style="width:50px;">
+									<p:outputLabel value="#{rowId+1}">
+									</p:outputLabel>
+								</p:column>
+
+								<p:column headerText="№ договора" style="width:120px;">
+									<p:outputLabel value="#{item.contract.contract_number}">
+									</p:outputLabel>
+										<p:button target="_blank" styleClass="f4button" style="margin-left:5px;"
+											outcome="/dms/contract/dmsc03?contract_number=#{item.contract.contract_number}"
+											icon="ui-icon-zoomin" title="View">
+										</p:button>
+								</p:column>
+
+								<p:column headerText="Дата"
+									style="width:100px;text-align:center;">
+									<p:outputLabel value="#{item.contract.contract_date}">
+										<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+									</p:outputLabel>
+								</p:column>
+
+								<p:column headerText="Номер аппарата"
+									style="width:150px;text-align:center;">
+									<p:outputLabel value="#{item.contract.tovar_serial}"></p:outputLabel>
+								</p:column>
+								<p:column headerText="Списанный аппарат"
+									style="width:200px;">
+									<ui:repeat var="ml" value="#{item.matnrList}">
+										<p:outputLabel value="#{ml.getTypeName()} (#{ml.getStatusName()})"></p:outputLabel><br/>
+										<ui:repeat var="docItem" value="#{item.getInvoiceItems(ml.id)}">
+											<p:outputLabel value="--#{docItem.matnrObject.text45} (#{docItem.barcode})"></p:outputLabel><br/>
+										</ui:repeat>
+										<br/>
+									</ui:repeat>
+								</p:column>
+
+								<p:column headerText="Акции">
+									<ui:repeat var="promo" value="#{item.promotions}">
+										<p:outputLabel value="#{promo.text45}"></p:outputLabel><br/>
+									</ui:repeat>
+								</p:column>
+								
+								<p:column headerText="Списанные акции">
+									<ui:repeat var="doc" value="#{item.promotionDocs}">
+										<p:outputLabel value="#{doc.getTypeName()} (#{doc.getStatusName()})"></p:outputLabel><br/>
+										<ui:repeat var="docItem" value="#{item.getInvoiceItems(doc.id)}">
+											<p:outputLabel value="--#{docItem.matnrObject.text45}"></p:outputLabel><br/>
+										</ui:repeat>
+										<br/>
+									</ui:repeat>
+								</p:column>
+								
+							</p:dataTable>
+							<br />
+							<br />
+						</h:form>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

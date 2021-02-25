@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<f:metadata>
+	<f:viewParam name="sp_id" value="#{spViewBean.sp_id}" />
+	<f:event type="preRenderView" listener="#{spViewBean.init}" />
+</f:metadata>
+
+<h:head>
+	<title>Просмотр сервис пакета</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="Сервис > Пакеты > Просмотр сервис пакета" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Просмотр сервис пакета" />
+				</ui:include>
+			</ui:insert>
+			<div id="content" class="container">
+				<f:view>
+
+					<h:form id="form">
+
+						<p:growl id="messages" sticky="false" showDetail="true" />
+
+						<div class="ui-grid-row" style="padding-bottom: 10px;">
+
+							<fieldset style="border: 1px solid #ddd;">
+								<legend>Заголовок</legend>
+
+								<div style="display: inline; float: left; padding-right: 25px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="Компания" /></td>
+											<td><p:selectOneMenu id="bukrs" disabled="true"
+													value="#{spViewBean.spTitle.bukrs}">
+													<f:selectItem itemLabel="Выберите компанию" itemValue="0" />
+													<f:selectItems value="#{spViewBean.bukrs_list}"
+														var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+														itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Страна" /></td>
+											<td><p:selectOneMenu id="country" disabled="true"
+													value="#{spViewBean.spTitle.country_id}">
+													<f:selectItem itemLabel="Выберите страну" itemValue="0" />
+													<f:selectItems value="#{spViewBean.country_list}"
+														var="wa_c" itemLabel="#{wa_c.country}"
+														itemValue="#{wa_c.country_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><p:outputLabel value="Дата" /></td>
+											<td><p:calendar id="startDate" styleClass="dateField"
+													value="#{spViewBean.spTitle.start_date}" navigator="true"
+													pattern="dd.MM.yyyy" mask="true" disabled="true"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Категория " /></td>
+											<td><p:selectOneMenu id="category" disabled="true"
+													value="#{spViewBean.spTitle.tovar_category}">
+													<f:selectItem itemLabel="Выберите категорию" itemValue="9" />
+													<f:selectItem itemLabel="Уборочная система"
+														itemValue="1" />
+													<f:selectItem itemLabel="Система очистки воды"
+														itemValue="2" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Товар" /></td>
+											<td><p:selectOneMenu id="tovar"
+													value="#{spViewBean.spTitle.tovar_id}" disabled="true">
+													<f:selectItem itemLabel="Выберите вид товара" itemValue="0" />
+													<f:selectItems value="#{spViewBean.tovar_list}" var="wa_t"
+														itemLabel="#{wa_t.text45}" itemValue="#{wa_t.matnr}" />
+												</p:selectOneMenu></td>
+										</tr>
+
+									</table>
+								</div>
+
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+
+
+										<tr>
+											<td><h:outputLabel value="Название" /></td>
+											<td><p:inputText id="spname" size="50" disabled="true"
+													value="#{spViewBean.spTitle.name}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Примечание &nbsp;" /></td>
+											<td><p:inputText id="info" size="50" autocomplete="off"
+													value="#{spViewBean.spTitle.info}" disabled="true" /> <h:outputLabel
+													id="currency" rendered="false"
+													value=" &nbsp; #{spViewBean.spTitle.waers}"
+													style="margin-bottom:10px;" /></td>
+										</tr>
+									</table>
+								</div>
+
+							</fieldset>
+
+						</div>
+
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="Редактировать"
+									id="edit_button" align="right" icon="ui-icon ui-icon-pencil"
+									actionListener="#{spViewBean.toEditPage}" update="messages">
+								</p:commandButton>
+							</f:facet>
+
+							<f:facet name="right">
+								<p:outputLabel>Сервис Пакет №: </p:outputLabel>
+								<p:inputText value="#{spViewBean.sp_id}">
+									<p:ajax event="change" actionListener="#{spViewBean.searchById}" />									
+								</p:inputText>
+								<p:commandButton style="margin-left: 5px"
+									actionListener="#{spViewBean.searchById}" value=" Найти"
+									styleClass="add_button" icon="ui-icon-search"
+									updates="messages" type="push" id="search_button">
+								</p:commandButton>
+							</f:facet>
+						</p:toolbar>
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<div class="wrapRTClass">
+								<p:scrollPanel style="width: 100%; height:100%"
+									easing="easeOutElastic" id="olScrollPanel">
+
+									<p:dataTable value="#{spViewBean.spPosL}" var="o"
+										widgetVar="dataTableWidgetVar" id="olTable"
+										emptyMessage="Нет записей" styleClass="employeeTable"
+										headerClass="employeeTableHeader" sortBy="#{o.group}"
+										rowClasses="employeeTableOddRow,employeeTableEvenRow"
+										update="messages">
+
+										<p:column>
+											<f:facet name="header">#</f:facet>
+											<h:outputText id="b_index" value="#{o.index}"
+												styleClass="index" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Операция</f:facet>
+											<p:selectOneMenu id="serv_oper" value="#{o.spPos.operation}"
+												disabled="true">
+												<f:selectItems value="#{spViewBean.ot_l}" var="wa_ot"
+													itemLabel="#{wa_ot.operName}" itemValue="#{wa_ot.operType}" />
+											</p:selectOneMenu>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Описание</f:facet>
+											<h:inputText id="infoText" value="#{o.spPos.info}" size="50"
+												maxlength="145" styleClass="input1" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Гарантия<br />(в мес.)</f:facet>
+											<h:inputText value="#{o.spPos.new_war_inm}" size="5"
+												maxlength="5" id="war_text" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Цена</f:facet>
+											<h:inputText id="unitPrice" value="#{o.spPos.price}"
+												size="10" maxlength="10" styleClass="input1" disabled="true">
+												<f:convertNumber pattern="#0.00" />
+											</h:inputText>
+											<h:outputLabel value=" #{spViewBean.spTitle.waers}" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Количество</f:facet>
+											<h:inputText id="b_menge" value="#{o.spPos.quantity}"
+												size="8" maxlength="10" styleClass="input1"
+												disabled="#{o.dis_qq}">
+												<f:convertNumber pattern="#0" />
+											</h:inputText>
+											<h:outputLabel> шт.</h:outputLabel>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Сумма</f:facet>
+											<h:inputText id="b_wrbtr" value="#{o.spPos.summ}" size="15"
+												maxlength="15" styleClass="input1" disabled="true">
+												<f:convertNumber pattern="#0.00" />
+											</h:inputText>
+											<h:outputLabel value=" #{spViewBean.spTitle.waers}" />
+										</p:column>
+
+										<p:summaryRow id="summaryRow">
+											<p:column colspan="6" style="text-align:right">
+												<h:outputText value="Итоги:" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{spViewBean.spTitle.summ}"
+													id="summarySC" />
+												<h:outputLabel value=" #{spViewBean.spTitle.waers}" />
+											</p:column>
+										</p:summaryRow>
+									</p:dataTable>
+								</p:scrollPanel>
+
+							</div>
+						</div>
+
+
+
+						<p:outputPanel>
+							<h4>Список запчастей к которым присваиваются гарантии</h4>
+						</p:outputPanel>
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<div class="wrapRTClass">
+								<p:scrollPanel style="height:100%" easing="easeOutElastic"
+									id="spWarScrollPanel">
+
+									<p:dataTable value="#{spViewBean.spWarL}" var="o"
+										widgetVar="warTableWidgetVar" id="spWarTable"
+										emptyMessage="Нет записей" styleClass="employeeTable"
+										headerClass="employeeTableHeader" sortBy="#{o.group}"
+										rowClasses="employeeTableOddRow,employeeTableEvenRow"
+										update="messages">
+
+										<p:column>
+											<f:facet name="header">#</f:facet>
+											<h:outputText id="b_index" value="#{o.index}"
+												styleClass="index" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Описание</f:facet>
+											<h:inputText id="infoText" value="#{o.spWar.info}" size="50"
+												maxlength="145" styleClass="input1" disabled="true" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">Гарантия<br />(в мес.)</f:facet>
+											<h:inputText value="#{o.spWar.war_months}" size="5"
+												maxlength="5" id="war_mon" disabled="true" />
+										</p:column>
+
+									</p:dataTable>
+								</p:scrollPanel>
+
+							</div>
+						</div>
+
+
+
+
+
+						<div class="ui-grid-row"
+							style="padding-bottom: 10px; margin-top: 0px;">
+
+							<fieldset style="border: 1px solid #ddd;">
+								<legend>Подзаголовок сервиса</legend>
+
+								<div style="display: inline; float: left; padding-right: 10px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="Сумма " /></td>
+											<td><p:inputText id="totalSumm" size="15"
+													disabled="true" value="#{spViewBean.spTitle.summ}" /> <p:outputLabel
+													id="summCurrency" value=" #{spViewBean.spTitle.waers}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Скидка " /></td>
+											<td><p:inputText id="discount" size="15" disabled="true"
+													value="#{spViewBean.spTitle.discount}">
+												</p:inputText> <p:outputLabel id="discCurrency"
+													value=" #{spViewBean.spTitle.waers}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Сумма к оплате:" /></td>
+											<td><p:inputText id="paymentDue" size="15"
+													disabled="true" value="#{spViewBean.spTitle.price}" /> <p:outputLabel
+													id="paymnetCurrency" value=" #{spViewBean.spTitle.waers}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2">
+												<hr />
+											</td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="Премия Мастера " /></td>
+											<td><p:inputText id="masterPremi" size="15"
+													disabled="true" value="#{spViewBean.spTitle.master_bonus}" />
+												<p:outputLabel id="masterCurrency"
+													value=" #{spViewBean.spTitle.waers}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Премия оператора " /></td>
+											<td><p:inputText id="operPremi" size="15"
+													disabled="true" value="#{spViewBean.spTitle.oper_bonus}" />
+												<p:outputLabel id="operCurrency"
+													value=" #{spViewBean.spTitle.waers}" /></td>
+										</tr>
+
+									</table>
+								</div>
+
+							</fieldset>
+						</div>
+
+					</h:form>
+
+				</f:view>
+
+			</div>
+		</div>
+	</div>
+
+</h:body>
+</html>

@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>	
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh" content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml"/>
+	<script type="text/javascript">
+		function birthdayDisable() {
+
+			if (document.getElementById("form:sc_fiz_yur_input").value == 1) {
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+
+				document.getElementById("form:sc_name").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+			} else if (document.getElementById("form:sc_fiz_yur_input").value == 2) {
+				document.getElementById("form:sc_birthday_input").disabled = false;
+				document.getElementById("form:sc_passport_id").disabled = false;
+				document.getElementById("form:sc_firstname").disabled = false;
+				document.getElementById("form:sc_lastname").disabled = false;
+				document.getElementById("form:sc_middlename").disabled = false;
+				document.getElementById("form:sc_iin_bin").disabled = false;
+
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			} else {
+				document.getElementById("form:sc_iin_bin").value = null;
+				document.getElementById("form:sc_iin_bin").disabled = true;
+				document.getElementById("form:sc_birthday_input").value = null;
+				document.getElementById("form:sc_birthday_input").disabled = true;
+				document.getElementById("form:sc_passport_id").value = null;
+				document.getElementById("form:sc_passport_id").disabled = true;
+				document.getElementById("form:sc_firstname").value = null;
+				document.getElementById("form:sc_firstname").disabled = true;
+				document.getElementById("form:sc_lastname").value = null;
+				document.getElementById("form:sc_lastname").disabled = true;
+				document.getElementById("form:sc_middlename").value = null;
+				document.getElementById("form:sc_middlename").disabled = true;
+				document.getElementById("form:sc_name").value = null;
+				document.getElementById("form:sc_name").disabled = true;
+			}
+
+		}
+	</script>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	
+	<h:outputStylesheet library="css" name="finance/debitor/fdsog.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b><h:outputLabel value="#{msg.menu}" /></b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.fdsog']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,fdsogBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+	
+								<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<p:commandButton type="push" value="#{msg.save}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{fdsogBean.to_save}" />
+									</f:facet>
+								</p:toolbar>
+		
+								<p:growl id="messages" sticky="false" showDetail="true" />
+ 
+								<fieldset>
+									<legend><h:outputLabel value="#{msg.header}" /></legend>
+									
+									
+									<p:panelGrid styleClass="searchPanelGrid" >
+							    <p:row>
+        							<p:column><h:outputLabel value="#{msg.company}" /></p:column>
+        							<p:column>
+										<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{fdsogBean.p_bkpf.bukrs}">
+											<p:ajax listener ="#{fdsogBean.changeBukrs}" />
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu>
+									</p:column>
+									
+									<p:column><h:outputLabel value="#{msg['bkpf.blart.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_blart" styleClass="blart" style="color: #{fdsogBean.p_bkpf.blart=='ST' ? 'red' : 'black'}"
+											maxlength="2" autocomplete="off"
+											value="#{fdsogBean.p_bkpf.blart}" disabled="true" /> <p:commandButton
+											icon="ui-icon-newwin" onclick="PF('docTypeWidget').show();"
+											type="push" styleClass="f4button" />
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.monat.long']}" /></p:column>
+									<p:column>
+										<p:selectOneMenu styleClass="monat" id="bkpf_monat"	value="#{fdsogBean.p_bkpf.monat}" disabled="true">  
+													<f:selectItem  itemLabel="" itemValue="0" />
+													<f:selectItem  itemLabel="1" itemValue="1" />
+													<f:selectItem  itemLabel="2" itemValue="2" />
+													<f:selectItem  itemLabel="3" itemValue="3" />
+													<f:selectItem  itemLabel="4" itemValue="4" />
+													<f:selectItem  itemLabel="5" itemValue="5" />
+													<f:selectItem  itemLabel="6" itemValue="6" />
+													<f:selectItem  itemLabel="7" itemValue="7" />
+													<f:selectItem  itemLabel="8" itemValue="8" />
+													<f:selectItem  itemLabel="9" itemValue="9" />
+													<f:selectItem  itemLabel="10" itemValue="10" />
+													<f:selectItem  itemLabel="11" itemValue="11" />
+													<f:selectItem  itemLabel="12" itemValue="12" />
+												</p:selectOneMenu>
+									</p:column>
+        							
+        							
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.business_area}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="business_area" value="#{fdsogBean.p_bkpf.business_area_id}">
+													<p:ajax update="branch" />
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{businessAreaF4Bean.getByBukrs(fdsogBean.p_bkpf.bukrs,userinfo.bukrs,userinfo.branch_id)}"
+														var="ba" itemLabel="#{ba.name}"
+														itemValue="#{ba.business_area_id}" />
+												</p:selectOneMenu>
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.budat.long']}" /></p:column>
+        							<p:column><p:calendar id="bkpf_budat" styleClass="budat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{fdsogBean.p_bkpf.budat}"  disabled="true"/></p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.awkey.long']}" /></p:column>
+        							<p:column><h:inputText id="awkey"
+											value="#{fdsogBean.p_bkpf.awkey}" disabled="true"/></p:column>		
+									
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.branch}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="branch"
+													value="#{fdsogBean.p_bkpf.brnch}" >
+													<p:ajax listener ="#{fdsogBean.changeBranch}" />
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{branchF4Bean.getByBukrsOrBusinessArea(fdsogBean.p_bkpf.bukrs,userinfo.bukrs,fdsogBean.p_bkpf.business_area_id,fdsogBean.p_bkpf.business_area_id,0,userinfo.branch_id)}"
+														var="branch" itemLabel="#{branch.text45}"
+														itemValue="#{branch.branch_id}" />
+												</p:selectOneMenu>
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.bldat.long']}" /></p:column>										
+									<p:column>
+										<p:calendar id="bkpf_bldat" styleClass="bldat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{fdsogBean.p_bkpf.bldat}" />																			
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.contract_number.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="contract_number"
+											value="#{fdsogBean.p_bkpf.contract_number}" disabled="true"/>
+											
+												<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{fdsogBean.p_bkpf.contract_number}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton1" 
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+									</p:column>
+									
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.department}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="department"
+													value="#{fdsogBean.p_bkpf.dep}">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{departmentF4Bean.l_dep}"
+														var="d" itemLabel="#{d.getName(systemLocale.currentLocale)}"
+														itemValue="#{d.dep_id}" /> 
+												</p:selectOneMenu>
+									</p:column>									
+									<p:column><h:outputLabel value="#{msg['bkpf.waers.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_waers" styleClass="waers"
+											value="#{fdsogBean.p_bkpf.waers}" disabled="true" />
+										<p:commandButton
+											icon="ui-icon-newwin" onclick="PF('waersType').show();"
+											type="push" styleClass="f4button" />	
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.bktxt.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_bktxt"
+											value="#{fdsogBean.p_bkpf.bktxt}" />
+									</p:column>
+									
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.customer}" /></p:column>
+									<p:column> 
+											
+											<h:inputText id="bkpf_customer_id" value="#{customerF4Bean.getNameByIdString(fdsogBean.p_bkpf.customer_id)}" disabled="true"/>
+											<h:outputLabel id = "bkpf_customer_id_href">
+												
+												<p:button target="_blank" outcome="/hr/customer/hrc03.xhtml?customerId=#{fdsogBean.p_bkpf.customer_id}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton2" 
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+											</h:outputLabel>
+											<p:commandButton icon="ui-icon-newwin" type="push"
+													onclick="PF('customerWidget').show();"
+													styleClass="f4button" />
+												
+									</p:column>
+									<p:column><h:outputLabel value="#{msg.ex_rate}" /></p:column>
+									<p:column>
+										<h:inputText
+											id="bkpf_kursf" styleClass="kursf"
+											value="#{fdsogBean.p_bkpf.kursf}" disabled="true" />
+									</p:column>
+									<p:column></p:column>
+									<p:column>
+									
+									</p:column>
+								</p:row>
+							</p:panelGrid>
+
+
+
+							</fieldset>
+
+
+
+								<p:commandButton actionListener="#{fdsogBean.addRow}"
+									value="#{msg.add}" styleClass="add_button"  />
+								<div class="wrapRTClass">
+									<p:scrollPanel style="width:100%;height:300px"
+										easing="easeOutElastic" id="bsegScrollPanel"
+										>
+										<p:dataTable value="#{fdsogBean.l_bseg}" var="o"
+											widgetVar="dataTableWidgetVar" id="bsegTable"
+											emptyMessage="#{msg.empty_rows}" styleClass="employeeTable"
+											headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow">
+
+												
+		 
+
+											<p:column style="width: 145px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.matnr.long']}" /></f:facet> 
+												<h:inputText id="b_matnr" value="#{o.matnrName}" size="10" maxlength="5" styleClass="input1" disabled="true" />
+												<p:commandButton icon="ui-icon-newwin" type="push"
+													onclick="PF('matnrWidget').show();" styleClass="f4button">
+													<f:setPropertyActionListener target="#{fdsogBean.p_bseg}"
+														value="#{o}" />
+												</p:commandButton>
+											</p:column>
+
+											<p:column style="width: 125px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.menge.long']}" /></f:facet>
+												<h:inputText id="b_menge" value="#{o.t_bseg.menge}" size="10"
+													maxlength="10" styleClass="input1" disabled="true" > <f:convertNumber pattern="#0" /></h:inputText> 
+
+											</p:column>
+
+											<p:column style="width: 115px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.dmbtr.long']}" /></f:facet>
+												<h:inputText id="b_dmbtr" value="#{o.t_bseg.dmbtr}" size="10" maxlength="10" styleClass="input1" disabled="true">
+												<f:convertNumber pattern="#,###,##0.00" />
+												</h:inputText>
+											</p:column>
+											
+											<p:column style="width: 115px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.wrbtr.long']}" /></f:facet>
+												<h:inputText id="b_wrbtr" value="#{o.t_bseg.wrbtr}" size="10" maxlength="10" styleClass="input1"  disabled="true">
+												<f:convertNumber pattern="#,###,##0.00" />
+												</h:inputText>
+											</p:column>
+
+
+											
+
+>
+											<p:column style="width: 145px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.werks.long']}" /></f:facet>
+												<h:inputText id="b_werks" value="#{o.werksName}" size="10"
+													maxlength="10" styleClass="input1" disabled="true" /> 
+												<p:commandButton icon="ui-icon-newwin" type="push"
+													onclick="PF('werksWidget').show();" styleClass="f4button">
+													<f:setPropertyActionListener target="#{fdsogBean.p_bseg}"
+														value="#{o}" />
+												</p:commandButton>	
+											</p:column>
+										</p:dataTable>
+
+									</p:scrollPanel>
+
+
+								</div>
+
+
+
+								
+
+								<p:dialog header="#{msg['bkpf.waers.long']}" widgetVar="waersType" dynamic="true"
+									width="500" height="500">
+
+									<p:commandButton
+										actionListener="#{fdsogBean.assignSelectedCurrency}"
+										onclick="PF('waersType').hide();" value="#{msg.select}" />
+									<p:dataTable scrollable="true" scrollHeight="400"
+										id="singleCurrency" var="waers" rowKey="#{waers.currency}"
+										value="#{currencyF4Bean.currency_list}" selectionMode="single"
+										selection="#{fdsogBean.selectedCurrency}">
+										<p:column headerText="Code" 
+											style="width:10px">
+											<h:outputText value="#{waers.currency}" />
+										</p:column>
+										<p:column headerText="#{msg.name}" 
+											style="width:100px">
+											<h:outputText value="#{waers.text20}" />
+										</p:column>
+									</p:dataTable>
+								</p:dialog>
+								
+								
+								<p:dialog header="#{msg['bseg.werks.long']}" widgetVar="werksWidget" dynamic="true"
+									width="500" height="500"> 
+									<p:commandButton
+										actionListener="#{fdsogBean.assignSelectedWerks}"
+										onclick="PF('werksWidget').hide();" value="#{msg.select}" />	
+									<p:dataTable scrollable="true" scrollHeight="400"
+										id="singleWerks" var="werks" rowKey="#{werks.werks}"
+										value="#{fdsogBean.werks_list}" selectionMode="single"
+										selection="#{fdsogBean.selectedWerks}">
+										<p:column headerText="ID" footerText="ID"
+											style="width:10px">
+											<h:outputText value="#{werks.werks}" />
+										</p:column>
+										<p:column headerText="#{msg.name}" 
+											style="width:100px">
+											<h:outputText value="#{werks.text45}" />
+										</p:column>
+									</p:dataTable>
+
+								</p:dialog>
+
+
+								<p:dialog header="#{msg['bseg.matnr.long']}" widgetVar="matnrWidget" dynamic="true"
+									width="500" height="500">
+									<div id="sc_div"> 
+											<table>
+												<tr>
+													<td><h:outputLabel value="#{msg.select_quantity}" /></td>
+													<td> <p:inputMask id="mwMenge" mask="9"   size = "10" autocomplete="off"  value = "#{fdsogBean.mwMenge}" /></td>
+												</tr> 											
+											</table> 
+									</div>
+									<br />
+									
+									<p:dataTable scrollable="true" scrollHeight="400"
+										id="singleMatnr" var="matnr" rowKey="#{matnr.matnr}"
+										value="#{fdsogBean.priceList_list}" selectionMode="single"
+										selection="#{fdsogBean.p_priceList}">
+										<f:facet name="header">
+
+											<p:commandButton 
+												actionListener="#{fdsogBean.assignFoundMatnr}"
+												onclick="PF('matnrWidget').hide();" value="#{msg.select}" />
+										</f:facet>
+										
+										
+										<p:column headerText="ID" footerText="ID"
+											style="width:10px">
+											<h:outputText value="#{matnr.matnr}" />
+										</p:column>
+										<p:column headerText="#{msg.name}" 
+											style="width:100px">
+											<h:outputText value="#{matnrF4Bean.getName(matnr.matnr)}" />
+										</p:column>
+										<p:column headerText="#{msg.amount}"
+											style="width:100px">
+											<h:outputText value="#{matnr.price}" />
+										</p:column>
+										<p:column headerText="#{msg['bkpf.waers.long']}"
+											style="width:100px">
+											<h:outputText value="#{matnr.waers}" />
+										</p:column>
+									</p:dataTable>
+								</p:dialog>
+								
+
+
+
+								
+								<p:dialog header="#{msg.customer}" widgetVar="customerWidget"
+									dynamic="true" width="900" height="500">
+									<div id="sc_div">
+										<fieldset class="sc_FieldSet">
+											<legend><h:outputLabel value="#{msg.search}" /></legend>
+											<table>
+												<tr>
+													<td><h:outputLabel value="#{msg.fiz_yur}" /></td>
+													<td><p:selectOneMenu id="sc_fiz_yur"
+															value="#{fdsogBean.searchCustomer.fiz_yur}"
+															onchange="birthdayDisable()">
+															<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+															<f:selectItem itemLabel="#{msg.fiz_lico}" itemValue="2" />
+															<f:selectItem itemLabel="#{msg.yur_lico}" itemValue="1" />
+														</p:selectOneMenu></td>
+													<td><h:outputLabel value="#{msg.first_name}" /></td>
+													<td><h:inputText id="sc_firstname" maxlength="45"
+															autocomplete="off"
+															value="#{fdsogBean.searchCustomer.firstname}" /></td>
+												</tr>
+												<tr>
+													<td><h:outputLabel value="#{msg['hr.customer.iin_bin']}" /></td>
+													<td><h:inputText id="sc_iin_bin" maxlength="45"
+															autocomplete="off"
+															value="#{fdsogBean.searchCustomer.iin_bin}" /></td>
+													<td><h:outputLabel value="#{msg.last_name}" /></td>
+													<td><h:inputText id="sc_lastname" maxlength="45"
+															autocomplete="off"
+															value="#{fdsogBean.searchCustomer.lastname}" /></td>
+												</tr>
+
+												<tr>
+													<td><h:outputLabel value="#{msg.name}" /></td>
+													<td><h:inputText id="sc_name" maxlength="45"
+															autocomplete="off"
+															value="#{fdsogBean.searchCustomer.name}" /></td>
+													<td><h:outputLabel value="#{msg.middle_name}" /></td>
+													<td><h:inputText id="sc_middlename" maxlength="45"
+															autocomplete="off"
+															value="#{fdsogBean.searchCustomer.middlename}" /></td>
+												</tr>
+
+
+
+												<tr>
+													<td><h:outputLabel value="#{msg.country}" /></td>
+													<td><p:selectOneMenu id="sc_country"
+															value="#{fdsogBean.searchCustomer.country_id}">
+															<f:selectItem itemLabel="" itemValue="0" />
+															<f:selectItems value="#{countryF4Bean.country_list}"
+																var="wa_country" itemLabel="#{wa_country.country}"
+																itemValue="#{wa_country.country_id}" />
+														</p:selectOneMenu></td>
+													<td><h:outputLabel value="#{msg['hr.customer.birthday']}" /></td>
+													<td><p:calendar id="sc_birthday" styleClass="bldat"
+															pattern="dd.MM.yyyy" autocomplete="off"
+															value="#{fdsogBean.searchCustomer.birthday}"
+															converterMessage="Date is invalid.">
+														</p:calendar></td>
+												</tr>
+												<tr>
+													<td><p:commandButton
+															actionListener="#{fdsogBean.to_search_customer}"
+															value="#{msg.search}" update="messages" /></td>
+													<td></td>
+													<td><h:outputLabel value="#{msg['hr.customer.passport_id']}" /></td>
+													<td><h:inputText id="sc_passport_id" maxlength="45"
+															autocomplete="off"
+															value="#{fdsogBean.searchCustomer.passport_id}" /></td>
+												</tr>
+											</table>
+
+										</fieldset>
+									</div>
+									<br />
+
+
+									<p:dataTable id="customerTable" var="cus" rowKey="#{cus.id}"  scrollable="true" scrollHeight="220"
+										value="#{fdsogBean.p_customer_list}"
+										emptyMessage="#{msg.empty_rows}" selectionMode="single"
+										selection="#{fdsogBean.selectedCustomer}">
+										<f:facet name="header">
+
+											<p:commandButton process="customerTable"
+												actionListener="#{fdsogBean.assignFoundCustomer}"
+												onclick="PF('customerWidget').hide();" value="Выбрать" />
+										</f:facet>
+
+										<p:column headerText="#{msg.fiz_yur}">
+											<p:selectOneMenu id="fiz_yur" value="#{cus.fiz_yur}"
+												disabled="true">
+												<f:selectItem itemLabel="#{msg.fiz_lico}" itemValue="2" />
+												<f:selectItem itemLabel="#{msg.yur_lico}" itemValue="1" />
+											</p:selectOneMenu>
+										</p:column>
+										<p:column headerText="#{msg['hr.customer.iin_bin']}">
+											<h:outputText value="#{cus.iin_bin}" />
+										</p:column>
+										<p:column headerText="#{msg.name}">
+											<h:outputText value="#{cus.name}" />
+										</p:column>
+										<p:column headerText="#{msg.first_name}">
+											<h:outputText value="#{cus.firstname}" />
+										</p:column>
+										<p:column headerText="#{msg.last_name}">
+											<h:outputText value="#{cus.lastname}" />
+										</p:column>
+										<p:column headerText="#{msg.middle_name}">
+											<h:outputText value="#{cus.middlename}" />
+										</p:column>
+										<p:column headerText="#{msg['hr.customer.birthday']}">
+											<p:calendar id="birthday" styleClass="bldat"
+												pattern="dd.MM.yyyy" autocomplete="off"
+												value="#{cus.birthday}" converterMessage="Date is invalid."
+												disabled="true">
+											</p:calendar>
+										</p:column>
+										<p:column headerText="#{msg['hr.customer.passport_id']}">
+											<h:outputText value="#{cus.passport_id}" />
+										</p:column>
+									</p:dataTable>
+
+
+								</p:dialog>
+
+							</h:form>
+
+
+						</f:view>
+					</div> 
+
+		</div>
+	</div>
+</h:body>
+</html>

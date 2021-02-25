@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog id="ContractDlg" widgetVar="ContractWidget" modal="true"
+		dynamic="true" resizable="false" appendTo="@(body)" header="Договоры">
+
+		<h:form id="ContractListForm">
+
+			<fieldset>
+				<legend>Заголовок документа</legend>
+
+				<div style="float: left;">
+					<table>
+						<tr>
+							<td><h:outputLabel value="Компания" /></td>
+							<td><p:selectOneMenu id="bukrs" disabled="true"
+									value="#{formBean.contractModel.searchModel.bukrs}">
+									<p:ajax listener="#{formBean.loadContrBranch}" />
+									<f:selectItem itemLabel="Выберите компанию" itemValue="0" />
+									<f:selectItems value="#{formBean.bukrs_list}"
+										var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+										itemValue="#{wa_bukrs.bukrs}" />
+								</p:selectOneMenu></td>
+						</tr>
+						<tr>
+							<td><h:outputLabel value="Филиал" /></td>
+							<td><p:selectOneMenu styleClass="branch" id="cbranch"
+									value="#{formBean.contractModel.searchModel.branch_id}">
+									<p:ajax listener="#{formBean.loadDealerList}" />
+									<f:selectItem itemLabel="Выберите офис" itemValue="0" />
+									<f:selectItems value="#{formBean.cbranch_list}"
+										var="wa_branch" itemLabel="#{wa_branch.text45}"
+										itemValue="#{wa_branch.branch_id}" />
+								</p:selectOneMenu></td>
+						</tr>
+					</table>
+				</div>
+
+				<div style="float: left; margin-left: 25px;">
+					<table>
+						<tr>
+							<td><h:outputLabel value="#{msg['dmsc.status']}: " /></td>
+							<td><p:selectOneMenu id="contract_status_id"
+									value="#{formBean.contractModel.searchModel.last_state}">
+									<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+									<f:selectItem itemLabel="Оформлен" itemValue="1" />
+									<f:selectItem itemLabel="Выдан" itemValue="2" />
+									<f:selectItem itemLabel="Возврат" itemValue="3" />
+									<f:selectItem itemLabel="Установлен" itemValue="4" />
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="Клиент" /></td>
+							<td><p:inputText id="fio" size="25" autocomplete="off"
+									value="#{formBean.contractModel.searchModel.customer_fio}"
+									disabled="true" /> <p:commandButton icon="ui-icon-newwin"
+									type="push" oncomplete="PF('CustomerWidget').show();"
+									styleClass="f4button">
+								</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+									actionListener="#{formBean.clearCustomerField}"
+									styleClass="f4button" disabled="false" /></td>
+						</tr>
+
+					</table>
+				</div>
+
+				<div style="float: left; margin-left: 15px">
+					<div>
+						<table>
+							<tr>
+								<td><h:outputLabel value="#{msg['dmsc.dateFrom']} " /></td>
+								<td><p:calendar id="start_date" styleClass="dateField"
+										value="#{formBean.contractModel.searchModel.p_start_date}"
+										navigator="true" pattern="dd.MM.yyyy" mask="true"
+										converterMessage="Date is invalid." /> <h:outputLabel
+										value="#{msg['dmsc.dateFrom1']} " /></td>
+							</tr>
+							<tr>
+								<td><h:outputLabel value=" #{msg['dmsc.dateTo']} " /></td>
+								<td><p:calendar id="end_date" styleClass="dateField"
+										value="#{formBean.contractModel.searchModel.p_end_date}"
+										navigator="true" pattern="dd.MM.yyyy" mask="true"
+										converterMessage="Date is invalid." /> #{msg['dmsc.dateTo1']}</td>
+							</tr>
+
+						</table>
+					</div>
+				</div>
+
+				<div style="float: left; margin-left: 25px;">
+					<table>
+						<tr>
+							<td><h:outputLabel value="Товар SN" /></td>
+							<td><p:inputText id="tovarSN" maxlength="25"
+									autocomplete="off"
+									value="#{formBean.contractModel.searchModel.tovar_serial}" /></td>
+						</tr>
+
+						<tr>
+							<td><h:outputLabel value="# Договора" /></td>
+							<td><p:inputText id="contr_num" maxlength="20"
+									style="width: 95px;" autocomplete="off"
+									value="#{formBean.contractModel.searchModel.contract_number}" /></td>
+						</tr>
+					</table>
+				</div>
+
+				<div style="float: right; margin-left: 25px;">
+					<table>
+						<tr>
+							<td></td>
+							<td><p:commandButton type="push" value="Поиск"
+									icon="ui-icon ui-icon-search" style="height:63px;"
+									actionListener="#{formBean.searchContract}"
+									update=":messages">
+								</p:commandButton></td>
+						</tr>
+					</table>
+				</div>
+
+			</fieldset>
+
+			<div class="wrapRTClass">
+
+				<p:dataTable value="#{formBean.contractModel}" var="o"
+					rowKey="#{o.contract.contract_id}" selectionMode="single"
+					selection="#{formBean.selectedContr}"
+					emptyMessage="#{msg[dmsc.emptyRec]}" paginator="true" rows="15"
+					lazy="true" widgetVar="50" id="outputTable"
+					styleClass="outputTable-table"
+					headerClass="outputTable-table-header"
+					rowClasses="outputTable-table-odd-row,outputTable-table-even-row">
+
+					<f:facet name="header">
+						<p:commandButton process="outputTable"
+							actionListener="#{formBean.assignSelectedContrId}"
+							value="Выбрать" />
+					</f:facet>
+
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="SN номер" />
+						</f:facet>
+						<h:outputText value="#{o.contract.contract_number}" />
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Дата договора" />
+						</f:facet>
+						<p:calendar id="birthday" styleClass="dateField"
+							pattern="dd.MM.yyyy" autocomplete="off"
+							value="#{o.contract.contract_date}"
+							converterMessage="Date is invalid." disabled="true">
+						</p:calendar>
+					</p:column>
+
+					<p:column style="text-align:center;width:110px;" rendered="true">
+						<f:facet name="header">
+							<h:outputText value="#{msg['dmsc.branch']}" />
+						</f:facet>
+						<p:selectOneMenu id="branch" value="#{o.contract.serv_branch_id}"
+							disabled="true">
+							<f:selectItem itemLabel="#{msg['dmsc.no']}" itemValue="0" />
+							<f:selectItems value="#{dmsclistBean.p_branchF4Bean.branch_list}"
+								var="wa_branch" itemLabel="#{wa_branch.text45}"
+								itemValue="#{wa_branch.branch_id}" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Заводской номер" />
+						</f:facet>
+						<h:outputText value="#{o.contract.tovar_serial}" />
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Клиент" />
+						</f:facet>
+						<h:outputText value="#{o.customer.getFullFIO()}" />
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Статус" />
+						</f:facet>
+						<p:selectOneMenu id="contract_status_id" disabled="true"
+							value="#{o.contract.contract_status_id}">
+							<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+							<f:selectItems
+								value="#{contractStatusF4Bean.contractStatus_list}"
+								var="wa_contractStatus" itemLabel="#{wa_contractStatus.name}"
+								itemValue="#{wa_contractStatus.contract_status_id}" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column style="text-align:center;">
+						<p:selectOneMenu id="lastState" disabled="true"
+							value="#{o.contract.last_state}">
+							<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+							<f:selectItem itemLabel="Оформлен" itemValue="1" />
+							<f:selectItem itemLabel="Выдан" itemValue="2" />
+							<f:selectItem itemLabel="Возврат" itemValue="3" />
+							<f:selectItem itemLabel="Установлен" itemValue="4" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Дилер" />
+						</f:facet>
+						<h:outputText value="#{o.dealer.getLF()}" />
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Тип договора" />
+						</f:facet>
+						<p:selectOneMenu id="contractType" disabled="true"
+							value="#{o.contract.contract_type_id}">
+							<f:selectItem itemLabel="#{msg['dmsc.all']}" itemValue="0" />
+							<f:selectItems value="#{contractTypeF4Bean.contractType_list}"
+								var="wa_ct" itemLabel="#{wa_ct.name}"
+								itemValue="#{wa_ct.contract_type_id}" />
+						</p:selectOneMenu>
+					</p:column>
+					<f:facet name="footer">
+									 #{msg['dmsc.foundTotal']}: #{formBean.contractModel.rowCount}
+					</f:facet>
+				</p:dataTable>
+			</div>
+
+
+		</h:form>
+
+	</p:dialog>
+
+</ui:composition>
+</html>

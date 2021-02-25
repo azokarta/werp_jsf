@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog header="#{msg['dmsc.addNewcustomer']}" modal="true"
+		appendTo="@(body)" widgetVar="newCustomerWidget" dynamic="true"
+		width="835" height="500">
+
+		<h:form id="NewCustomerForm">
+
+							<p:toolbar styleclass="mp_toolbar">
+								<f:facet name="left">
+									<p:commandButton type="push" value="Save"
+										icon="ui-icon ui-icon-check"
+										actionListener="#{formBean.save_customer}" update=":messages" />
+
+								</f:facet>
+							</p:toolbar>
+
+							<div style="width: 400px; float: left;" id="primaryInfo">
+								<fieldset class="primaryInfoFieldSet" style="height: 300px;">
+									<legend>#{msg['dmsc.customerInfo']}</legend>
+									<table class="form-table1">
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.fizyur']}" /></td>
+											<td class="value"><p:selectOneMenu id="fiz_yur"
+													value="#{formBean.newCustomer.fiz_yur}">
+													<p:ajax listener="#{formBean.change_fizyur}" />
+													<f:selectItem itemLabel="#{msg['dmsc.fiz']}" itemValue="2" />
+													<f:selectItem itemLabel="#{msg['dmsc.yur']}" itemValue="1" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.IINBIN']}" /></td>
+											<td class="value"><h:inputText id="iin_bin"
+													autocomplete="off"
+													value="#{formBean.newCustomer.iin_bin}" /></td>
+										</tr>
+
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.yurname']}" /></td>
+											<td class="value"><h:inputText id="name" maxlength="45"
+													autocomplete="off" value="#{formBean.newCustomer.name}"
+													disabled="#{formBean.dis_field1}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.director']}" /></td>
+											<td class="value"><h:inputText id="director"
+													autocomplete="off"
+													value="#{formBean.newCustomer.director}"
+													disabled="#{formBean.dis_field1}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.accountant']}" /></td>
+											<td class="value"><h:inputText id="buh" maxlength="45"
+													autocomplete="off" value="#{formBean.newCustomer.buh}"
+													disabled="#{formBean.dis_field1}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.name']}" /></td>
+											<td class="value"><h:inputText id="firstname"
+													autocomplete="off"
+													value="#{formBean.newCustomer.firstname}"
+													disabled="#{formBean.dis_field2}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.lastname']}" /></td>
+											<td class="value"><h:inputText id="lastname"
+													autocomplete="off"
+													value="#{formBean.newCustomer.lastname}"
+													disabled="#{formBean.dis_field2}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.midname']}" /></td>
+											<td class="value"><h:inputText id="middlename"
+													autocomplete="off"
+													value="#{formBean.newCustomer.middlename}"
+													disabled="#{formBean.dis_field2}" /></td>
+										</tr>
+
+
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.bdate']}" /></td>
+											<td class="value"><p:calendar id="birthday"
+													styleClass="bldat" pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{formBean.newCustomer.birthday}"
+													converterMessage="Date is invalid." navigator="true"
+													locale="#{systemLocale.currentLanguage}"
+													yearRange="1930:2015" disabled="#{formBean.dis_field2}">
+
+												</p:calendar></td>
+										</tr>
+
+									</table>
+								</fieldset>
+							</div>
+
+							<div id="contactInfo" style="width: 380px; float: right;">
+								<fieldset class="contactInfoFieldSet" style="height: 300px;">
+									<legend>#{msg['dmsc.contact_info']}</legend>
+									<table class="form-table1">
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.tel_dom']}" /></td>
+											<td class="value"><h:inputText id="telephone"
+													autocomplete="off"
+													value="#{formBean.newCustomer.telephone}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.mob_main']}" /></td>
+											<td class="value"><h:inputText id="mobile"
+													maxlength="45" autocomplete="off"
+													value="#{formBean.newCustomer.mobile}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.mob_add']}" /></td>
+											<td class="value"><h:inputText id="mobile2"
+													autocomplete="off"
+													value="#{formBean.newCustomer.mobile2}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.email']}" /></td>
+											<td class="value"><h:inputText id="email" maxlength="45"
+													autocomplete="off" value="#{formBean.newCustomer.email}" />
+											</td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.address']}" /></td>
+											<td class="value"><h:inputText id="address"
+													autocomplete="off"
+													value="#{formBean.newCustomer.address}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.addressReg']}" /></td>
+											<td class="value"><h:inputText id="address_reg"
+													autocomplete="off"
+													value="#{formBean.newCustomer.address_reg}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.rab']}" /></td>
+											<td class="value"><h:inputText id="address_work"
+													autocomplete="off"
+													value="#{formBean.newCustomer.address_work}"
+													disabled="#{formBean.dis_field2}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.country']}" /></td>
+											<td class="value"><p:selectOneMenu id="country"
+													value="#{formBean.newCustomer.country_id}">
+													<f:selectItem itemLabel="Select Country" itemValue="0" />
+													<f:selectItems value="#{countryF4Bean.country_list}"
+														var="wa_country" itemLabel="#{wa_country.country}"
+														itemValue="#{wa_country.country_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+
+							<div id="passportInfo" style="width: 100%; float: left;">
+								<fieldset class="passportInfoFieldSet">
+									<legend>#{msg['dmsc.passportInfo']}</legend>
+									<table class="form-table1">
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.passportNo']}" /></td>
+											<td class="value"><h:inputText id="passport_id"
+													autocomplete="off"
+													value="#{formBean.newCustomer.passport_id}"
+													disabled="#{formBean.dis_field2}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.issued']}" /></td>
+											<td class="value"><h:inputText id="passport_given_by"
+													autocomplete="off"
+													value="#{formBean.newCustomer.passport_given_by}"
+													disabled="#{formBean.dis_field2}" /></td>
+										</tr>
+										<tr>
+											<td class="key"><h:outputLabel
+													value="#{msg['dmsc.date_issued']}" /></td>
+											<td class="value"><p:calendar id="passport_given_date"
+													styleClass="bldat" pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{formBean.newCustomer.passport_given_date}"
+													converterMessage="Date is invalid." navigator="true"
+													locale="#{systemLocale.currentLanguage}"
+													yearRange="1930:2015" disabled="#{formBean.dis_field2}">
+
+												</p:calendar></td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

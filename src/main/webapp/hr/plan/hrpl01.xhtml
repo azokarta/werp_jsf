@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title>#{msg['hr.plan.new_plan']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{hrpl01Bean.breadcrumb}" />
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+				<f:view locale="#{systemLocale.currentLocale}">
+					<h:form id="form">
+						<p:toolbar>
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg.save}"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{hrpl01Bean.save}" update="form,:messages">
+								</p:commandButton>
+							</f:facet>
+						</p:toolbar>
+						<br />
+
+						<div class="ui-grid-row">
+							<div id="contract" class="ui-grid-col-5"
+								style="display: block; float: left;">
+								<fieldset class="contractFieldSet">
+									<legend>#{msg['hr.plan']}</legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg.country}" /></td>
+											<td><p:selectOneMenu id="country_id"
+													value="#{hrpl01Bean.newSP.country_id}">
+													<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+													<f:selectItems value="#{countryF4Bean.country_list}"
+														var="country" itemLabel="#{country.country}"
+														itemValue="#{country.country_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.company}" /></td>
+											<td><p:selectOneMenu id="bukrs"
+													value="#{hrpl01Bean.newSP.bukrs}">
+													<p:ajax update="branch, business_area" />
+													<f:selectItem itemLabel="#{msg.select_company}"
+														itemValue="" />
+													<f:selectItems value="#{bukrsF4Bean.bukrs_list}"
+														var="bukrs" itemLabel="#{bukrs.name}"
+														itemValue="#{bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.business_area}" /></td>
+											<td><p:selectOneMenu id="business_area"
+													value="#{hrpl01Bean.newSP.business_area_id}">
+													<f:selectItem itemLabel="#{msg['hr.customer.select']}"
+														itemValue="0" />
+													<f:selectItems
+														value="#{businessAreaBean.getItemsByBukrs(hrpl01Bean.newSP.bukrs)}"
+														var="ba" itemLabel="#{ba.name}"
+														itemValue="#{ba.business_area_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.branch}" /></td>
+											<td><p:selectOneMenu id="branch"
+													value="#{hrpl01Bean.newSP.branch_id}">
+													<f:selectItem itemLabel="#{msg.select_branch}"
+														itemValue="0" />
+													<f:selectItems
+														value="#{branchBean.getItemsByBukrs(hrpl01Bean.newSP.bukrs)}"
+														var="branch" itemLabel="#{branch.text45}"
+														itemValue="#{branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.currency}" /></td>
+											<td><p:selectOneMenu id="waers"
+													value="#{hrpl01Bean.newSP.waers}">
+													<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+													<f:selectItems value="#{currencyF4Bean.currency_list}"
+														var="currency" itemLabel="#{currency.currency}"
+														itemValue="#{currency.currency_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['hr.plan.year']}" /></td>
+											<td><p:selectOneMenu id="year"
+													value="#{hrpl01Bean.newSP.year}">
+													<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+													<f:selectItems value="#{hrpl01Bean.years}" var="year"
+														itemLabel="#{year.value}" itemValue="#{year.id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['hr.plan.month']}" /></td>
+											<td><p:selectOneMenu id="month"
+													value="#{hrpl01Bean.newSP.month}">
+													<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+													<f:selectItems value="#{monthBean.items}" var="month"
+														itemLabel="#{month.value}" itemValue="#{month.id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['hr.plan']}" /></td>
+											<td><p:inputText id="plan_count" size="45"
+													autocomplete="off" value="#{hrpl01Bean.newSP.plan_count}">
+												</p:inputText></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.plan_summ}" /></td>
+											<td><p:inputText id="plan_sum" size="45"
+													autocomplete="off" value="#{hrpl01Bean.newSP.plan_sum}">
+												</p:inputText></td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+						</div>
+					</h:form>
+					<ui:include src="/hr/staff/ListDialog.xhtml">
+                            <ui:param name="formId" value=":form" />
+                            <ui:param name="mainFormBean" value="#{hrpl01Bean}" />
+                        </ui:include>
+				</f:view>
+			</div>
+
+		</div>
+	</div>
+</h:body>
+</html>

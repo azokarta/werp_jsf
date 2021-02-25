@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog id="CrmHistoryDlg" widgetVar="CrmHistoryWidget" modal="true"
+		dynamic="true" resizable="false" appendTo="@(body)"
+		header="История клиента" width="1130px" height="650px">
+
+		<h:form id="CrmHistoryForm">
+			<div class="ui-grid-row">
+				<p:tabView id="tabView" style="height:220px;">
+					<p:tab title="Данные клиента">
+						<div class="ui-grid-row">
+							<div style="float: left;">
+								<h:panelGrid columns="2" cellpadding="3">
+									<h:outputLabel value="Компания " />
+									<p:outputLabel style="font-weight:bold;" id="bukrs"
+										value="#{formBean.crmhBean.bukrs.name}" />
+
+									<h:outputLabel value="Филиал " />
+									<p:outputLabel style="font-weight:bold;" id="branch"
+										value="#{formBean.crmhBean.branch.text45}" />
+
+									<h:outputLabel value="Договор # " />
+									<h:panelGrid columns="2" cellpadding="0">
+										<p:outputLabel id="conSN" style="font-weight:bold;"
+											value="#{formBean.crmhBean.contract.contract_number} " />
+										<p:button target="_blank" styleClass="f4button"
+											outcome="/dms/contract/dmsc03.xhtml?contract_number=#{formBean.crmhBean.contract.contract_number}"
+											icon="ui-icon-zoomin" title="View" id="viewButton4" />
+									</h:panelGrid>
+
+									<h:outputLabel value="Товар SN " />
+									<p:outputLabel id="tovSN" style="font-weight:bold;"
+										value="#{formBean.crmhBean.contract.tovar_serial}" />
+
+									<h:outputLabel value="Дата выдачи: " />
+									<p:calendar id="start_date" styleClass="dateField"
+										value="#{formBean.crmhBean.contract.matnr_release_date}"
+										navigator="true" pattern="dd.MM.yyyy" mask="true"
+										disabled="true" converterMessage="Date is invalid." />
+
+									<h:outputLabel value="Дилер " />
+									<p:outputLabel id="dealer" style="font-weight:bold;"
+										value="#{formBean.crmhBean.dealer.LF}" />
+								</h:panelGrid>
+							</div>
+
+							<div style="float: left; margin-left: 25px;">
+								<p:panelGrid cellpadding="3">
+									<p:row>
+										<p:column>
+											<h:outputLabel value="Клиент" />
+										</p:column>
+										<p:column>
+											<p:outputLabel id="cust" style="font-weight:bold;"
+												value="#{formBean.crmhBean.customer.fullFIO}" />
+											<p:button target="_blank" styleClass="f4button"
+												style="margin-left:5px;"
+												outcome="/hr/customer/hrc02.xhtml?customerId=#{formBean.crmhBean.customer.id}"
+												icon="ui-icon-zoomin" title="View">
+											</p:button>
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column>
+											<h:outputLabel value="Адрес" />
+										</p:column>
+										<p:column>
+											<p:outputLabel id="addr" style="font-weight:bold;"
+												value="#{formBean.crmhBean.addrService.address}" />
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column>
+											<h:outputLabel value="Тел (Дом)" />
+										</p:column>
+										<p:column>
+											<p:outputLabel id="telDom" style="font-weight:bold;"
+												value="#{formBean.crmhBean.sfo.tel}" />
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column>
+											<h:outputLabel value="Тел (Рабочий)" />
+										</p:column>
+										<p:column>
+											<p:outputLabel id="telRab" style="font-weight:bold;"
+												value="#{formBean.crmhBean.sfo.telRab}" />
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column>
+											<h:outputLabel value="Категория" />
+										</p:column>
+										<p:column>
+											<p:selectOneMenu id="categoryOld" disabled="true"
+												value="#{formBean.crmhBean.sf.crm_category}">
+												<f:selectItem itemLabel="ЗЕЛЕНЫЙ" itemValue="1" />
+												<f:selectItem itemLabel="ЖЕЛТЫЙ" itemValue="2" />
+												<f:selectItem itemLabel="КРАСНЫЙ" itemValue="3" />
+												<f:selectItem itemLabel="ЧЕРНЫЙ" itemValue="4" />
+											</p:selectOneMenu>
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column colspan="2">
+											<p:panelGrid columns="10" styleClass="ppGrid" cellpadding="0">
+												<h:outputLabel value="F1" />
+												<p:inputText id="f1" disabled="true" size="3"
+													style="font-weight:bold;"
+													value="#{formBean.crmhBean.sfo.f1}" />
+												<h:outputLabel value="F2" />
+												<p:inputText id="f2" disabled="true" size="3"
+													style="font-weight:bold;"
+													value="#{formBean.crmhBean.sfo.f2}" />
+												<h:outputLabel value="F3" />
+												<p:inputText id="f3" disabled="true" size="3"
+													style="font-weight:bold;"
+													value="#{formBean.crmhBean.sfo.f3}" />
+												<h:outputLabel value="F4" />
+												<p:inputText id="f4" disabled="true" size="3"
+													style="font-weight:bold;"
+													value="#{formBean.crmhBean.sfo.f4}" />
+												<h:outputLabel value="F5" />
+												<p:inputText id="f5" disabled="true" size="3"
+													style="font-weight:bold;"
+													value="#{formBean.crmhBean.sfo.f5}" />
+											</p:panelGrid>
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="Смена категории">
+						<div class="ui-grid-row">
+							<div style="float: left;">
+								<p:panelGrid columns="3" styleClass="ppGrid" cellpadding="5">
+									<p:outputLabel>Категория: </p:outputLabel>
+									<p:selectOneMenu id="category" style="width:150px;"
+										value="#{formBean.crmhBean.sf.crm_category}">
+										<f:selectItem itemLabel="ЗЕЛЕНЫЙ" itemValue="1" />
+										<f:selectItem itemLabel="ЖЕЛТЫЙ" itemValue="2" />
+										<f:selectItem itemLabel="КРАСНЫЙ" itemValue="3" />
+										<f:selectItem itemLabel="ЧЕРНЫЙ" itemValue="4" />
+									</p:selectOneMenu>
+									<p:commandButton type="push" value="Сменить" icon="ui-icon-tag"
+										actionListener="#{formBean.crmhBean.changeCRMCategory}"
+										update=":messages">
+									</p:commandButton>
+								</p:panelGrid>
+							</div>
+						</div>
+					</p:tab>
+
+					<p:tab title="Назначить звонок">
+						<div class="ui-grid-row">
+							<div style="float: left;">
+								<p:panelGrid columns="2" styleClass="ppGrid" cellpadding="5">
+									<p:outputLabel>Дата: </p:outputLabel>
+									<p:calendar id="schedDate"
+										value="#{formBean.crmhBean.newcrmsBean.newSCS.scheduledDate}"
+										navigator="true" pattern="dd.MM.yyyy HH:mm" mask="true"
+										converterMessage="Date is invalid." />
+
+									<h:outputLabel value="Примечание" />
+									<p:inputText id="reply" size="38"
+										value="#{formBean.crmhBean.newcrmsBean.newSCS.info}" />
+								</p:panelGrid>
+							</div>
+						</div>
+						<p:toolbar styleclass="mp_toolbar" style="margin-top: 10px;">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg['dmsc.save']}"
+									icon="ui-icon ui-icon-check" update=":messages"
+									actionListener="#{formBean.crmhBean.saveNewSchedule}" />
+							</f:facet>
+						</p:toolbar>
+					</p:tab>
+
+					<p:tab title="Рекдактировать даты замены фильтров">
+						<div class="ui-grid-row">
+							
+						</div>
+					</p:tab>
+				</p:tabView>
+			</div>
+
+			<p:toolbar styleclass="mp_toolbar" style="margin-top: 10px;">
+				<f:facet name="right">
+					<p:commandButton type="push" value="Новый звонок"
+						icon="ui-icon ui-icon-plus" update=":messages"
+						actionListener="#{formBean.crmhBean.prepareNewCRMHDialog()}"
+						oncomplete="PF('NewCallWidget').show();" />
+				</f:facet>
+			</p:toolbar>
+
+			<div class="ui-grid-row">
+				<p:dataTable value="#{formBean.crmhBean.crmHisL}" var="o"
+					rowKey="#{o.sch.id}" selectionMode="single"
+					selection="#{formBean.crmhBean.selectedCH}" scrollable="true"
+					scrollHeight="285" emptyMessage="#{msg[dmsc.emptyRec]}"
+					paginator="true" rows="8" lazy="false" widgetVar="50"
+					id="outputTable" styleClass="outputTable-table"
+					headerClass="outputTable-table-header"
+					rowClasses="outputTable-table-odd-row,outputTable-table-even-row">
+
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Дата" />
+						</f:facet>
+						<p:calendar id="birthday" pattern="dd.MM.yyyy HH.mm"
+							autocomplete="off" value="#{o.sch.actionDate}"
+							converterMessage="Date is invalid." disabled="true">
+						</p:calendar>
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Действие" />
+						</f:facet>
+						<p:selectOneMenu id="actionName" value="#{o.sch.actionId}"
+							disabled="true">
+							<f:selectItems value="#{servCRMActionF4Bean.crmaction_list}"
+								var="wa" itemLabel="#{wa.nameRU}" itemValue="#{wa.id}" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="ФИО сотрудника" />
+						</f:facet>
+						<h:outputText value="#{o.staff.LF}" />
+					</p:column>
+					<p:column style="text-align:center;">
+						<f:facet name="header">
+							<h:outputText value="Описание действия" />
+						</f:facet>
+						<h:outputText value="#{o.sch.info}" />
+					</p:column>
+
+				</p:dataTable>
+			</div>
+
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

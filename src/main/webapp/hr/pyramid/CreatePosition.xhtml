@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<f:metadata>
+		<f:event type="preRenderView" listener="#{hrpCrud.initCrud(bukrsId)}" />
+	</f:metadata>
+	<p:dialog id="CreatePositionDlg" widgetVar="CreatePositionDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="Добавление данных в иерархиу">
+		<h:form id="CreatePositionForm">
+			<h:panelGroup id="display" rendered="#{hrpCrud.selected != null}">
+				<p:panelGrid columns="2">
+
+					<p:outputLabel value="Род. элемент"></p:outputLabel>
+					<p:outputLabel value="#{hrpCrud.selectedParent.pyramid_id}"
+						rendered="true"></p:outputLabel>
+
+					<p:outputLabel value="Должность (Сотрудник)" />
+					<h:panelGrid columns="3" id="pyr-ins-obj">
+						<p:inputText id="staff-fio" size="35" autocomplete="off"
+							value="#{hrpCrud.hrSalaryDialog.selected.p_staff.getLF()}"
+							disabled="true" />
+						<p:commandButton icon="ui-icon-newwin" type="push"
+							oncomplete="PF('SalaryListDialog').show();">
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-closethick" type="push"
+							action="#{hrpCrud.hrSalaryDialog.Reset()}"
+							update="PyramidCreateForm">
+							<f:actionListener binding="#{hrpCrud.removeSalary()}"></f:actionListener>
+						</p:commandButton>
+					</h:panelGrid>
+				</p:panelGrid>
+
+
+				<p:commandButton rendered="#{hrpCrud.mode == 'create'}"
+					actionListener="#{hrpCrud.Create}" value="Save" update=":messages" />
+				<p:commandButton rendered="#{hrpCrud.mode == 'update'}"
+					actionListener="#{hrpCrud.Update}" value="Update"
+					update=":messages" />
+				<p:commandButton actionListener="#{hrpCrud.Reset}" value="Cancel"
+					oncomplete="PF('CreatePositionDialog').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+	<h:panelGroup id="SalaryLstDlgBlock" layout="block">
+		<ui:include src="/hr/salary/ListDialog.xhtml">
+			<ui:param name="formId" value=":CreatePositionForm" />
+			<ui:param name="mainFormBean" value="#{hrpCrud}" />
+			<ui:param name="dialogBean" value="#{hrpCrud.hrSalaryDialog}" />
+		</ui:include>
+	</h:panelGroup>
+</ui:composition>
+</html>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>Журнал склада</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Склад > Журнал склада" />
+				</ui:include>
+			</ui:insert>
+
+			<div class="ui-grid-row">
+				<div style="width: 95%; margin: auto;">
+					<h2>Журнал склада</h2>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-3">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel header="#{msg.advanced_search}">
+							<h:panelGrid columns="2" cellpadding="10">
+
+								<p:outputLabel value="Компания"></p:outputLabel>
+								<p:selectOneMenu value="#{logListBean.searchModel.bukrs}">
+									<p:ajax update="werks"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg['logistics.storage']}"></p:outputLabel>
+								<p:selectOneMenu id="werks"
+									value="#{logListBean.searchModel.werks}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue="0" />
+									<f:selectItems
+										value="#{werksF4Bean.getByBukrs(logListBean.searchModel.bukrs)}"
+										var="w" itemLabel="#{w.text45}" itemValue="#{w.werks}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="Дата от"></p:outputLabel>
+								<p:calendar yearRange="2016:2021" styleClass="bldat"
+									pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+									value="#{logListBean.searchModel.fromDate}"
+									converterMessage="Date is invalid."
+									locale="#{systemLocale.currentLocale.getLanguage()}" />
+
+								<p:outputLabel value="Дата по"></p:outputLabel>
+								<p:calendar yearRange="2016:2021" styleClass="bldat"
+									pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+									value="#{logListBean.searchModel.toDate}"
+									converterMessage="Date is invalid."
+									locale="#{systemLocale.currentLocale.getLanguage()}" />
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									id="searchBtn" update=":MatnrListForm:datalist,:messages"
+									actionListener="#{logListBean.prepareLogList()}"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+
+
+				<div class="ui-grid-col-9">
+					<h:form id="MatnrListForm">
+						<p:panel header="Действия на складе">
+							<p:dataTable id="datalist" value="#{logListBean.mmList}"
+								var="item" rowKey="#{item.mm_id}" rows="200">
+
+								<p:column style="width:16px">
+									<p:rowToggler />
+								</p:column>
+
+								<p:column style="width:60px;">
+									<f:facet name="header">
+										<h:outputText value="Дата" />
+									</f:facet>
+									<h:outputText value="#{item.mm_date}" >
+										<f:convertDateTime pattern="d.MM.yyyy"></f:convertDateTime>
+									</h:outputText>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Действие" />
+									</f:facet>
+									<h:outputText value="#{item.getTypeName()}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Примечание" />
+									</f:facet>
+									<h:outputText value="#{item.note}" />
+								</p:column>
+
+								<p:rowExpansion>
+									<p:dataTable value="#{logListBean.getOutputItems(item.mm_id)}"
+										var="item2" rows="200">
+										
+										<p:column style="width:60px" headerText="Код">
+											<h:outputText value="#{item2.matnrCode}" />
+										</p:column>
+										<p:column headerText="Материал">
+											<h:outputText value="#{item2.matnrName}" />
+										</p:column>
+										<p:column headerText="Заводской номер">
+											<h:outputText value="#{item2.matnrBarcode}" />
+										</p:column>
+										
+										<p:column headerText="Количество">
+											<h:outputText value="#{item2.menge}" />
+										</p:column>
+										
+									</p:dataTable>
+								</p:rowExpansion>
+							</p:dataTable>
+						</p:panel>
+					</h:form>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

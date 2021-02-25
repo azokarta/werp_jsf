@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Каталог товаров</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP');
+                         $(this).toggleClass('shiftLeft');
+                         $('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Логистика > Каталог товаров" />
+				</ui:include>
+			</ui:insert>
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel id="horizontal" header="#{msg.advanced_search}"
+							toggleable="true" toggleOrientation="vertical" collapsed="false">
+							<h:panelGrid columns="4" cellpadding="10">
+								<p:outputLabel rendered="false" value="#{msg.company}"></p:outputLabel>
+								<p:selectOneMenu rendered="false"
+									value="#{refMatnr.searchModel.bukrs}">
+									<f:selectItem itemValue=""
+										itemLabel="#{msg['dmsc.select_bukrs']}"></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}" />
+								</p:selectOneMenu>
+
+								<p:outputLabel value="#{msg['dmsc.hint_code']}"></p:outputLabel>
+								<p:inputText value="#{refMatnr.searchModel.code}"></p:inputText>
+
+								<p:outputLabel value="#{msg['finance.fa.name']}"></p:outputLabel>
+								<p:inputText value="#{refMatnr.searchModel.text45}"></p:inputText>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+									actionListener="#{refMatnr.loadItems()}" id="searchBtn"
+									update=":MatnrListForm:datalist"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<h:form id="MatnrListForm">
+					<p:dataTable id="datalist" value="#{refMatnr.items}" var="item"
+						selectionMode="single" selection="#{refMatnr.selected}"
+						paginator="true" paginatorPosition="bottom" rowKey="#{item.matnr}"
+						rows="50">
+
+						<f:facet name="header" id="tableHeader">
+							<h:commandLink id="xlsxExport"
+								style="float:right;margin-right:5px;">
+								<p:graphicImage name="xlsx_export_icon.png" library="img"
+									width="32" />
+								<p:dataExporter type="xls" target="datalist"
+									fileName="matnrList" postProcessor="#{refMatnr.exportXLS}" />
+							</h:commandLink>
+
+							<p:commandButton rendered="#{refMatnr.canAll()}" disabled="#{empty refMatnr.selected.matnr}"
+								id="updateButton" icon="ui ui-icon-pencil" title="Update"
+								update=":MatnrCreateDlg"
+								oncomplete="PF('MatnrCreateDialog').show()"
+								style="float:right;margin-right:5px;" />
+								
+							<p:commandButton disabled="#{empty refMatnr.selected.matnr}"
+								id="imageButton" title="Show Image"
+								update=":MatnrImageDlg" value="Картинка"
+								oncomplete="PF('MatnrImageDlg').show()"
+								style="float:right;margin-right:5px;" />
+
+							<p:commandButton rendered="#{refMatnr.canAll()}" id="createButton" icon="ui ui-icon-plus"
+								title="Create" actionListener="#{refMatnr.prepareCreate}"
+								update=":MatnrCreateDlg"
+								oncomplete="PF('MatnrCreateDialog').show()"
+								style="float:right;margin-right:5px;" />
+							<div style="clear: both;"></div>
+						</f:facet>
+						<p:ajax event="rowSelect"
+							update="createButton updateButton, imageButton, :MatnrCreateForm, :MatnrImageDlg" />
+						<p:ajax event="rowUnselect"
+							update="createButton updateButton, imageButton, :MatnrCreateForm, :MatnrImageDlg" />
+
+						<p:column rendered="false">
+							<f:facet name="header">
+								<h:outputText value="Company" />
+							</f:facet>
+							<h:outputText value="#{bukrsF4Bean.getNameByBukrs(item.bukrs)}" />
+						</p:column>
+
+						<p:column style="width:30px;">
+							<f:facet name="header">
+								<h:outputText value="Matnr" />
+							</f:facet>
+							<h:outputText value="#{item.matnr}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Наименование" />
+							</f:facet>
+							<h:outputText value="#{item.text45}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Code" />
+							</f:facet>
+							<h:outputText value="#{item.code}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Comment" />
+							</f:facet>
+							<h:outputText value="#{item.comment}" />
+						</p:column>
+
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="parent" />
+							</f:facet>
+							<h:outputText value="#{item.parent_matnr}" />
+						</p:column>
+						
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Ограничение (количество)" />
+							</f:facet>
+							<h:outputText value="#{item.account_limit}" />
+						</p:column>
+
+					</p:dataTable>
+				</h:form>
+
+				<ui:include src="CreateOrUpdate.xhtml" />
+				<ui:include src="ImageDialog.xhtml" />
+
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

@@ -1,0 +1,815 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<h:head>
+	<title>#{msg['dmsc.newContract']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="СУД > Договоры > Новый Универсальный Договор" />
+				</ui:include>
+				<ui:include src="/template/headerPart.xhtml">
+					<ui:param name="pageHeader" value="Новый Универсальный Договор" />
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+
+						<p:growl id="messages" sticky="false" showDetail="true" />
+
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:commandButton type="push" value="#{msg['dmsc.save']}"
+									id="save_button"
+									disabled="#{universalConBean.p_disabled_save_button}"
+									icon="ui-icon ui-icon-check"
+									actionListener="#{universalConBean.to_save}" update="messages">
+									<p:confirm header="Confirmation"
+										message="#{msg['dmsc.hint_save_new_contr']}"
+										icon="ui-icon-alert" />
+								</p:commandButton>
+								<span class="ui-separator"> <span
+									class="ui-icon ui-icon-grip-dotted-vertical" />
+								</span>
+								<p:commandButton type="push" value="#{msg['dmsc.check']}"
+									id="check_button" icon="#{universalConBean.p_check_icon}"
+									style="margin-left:10px;"
+									actionListener="#{universalConBean.to_check_payment_table}"
+									update="messages">
+								</p:commandButton> &nbsp; <h:outputLabel
+									styleClass="#{universalConBean.p_check_text_color}"
+									value="* #{universalConBean.p_check_text}" id="check_text" />
+							</f:facet>
+						</p:toolbar>
+						<br />
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+							align="center">
+							<p:commandButton value="#{msg['dmsc.yes']}" type="button"
+								align="center" styleClass="ui-confirmdialog-yes"
+								icon="ui-icon-check" />
+							<p:commandButton value="#{msg['dmsc.no']}" type="button"
+								align="center" styleClass="ui-confirmdialog-no"
+								icon="ui-icon-close" />
+						</p:confirmDialog>
+
+						<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+							<div id="contract" class="contractFieldDiv"
+								style="display: block; float: left;">
+								<fieldset class="contractFieldSet">
+									<legend>#{msg['dmsc.contract']}</legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.bukrs']}" /></td>
+											<td><p:selectOneMenu id="bukrs"
+													value="#{universalConBean.p_contract.bukrs}">
+													<p:ajax listener="#{universalConBean.loadBranch}" />
+													<f:selectItem itemLabel="#{msg['dmsc.select_bukrs']}"
+														itemValue="0" />
+													<f:selectItems value="#{universalConBean.bukrs_list}"
+														var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+														itemValue="#{wa_bukrs.bukrs}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.branch']}" /></td>
+											<td><p:selectOneMenu id="branch"
+													value="#{universalConBean.p_contract.branch_id}">
+													<p:ajax listener="#{universalConBean.loadContractType}" />
+													<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+														itemValue="0" />
+													<f:selectItems value="#{universalConBean.branch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+
+										<tr>
+											<td colspan="2">
+											<table><tr><td>
+											<h:outputLabel value="Сервис" /></td><td>
+											<p:selectOneMenu id="servBranch" update="messages"
+													value="#{universalConBean.p_contract.serv_branch_id}">
+													<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+														itemValue="0" />
+													<f:selectItems value="#{universalConBean.serv_branch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td><td width="75" align="right">
+												<h:outputLabel value="Финансы " /></td><td>
+												<p:selectOneMenu id="finBranch"
+													value="#{universalConBean.p_contract.finBranchId}">
+													<f:selectItem itemLabel="#{msg['dmsc.select_branch']}"
+														itemValue="0" />
+													<f:selectItems value="#{universalConBean.branch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td>
+												</tr>
+												</table>
+												</td>
+										</tr>
+
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.contr_type']}" /></td>
+											<td><p:selectOneMenu id="contract_type_id"
+													value="#{universalConBean.p_contract.contract_type_id}">
+													<p:ajax listener="#{universalConBean.loadWerksMatnrList}" />													
+													<f:selectItem itemLabel="#{msg['dmsc.select_contr_type']}"
+														itemValue="0" />
+													<f:selectItems value="#{universalConBean.contractType_list}"
+														var="wa_contractType" itemLabel="#{wa_contractType.name}"
+														itemValue="#{wa_contractType.contract_type_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td colspan="2">
+												<table>
+													<tr>
+													<td><h:outputLabel value="#{msg['dmsc.status']}" /></td>
+													<td><p:selectOneMenu id="contract_status_id"
+														value="#{universalConBean.p_contract.contract_status_id}"
+														disabled="#{universalConBean.statusChangeRole}">
+														<p:ajax listener="#{universalConBean.statusChanged}"
+															update="messages" />
+														<f:selectItems
+															value="#{contractStatusF4Bean.contractStatus_list}"
+															var="wa_contractStatus"
+															itemLabel="#{wa_contractStatus.name}"
+															itemValue="#{wa_contractStatus.contract_status_id}" />
+													</p:selectOneMenu></td>
+													<td><h:outputLabel value="#{msg['dmsc.contract_date']}" style="margin-left: 15px;"/></td>
+													<td><p:calendar id="contract_date" styleClass="dateField"
+														value="#{universalConBean.p_contract.contract_date}"
+														navigator="true" pattern="dd.MM.yyyy" mask="true"
+														converterMessage="Date is invalid.">														
+													</p:calendar></td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.customer']}" /></td>
+											<td><h:inputText id="fio" size="33" autocomplete="off"
+													value="#{universalConBean.p_fio}" disabled="true" /> <p:commandButton
+													icon="ui-icon-newwin" type="push"
+													actionListener="#{universalConBean.prepareCustomerDlg}"
+													oncomplete="PF('customerWidget').show();"
+													styleClass="f4button">
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{universalConBean.clearStuffField(-1)}"
+													styleClass="f4button" disabled="true" /> 
+													<h:link id="customerLink"
+													rendered="#{not empty universalConBean.p_contract.customer_id}"
+													outcome="/hr/customer/hrc03.xhtml" target="_blank"
+													styleClass="urlLinks">
+													<f:param name="customerId"
+														value="#{universalConBean.p_contract.customer_id}" />
+													<h:graphicImage value="/img/link.png"
+														style="float:right; width:15px; height:15px;" />
+												</h:link></td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.dealer']}" /></td>
+											<td><h:inputText id="dealer" size="33"
+													autocomplete="off" value="#{universalConBean.p_fioDealer}"
+													disabled="true" /> <p:commandButton icon="ui-icon-newwin"
+													type="push"
+													actionListener="#{universalConBean.setSearchPositionId(4)}"
+													oncomplete="PF('employeeWidget').show();"
+													styleClass="f4button">
+													<f:setPropertyActionListener
+														target="#{universalConBean.p_search_position_id}" value="4" />
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{universalConBean.clearStuffField(4)}"
+													styleClass="f4button" /> <h:link id="dealerLink"
+													rendered="#{not empty universalConBean.p_contract.dealer}"
+													outcome="/hr/staff/View.xhtml" target="_blank"
+													styleClass="urlLinks">
+													<f:param name="staffId"
+														value="#{universalConBean.p_contract.dealer}" />
+													<h:graphicImage value="/img/link.png"
+														style="float:right; width:15px; height:15px;" />
+												</h:link></td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel style="margin-left: 0px;" value="Премия Дилера" /></td>
+											<td><h:inputText id="dealerPremi" size="10"
+													autocomplete="off" value="#{universalConBean.p_dealerPremi}"
+													disabled="false">
+													<f:convertNumber type="number" groupingUsed="true"
+														minFractionDigits="2" pattern="#0.00" />
+													</h:inputText>
+													 <h:outputLabel id="premiCurrency"
+													value=" #{universalConBean.p_currency}" />
+													</td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel value="Менеджер" /></td>
+											<td><h:inputText id="manager" size="33"
+													autocomplete="off" value="#{universalConBean.p_fioManager}"
+													disabled="true" /> <p:commandButton icon="ui-icon-newwin"
+													type="push"
+													actionListener="#{universalConBean.setSearchPositionId(3)}"
+													oncomplete="PF('employeeWidget').show();"
+													styleClass="f4button">
+													<f:setPropertyActionListener
+														target="#{universalConBean.p_search_position_id}" value="3" />
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{universalConBean.clearStuffField(3)}"
+													styleClass="f4button" /> <h:link id="managerLink"
+													rendered="#{not empty universalConBean.p_manager}"
+													outcome="/hr/staff/View.xhtml" target="_blank"
+													styleClass="urlLinks">
+													<f:param name="staffId"
+														value="#{universalConBean.p_manager}" />
+													<h:graphicImage value="/img/link.png"
+														style="float:right; width:15px; height:15px;" />
+												</h:link></td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel style="margin-left: 0px;" value="Премия Менеджера" /></td>
+											<td><h:inputText id="managerPremi" size="10"
+													autocomplete="off" value="#{universalConBean.p_managerPremi}"
+													disabled="false">
+													<f:convertNumber type="number" groupingUsed="true"
+														minFractionDigits="2" pattern="#0.00" />
+													</h:inputText>
+													 <h:outputLabel id="premiManCurrency"
+													value=" #{universalConBean.p_currency}" />
+													</td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel value="Директор" /></td>
+											<td><h:inputText id="director" size="33"
+													autocomplete="off" value="#{universalConBean.p_fioDirector}"
+													disabled="true" /> <p:commandButton icon="ui-icon-newwin"
+													type="push"
+													actionListener="#{universalConBean.setSearchPositionId(10)}"
+													oncomplete="PF('employeeWidget').show();"
+													styleClass="f4button">
+													<f:setPropertyActionListener
+														target="#{universalConBean.p_search_position_id}" value="10" />
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{universalConBean.clearStaffField(10)}"
+													styleClass="f4button" /> <h:link id="directorLink"
+													rendered="#{not empty universalConBean.p_director}"
+													outcome="/hr/staff/View.xhtml" target="_blank"
+													styleClass="urlLinks">
+													<f:param name="staffId"
+														value="#{universalConBean.p_director}" />
+													<h:graphicImage value="/img/link.png"
+														style="float:right; width:15px; height:15px;" />
+												</h:link></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel style="margin-left: 0px;" value="Премия Директора" /></td>
+											<td><h:inputText id="directorPremi" size="10"
+													autocomplete="off" value="#{universalConBean.p_directorPremi}"
+													disabled="false">
+													<f:convertNumber type="number" groupingUsed="true"
+														minFractionDigits="2" pattern="#0.00" />
+													</h:inputText>
+													 <h:outputLabel id="premiDirCurrency"
+													value=" #{universalConBean.p_currency}" />
+													</td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.collector']}" /></td>
+											<td><h:inputText id="collector" size="33"
+													autocomplete="off" value="#{universalConBean.p_fioColl}"
+													disabled="true" /> <p:commandButton icon="ui-icon-newwin"
+													type="push"
+													actionListener="#{universalConBean.setSearchPositionId(9)}"
+													oncomplete="PF('employeeWidget').show();"
+													styleClass="f4button">
+													<f:setPropertyActionListener
+														target="#{universalConBean.p_search_position_id}" value="9" />
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{universalConBean.clearStuffField(9)}"
+													styleClass="f4button" /> <h:link id="collectorLink"
+													rendered="#{not empty universalConBean.p_contract.collector}"
+													outcome="/hr/staff/View.xhtml" target="_blank"
+													styleClass="urlLinks">
+													<f:param name="staffId"
+														value="#{universalConBean.p_contract.collector}" />
+													<h:graphicImage value="/img/link.png"
+														style="float:right; width:15px; height:15px;" />
+												</h:link></td>
+										</tr>
+										<tr>
+											<td><p:outputLabel value="#{msg['dmsc.fitter']}"
+													rendered="false" /></td>
+											<td><h:inputText id="fitter" size="33" rendered="false"
+													autocomplete="off" value="#{universalConBean.p_fioFitter}"
+													disabled="true" /> <p:commandButton icon="ui-icon-newwin"
+													type="push" disabled="true" rendered="false"
+													actionListener="#{universalConBean.setSearchPositionId(11)}"
+													oncomplete="PF('employeeWidget').show();"
+													styleClass="f4button">
+													<f:setPropertyActionListener
+														target="#{universalConBean.p_search_position_id}" value="11" />
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{universalConBean.clearStuffField(11)}"
+													styleClass="f4button" disabled="true" rendered="false" />
+												<h:link id="fitterLink"
+													rendered="#{not empty universalConBean.p_contract.fitter}"
+													outcome="/hr/staff/View.xhtml" target="_blank"
+													styleClass="urlLinks">
+													<f:param name="staffId"
+														value="#{universalConBean.p_contract.fitter}" />
+													<h:graphicImage value="/img/link.png"
+														style="float:right; width:15px; height:15px;" />
+												</h:link></td>
+
+										</tr>
+										
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.price']}" /></td>
+											<td><h:inputText id="price_list_id" size="10"
+													autocomplete="off" value="#{universalConBean.p_contract.price}"
+													disabled="false">
+													<p:ajax event="change" listener = "#{universalConBean.assignPrice}" />
+													<f:convertNumber type="number" groupingUsed="true"
+														minFractionDigits="2" pattern="#0.00" />
+												</h:inputText> <h:outputLabel id="currencyName"
+													value=" #{universalConBean.p_currency}" />
+													</td>
+										</tr>
+										<tr>
+											<td colspan="2"><h:outputLabel
+													value="Cумма предоплаты " /> <h:inputText
+													id="prepayment" size="10" autocomplete="off"
+													disabled="true" style="margin-left:10px;"
+													value="#{universalConBean.p_contract.first_payment}">
+													<f:convertNumber type="number" groupingUsed="true"
+														minFractionDigits="2" pattern="#0.00" />													
+												</h:inputText> <h:outputLabel id="prepayment_currency"
+													value=" #{universalConBean.p_currency}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Остаток " /></td>
+											<td><h:inputText id="remain" size="10"
+													autocomplete="off" disabled="true"
+													value="#{universalConBean.remain}">
+													<f:convertNumber type="number" groupingUsed="true"
+														minFractionDigits="2" pattern="#0.00" />
+												</h:inputText> <h:outputLabel id="remainCurr"
+													value=" #{universalConBean.p_currency}" /> <h:outputLabel
+													style="margin-left:15px;" value="Срок &nbsp;" /> <p:inputText
+													id="payment_schedule" size="5" autocomplete="off"
+													value="#{universalConBean.p_contract.payment_schedule}"
+													disabled="false">
+													<p:ajax event="keyup"
+														listener="#{universalConBean.monthController}" update="messages" />
+													<p:ajax event="change" listener = "#{universalConBean.updateAverage}" />
+												</p:inputText> <h:outputLabel value=" месяц(ев)" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.bank_partner']}" /></td>
+											<td><p:selectOneMenu id="bank_partner"
+													value="#{universalConBean.p_contract.bank_partner_id}">
+													<f:selectItem itemLabel="#{msg['dmsc.noBank']}"
+														itemValue="0" />
+													<f:selectItems
+														value="#{bankPartnerF4Bean.bankPartner_list}"
+														var="wa_bpartner" itemLabel="#{wa_bpartner.name_full}"
+														itemValue="#{wa_bpartner.id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										
+										<tr>
+											<td><h:outputLabel value="Оформлен на: " /></td>
+											<td><p:selectOneMenu id="subcompany"
+													value="#{universalConBean.p_contract.legal_entity_id}">
+													<f:selectItem itemLabel="Выберите ИП или ТОО"
+														itemValue="0" />
+													<f:selectItems
+														value="#{universalConBean.sc_list}"
+														var="wa_sc" itemLabel="#{wa_sc.name_ru}"
+														itemValue="#{wa_sc.sc_id}" />
+												</p:selectOneMenu></td>
+										</tr>										
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.date_issued']}" /></td>
+											<td><p:calendar id="matnr_release_date"
+													styleClass="dateField" disabled="true"
+													value="#{universalConBean.p_contract.matnr_release_date}"
+													navigator="true" pattern="dd.MM.yyyy" mask="true"
+													converterMessage="Date is invalid." /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.matnr_serial']}" /></td>
+											<td><h:inputText id="tovarSerial" autocomplete="off"
+													value="#{universalConBean.p_contract.tovar_serial}"
+													disabled="false" /> <p:commandButton icon="ui-icon-newwin"
+													type="push" oncomplete="PF('MatnrListDlg').show();"
+													styleClass="f4button">
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{universalConBean.clearMatnrList}"
+													styleClass="f4button" /></td>
+										</tr>
+
+									</table>
+								</fieldset>
+							</div>
+
+							<div id="contact" class="contactFieldDiv"
+								style="display: block; float: left;">
+								<fieldset class="contractFieldSet">
+									<legend>#{msg['dmsc.contact_info']}</legend>
+									<table border="0">
+
+										<tr>
+											<td colspan="2"><b><h:outputLabel
+														value="#{msg['dmsc.addr_home']}" /></b></td>
+										</tr>
+										<tr>
+											<td><p:outputLabel>Адрес </p:outputLabel></td>
+											<td><h:inputText id="addrHome" disabled="true" size="27"
+													value="#{universalConBean.addrHome.address}" /> <p:commandButton
+													icon="ui-icon-newwin" type="push"
+													actionListener="#{universalConBean.setCustomerAddressList}"
+													styleClass="f4button">
+													<f:setPropertyActionListener
+														target="#{universalConBean.currentAddr}" value="1" />
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{universalConBean.clearAddressField(1)}"
+													styleClass="f4button" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Тел. городской " /></td>
+											<td><p:inputMask id="tel_dom" size="16" disabled="true"
+													value="#{universalConBean.addrHome.telDom}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.mob_main']}" /></td>
+											<td><p:inputText id="tel_mob1" size="16" disabled="true"
+													value="#{universalConBean.addrHome.telMob1}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.mob_add']}" /></td>
+											<td><p:inputMask id="tel_mob2" size="16" disabled="true"
+													value="#{universalConBean.addrHome.telMob2}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td colspan="2"><b><h:outputLabel
+														value="#{msg['dmsc.addr_rab']}" /></b></td>
+										</tr>
+										<tr>
+											<td><p:outputLabel>Адрес </p:outputLabel></td>
+											<td><h:inputText id="addrWork" disabled="true" size="27"
+													value="#{universalConBean.addrWork.address}" /> <p:commandButton
+													icon="ui-icon-newwin" type="push"
+													actionListener="#{universalConBean.setCustomerAddressList}"
+													styleClass="f4button">
+													<f:setPropertyActionListener
+														target="#{universalConBean.currentAddr}" value="2" />
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{universalConBean.clearAddressField(2)}"
+													styleClass="f4button" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Тел. городской " /></td>
+											<td><p:inputMask id="telWork" size="16" disabled="true"
+													value="#{universalConBean.addrWork.telDom}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.mob_main']}" /></td>
+											<td><p:inputText id="telMob1Work" size="16"
+													disabled="true" value="#{universalConBean.addrWork.telMob1}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td colspan="2"><b><h:outputLabel
+														value="Адрес для сервиса" /></b></td>
+										</tr>
+										<tr>
+											<td><p:outputLabel>Адрес </p:outputLabel></td>
+											<td><h:inputText id="addrService" disabled="true"
+													size="27" value="#{universalConBean.addrService.address}" /> <p:commandButton
+													icon="ui-icon-newwin" type="push"
+													actionListener="#{universalConBean.setCustomerAddressList}"
+													styleClass="f4button">
+													<f:setPropertyActionListener
+														target="#{universalConBean.currentAddr}" value="3" />
+												</p:commandButton> <p:commandButton icon="ui-icon-close" type="push"
+													actionListener="#{universalConBean.clearAddressField(3)}"
+													styleClass="f4button" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="Тел. городской " /></td>
+											<td><p:inputMask id="telServ" size="16" disabled="true"
+													value="#{universalConBean.addrService.telDom}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.mob_main']}" /></td>
+											<td><p:inputText id="telMobServ" size="16"
+													disabled="true" value="#{universalConBean.addrService.telMob1}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.mob_add']}" /></td>
+											<td><p:inputMask id="telMob2Serv" size="16"
+													disabled="true" value="#{universalConBean.addrService.telMob2}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.email']}" /></td>
+											<td><p:inputText id="Email" disabled="true" size="27"
+													value="#{universalConBean.customer_email}" /></td>
+										</tr>
+
+										<tr>
+											<td colspan="2"><hr /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.info']}" /></td>
+											<td><p:inputTextarea rows="3" cols="25"
+													counter="display" maxlength="255"
+													counterTemplate="#{msg['dmsc.hint_left']} {0} #{msg['dmsc.hint_char']}"
+													autoResize="false" value="#{universalConBean.p_contract.info}" /><br />
+												<h:outputText style="color:#aaa;" styleClass="notetext"
+													id="display" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.barcode']}" /></td>
+											<td><p:inputText id="bar_code_contract" maxlength="25"
+													style="width:16em;" autocomplete="off"
+													value="#{universalConBean.p_contract.contract_barcode}" /></td>
+										</tr>
+									</table>
+								</fieldset>
+							</div>
+
+							<div class="paymentFieldDiv"
+								style="display: block; float: left; margin-top: 12px;">
+								<fieldset class="payment_scheduleFieldSet"
+									style="margin-top: -12px;">
+									<legend>#{msg['dmsc.payment_graph']}</legend>
+
+									<div class="ui-grid-row">
+										<table>
+											<tr>
+												<td width="97px"><h:outputLabel
+														value="#{msg['dmsc.first_payment']}" /></td>
+												<td><p:inputText id="first_payment" size="10"
+														autocomplete="off"
+														value="#{universalConBean.psDetFirstPayment.ps.sum}"
+														disabled="false">
+														<p:ajax event="keyup"
+															listener="#{universalConBean.assign_firstPayment}"
+															update="messages" />														
+													</p:inputText></td>
+												<td><p:commandButton type="push"
+														value="#{msg['dmsc.distribute']}" id="spread_button"
+														style="margin-left:5px;"
+														actionListener="#{universalConBean.to_spread_payment_table}"
+														update="messages">
+													</p:commandButton></td>
+
+											</tr>
+										</table>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="paymentScheduleDiv"
+											style="display: block; float: left;">
+
+											<p:dataTable id="PaymentTable" var="ps" rowKey="#{ps.index}"
+												value="#{universalConBean.psDetL}"
+												emptyMessage="#{msg['dmsc.nalichka']}"
+												style="margin-top: 10px; width:310px;">
+
+												<p:column headerText="" style="width:20px;">
+													<h:outputText value="#{ps.index}" />
+												</p:column>
+												<p:column headerText="#{msg['dmsc.date']}">
+													<p:calendar styleClass="dateField" pattern="dd.MM.yyyy"
+														autocomplete="off" value="#{ps.ps.payment_date}"
+														converterMessage="Date is invalid."
+														disabled="#{ps.mon_dis}">
+														<p:ajax event="click"
+															listener="#{universalConBean.disable_save_button}"
+															update=":messages" />
+													</p:calendar>
+												</p:column>
+												<p:column headerText="#{msg['dmsc.amount']}">
+													<h:inputText size="10" autocomplete="off"
+														value="#{ps.ps.sum}" disabled="#{ps.mon_dis}">
+														<p:ajax event="keyup"
+															listener="#{universalConBean.disable_save_button}"
+															update=":messages" />
+													</h:inputText>
+												</p:column>
+											</p:dataTable>
+										</div>
+
+									</div>
+
+								</fieldset>
+							</div>
+
+						</div>
+
+
+
+
+						<p:dialog header="#{msg['dmsc.staff']}" widgetVar="employeeWidget"
+							dynamic="true" width="900" height="500" resizable="false">
+							<div id="se_div">
+								<fieldset class="se_FieldSet">
+									<legend>#{msg['dmsc.search']}</legend>
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.branch']}" /></td>
+											<td><p:selectOneMenu id="staffBranch"
+													value="#{universalConBean.searchStaff.branch_id}">
+													<f:selectItems value="#{universalConBean.staffBranch_list}"
+														var="wa_branch" itemLabel="#{wa_branch.text45}"
+														itemValue="#{wa_branch.branch_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.name']}" /></td>
+											<td><h:inputText id="se_firstname" maxlength="45"
+													autocomplete="off"
+													value="#{universalConBean.searchStaff.firstname}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.lastname']}" /></td>
+											<td><h:inputText id="se_lastname" maxlength="45"
+													autocomplete="off"
+													value="#{universalConBean.searchStaff.lastname}" /></td>
+										</tr>
+
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.midname']}" /></td>
+											<td><h:inputText id="se_middlename" maxlength="45"
+													autocomplete="off"
+													value="#{universalConBean.searchStaff.middlename}" /></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['dmsc.duty']}" /></td>
+											<td><p:selectOneMenu styleClass="branch" id="se_pos"
+													value="#{universalConBean.p_search_position_id}">
+													<f:selectItems value="#{positionF4Bean.position_list}"
+														var="wa_pos" itemLabel="#{wa_pos.text}"
+														itemValue="#{wa_pos.position_id}" />
+												</p:selectOneMenu></td>
+										</tr>
+										<tr>
+											<td><p:commandButton
+													actionListener="#{universalConBean.to_search_staff}"
+													value="#{msg['dmsc.search']}" update="messages" /></td>
+											<td></td>
+										</tr>
+									</table>
+
+								</fieldset>
+							</div>
+							<br />
+
+
+							<p:dataTable id="staffTable" var="emp" rowKey="#{emp.staff_id}"
+								value="#{universalConBean.p_staff_list}" scrollable="true"
+								scrollHeight="212" emptyMessage="#{msg['dmsc.emptyRec']}"
+								selectionMode="single" selection="#{universalConBean.selectedStaff}">
+								<f:facet name="header">
+
+									<p:commandButton process="staffTable"
+										actionListener="#{universalConBean.assignFoundEmployee}"
+										onclick="PF('employeeWidget').hide();"
+										value="#{msg['dmsc.select']}" />
+								</f:facet>
+								<p:column headerText="#{msg['dmsc.IINBIN']}">
+									<h:outputText value="#{emp.iin_bin}" />
+								</p:column>
+								<p:column headerText="#{msg['dmsc.passportNo']}">
+									<h:outputText value="#{emp.passport_id}" />
+									<h:link outcome="/hr/staff/View.xhtml" target="_blank"
+										styleClass="urlLinks">
+										<f:param name="staffId" value="#{emp.staff_id}" />
+										<h:graphicImage value="/img/link.png"
+											style="float:right; width:15px; height:15px;" />
+									</h:link>
+								</p:column>
+								<p:column headerText="#{msg['dmsc.name']}">
+									<h:outputText value="#{emp.firstname}" />
+								</p:column>
+								<p:column headerText="#{msg['dmsc.lastname']}">
+									<h:outputText value="#{emp.lastname}" />
+								</p:column>
+								<p:column headerText="#{msg['dmsc.midname']}">
+									<h:outputText value="#{emp.middlename}" />
+								</p:column>
+								<p:column headerText="#{msg['dmsc.bdate']}">
+									<p:calendar id="birthday" styleClass="bldat"
+										pattern="dd.MM.yyyy" mask="true" autocomplete="off"
+										value="#{emp.birthday}" converterMessage="Date is invalid."
+										disabled="true">
+									</p:calendar>
+								</p:column>
+
+							</p:dataTable>
+
+						</p:dialog>
+
+					</h:form>
+
+					<ui:include src="matnrlist.xhtml" >
+						<ui:param name="formBean" value="#{universalConBean}" />
+					</ui:include>
+
+					<ui:include src="addresslist.xhtml">
+						<ui:param name="formBean" value="#{universalConBean}" />
+					</ui:include>
+
+					<ui:include src="newaddress.xhtml">
+						<ui:param name="formBean" value="#{universalConBean}" />
+					</ui:include>
+
+					<ui:include src="customerlist.xhtml" >
+						<ui:param name="formBean" value="#{universalConBean}" />
+					</ui:include>
+					
+					<ui:include src="newcustomer.xhtml" >
+						<ui:param name="formBean" value="#{universalConBean}" />
+					</ui:include>					
+
+				</f:view>
+
+			</div>
+		</div>
+	</div>
+
+
+</h:body>
+</html>

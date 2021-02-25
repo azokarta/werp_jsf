@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>Список позиции</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Справочники > Список позиции" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="Список позиции"></ui:param>
+			</ui:include>
+
+			<div class="ui-grid-row">
+				<h:form id="PositionListForm">
+					<p:dataTable id="datalist" value="#{hrReferencePositionBean.items}"
+						var="item" selectionMode="single"
+						selection="#{hrReferencePositionBean.selected}" paginator="true"
+						paginatorPosition="bottom" rowKey="#{item.position_id}" rows="50">
+
+						<p:ajax event="rowSelect" update="createButton updateButton" />
+						<p:ajax event="rowUnselect" update="createButton updateButton" />
+
+						<f:facet name="header" id="tableHeader">
+
+							<span class="ui-separator" style="float: right;"> <span
+								style="float: right;"
+								class="ui-icon ui-icon-grip-dotted-vertical" />
+							</span>
+
+							<p:commandButton style="float:right;" id="updateButton"
+								icon="ui-icon-pencil"
+								disabled="#{empty hrReferencePositionBean.selected.position_id}"
+								update=":PositionCreateForm"
+								oncomplete="PF('PositionCreateDlg').show()"></p:commandButton>
+
+							<p:commandButton style="float:right;" id="createButton"
+								icon="ui-icon-plus"
+								actionListener="#{hrReferencePositionBean.prepareCreate()}"
+								update=":PositionCreateForm"
+								oncomplete="PF('PositionCreateDlg').show()"></p:commandButton>
+
+
+							<div style="clear: both;"></div>
+						</f:facet>
+
+						<p:column style="width:70px;text-align:center;"
+							sortBy="#{item.position_id}">
+							<f:facet name="header">
+								<h:outputText value="POSITION ID" />
+							</f:facet>
+							<h:outputText value="#{item.position_id}" />
+						</p:column>
+
+						<p:column sortBy="#{item.text}">
+							<f:facet name="header">
+								<h:outputText value="Название" />
+							</f:facet>
+							<h:outputText value="#{item.text}" />
+						</p:column>
+					</p:dataTable>
+				</h:form>
+			</div>
+		</div>
+	</div>
+
+	<ui:include src="CreateOrUpdate.xhtml"></ui:include>
+</h:body>
+
+</html>

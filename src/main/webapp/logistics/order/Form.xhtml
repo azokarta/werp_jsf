@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<h:form id="form">
+		<p:toolbar styleclass="mp_toolbar">
+			<f:facet name="left">
+				<p:commandButton rendered="#{logOrderCrudBean.mode != 'view'}"
+					type="push" value="#{msg['dmsc.save']}" id="save_button"
+					icon="ui-icon ui-icon-check"
+					actionListener="#{logOrderCrudBean.Save()}" update=":messages">
+				</p:commandButton>
+				<p:button
+					outcome="/logistics/order/Update.xhtml?id=#{logOrderCrudBean.order.id}"
+					value="#{msg['edit']}"
+					rendered="#{logOrderCrudBean.mode == 'view' and logOrderCrudBean.order.status_id == 1}">
+				</p:button>
+
+				<p:button rendered="#{logOrderCrudBean.mode == 'view'}"
+					outcome="/logistics/order/List.xhtml" value="#{msg['logistics.to_list']}">
+				</p:button>
+
+				<p:button rendered="#{logOrderCrudBean.mode != 'view'}"
+					outcome="/logistics/order/List.xhtml" value="#{msg['cancel']}">
+				</p:button>
+
+			</f:facet>
+		</p:toolbar>
+		<br />
+
+		<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+			<div class="ui-grid-col-5" style="display: block; float: left;">
+				<fieldset class="contractFieldSet">
+					<legend>#{msg['logistics.doc_info']}</legend>
+					<table>
+						<tr>
+							<td>#{msg['country']}</td>
+							<td><h:outputText
+									rendered="#{logOrderCrudBean.mode == 'view'}"
+									value="#{countryF4Bean.getName(logOrderCrudBean.order.country_id)}"></h:outputText>
+								<p:selectOneMenu rendered="#{logOrderCrudBean.mode != 'view'}"
+									value="#{logOrderCrudBean.order.country_id}">
+									<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+									<f:selectItems value="#{countryF4Bean.country_list}" var="c"
+										itemLabel="#{c.country}" itemValue="#{c.country_id}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['company']}</td>
+							<td><h:outputText
+									rendered="#{logOrderCrudBean.mode == 'view'}"
+									value="#{bukrsF4Bean.getNameByBukrs(logOrderCrudBean.order.bukrs)}"></h:outputText>
+								<p:selectOneMenu rendered="#{logOrderCrudBean.mode != 'view'}"
+									value="#{logOrderCrudBean.order.bukrs}">
+									<p:ajax listener="#{logOrderCrudBean.changeBukrs}"
+									update="add_matnr_btn,itemsListTable"></p:ajax>
+									<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+									<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+										itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+						<tr>
+							<td>#{msg['department']}</td>
+							<td><h:outputText
+									rendered="#{logOrderCrudBean.mode == 'view'}"
+									value="#{departmentF4Bean.getName(logOrderCrudBean.order.department_id,userinfo.u_language)}"></h:outputText>
+
+								<p:selectOneMenu rendered="#{logOrderCrudBean.mode != 'view'}"
+									value="#{logOrderCrudBean.order.department_id}">
+									<f:selectItem itemValue="0" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems value="#{departmentF4Bean.l_dep}" var="dep"
+										itemValue="#{dep.dep_id}"
+										itemLabel="#{dep.getName(userinfo.u_language)}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.provider']}</td>
+							<td><h:outputText id="customer_id"
+									value="#{logOrderCrudBean.order.customer.name}"></h:outputText>
+								<p:commandButton rendered="#{logOrderCrudBean.mode != 'view'}"
+									icon="ui-icon-newwin" type="push"
+									oncomplete="PF('CustomerListDialog').show();"
+									styleClass="f4button" /> <p:commandButton
+									rendered="#{logOrderCrudBean.mode != 'view'}"
+									icon="ui-icon-close" type="push"
+									actionListener="#{logOrderCrudBean.removeCustomer()}"
+									update="customer_id" styleClass="f4button" /></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['currency']}</td>
+							<td><h:outputText
+									rendered="#{logOrderCrudBean.mode == 'view'}"
+									value="#{logOrderCrudBean.order.currency}"></h:outputText> <p:selectOneMenu
+									rendered="#{logOrderCrudBean.mode != 'view'}"
+									value="#{logOrderCrudBean.order.currency}">
+									<f:selectItem itemValue="" itemLabel="#{msg.select}"></f:selectItem>
+									<f:selectItems value="#{currencyF4Bean.currency_list}" var="c"
+										itemValue="#{c.currency}" itemLabel="#{c.currency}"></f:selectItems>
+								</p:selectOneMenu></td>
+						</tr>
+						
+						<tr>
+							<td>#{msg['logistics.description']}</td>
+							<td>
+								<p:inputTextarea rendered="#{logOrderCrudBean.mode != 'view'}" value="#{logOrderCrudBean.order.note}"></p:inputTextarea>
+								<p:outputLabel value="#{logOrderCrudBean.order.note}" rendered="#{logOrderCrudBean.mode == 'view'}"></p:outputLabel>
+							</td>
+						</tr>
+						
+						<tr>
+							<td>#{msg['logistics.creator']}</td>
+							<td><h:outputText
+									rendered="#{!empty logOrderCrudBean.order.creator and logOrderCrudBean.mode != 'create'}"
+									value="#{logOrderCrudBean.order.creator.getLF()}"></h:outputText>
+
+								<h:outputText
+									rendered="#{logOrderCrudBean.mode == 'create' and !empty logOrderCrudBean.userData.staff.staff_id}"
+									value="#{logOrderCrudBean.userData.staff.getLF()}"></h:outputText>
+							</td>
+						</tr>
+
+						<tr>
+							<td>#{msg['logistics.created_at']}</td>
+							<td><h:outputText
+									value="#{logOrderCrudBean.order.created_at}">
+									<f:convertDateTime pattern="dd.MM.YYYY kk:mm"
+										timeZone="Asia/Almaty"></f:convertDateTime>
+								</h:outputText></td>
+						</tr>
+
+						<tr>
+							<td>#{msg['status']}</td>
+							<td><h:outputText
+									value="#{logOrderCrudBean.order.getStatusName()}">
+								</h:outputText></td>
+						</tr>
+
+
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td colspan="2"></td>
+						</tr>
+					</table>
+
+					<div class="ui-grid-col-12" style="margin-top: 20px;">
+						<ui:include src="relatedDocsTree.xhtml">
+							<ui:param name="orderBean" value="#{logOrderCrudBean}" />
+						</ui:include>
+					</div>
+				</fieldset>
+			</div>
+
+
+			<div class="ui-grid-col-7" style="display: block; float: left;">
+				<ui:include src="matnrList.xhtml">
+					<ui:param name="oBean" value="#{logOrderCrudBean}" />
+				</ui:include>
+			</div>
+
+		</div>
+	</h:form>
+
+	<ui:include src="relatedDocsDialog.xhtml">
+		<ui:param name="oBean" value="#{logOrderCrudBean}" />
+	</ui:include>
+
+</ui:composition>
+</html>

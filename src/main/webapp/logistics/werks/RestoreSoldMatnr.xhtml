@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>Восстановление проданных аппаратов</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="#{restoreSoldMatnrBean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<div class="ui-grid-row">
+				<div style="width: 95%; margin: auto;">
+					<h2>#{restoreSoldMatnrBean.pageHeader}</h2>
+				</div>
+			</div>
+
+			<div class="ui-grid-row" style="margin: 20px;">
+				<h:form id="form">
+					<p:toolbar styleclass="mp_toolbar">
+						<f:facet name="left">
+							<p:commandButton type="push" value="#{msg['dmsc.save']}"
+								id="save_button" icon="ui-icon ui-icon-check"
+								actionListener="#{restoreSoldMatnrBean.Save()}"
+								update=":messages, :form">
+							</p:commandButton>
+						</f:facet>
+					</p:toolbar>
+					<br />
+
+					<div class="ui-grid-row" style="margin-bottom: 7px; padding: 10px">
+
+						<div class="ui-grid-col-12"
+							style="display: block; float: left; border: 1px solid #ddd; background-color: #fff;">
+
+							<table>
+								<tr>
+									<td>Компания</td>
+									<td><p:selectOneMenu value="#{restoreSoldMatnrBean.bukrs}"
+											disabled="#{!userinfo.sys_admin and !userinfo.main}">
+											<p:ajax update="werks"></p:ajax>
+											<f:selectItem itemLabel="Не выбрано" itemValue=""></f:selectItem>
+											<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+												itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+										</p:selectOneMenu></td>
+								</tr>
+								<tr>
+									<td>Номер договора</td>
+									<td><p:inputText
+											value="#{restoreSoldMatnrBean.contractNumber}"></p:inputText>
+									</td>
+								</tr>
+
+								<tr>
+									<td>Склад</td>
+									<td><p:selectOneMenu value="#{restoreSoldMatnrBean.werks}"
+											id="werks">
+											<f:selectItem itemLabel="Не выбрано" itemValue="0"></f:selectItem>
+											<f:selectItems
+												value="#{werksF4Bean.getByBukrs(restoreSoldMatnrBean.bukrs)}"
+												var="w" itemLabel="#{w.text45}" itemValue="#{w.werks}"></f:selectItems>
+										</p:selectOneMenu></td>
+								</tr>
+							</table>
+						</div>
+
+					</div>
+				</h:form>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

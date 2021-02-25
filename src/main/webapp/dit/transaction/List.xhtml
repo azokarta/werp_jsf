@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Все транзакции</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="#{ditTransactionListBean.breadcrumb}" />
+				</ui:include>
+			</ui:insert>
+
+			<div class="ui-grid-row">
+				<div style="width: 95%; margin: auto;">
+					<h2>Список транзакции</h2>
+				</div>
+			</div>
+
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+							<p:panel header="#{msg.advanced_search}">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Название"></p:outputLabel>
+									<p:inputText value="#{ditTransactionListBean.searchModel.name}"></p:inputText>
+
+									<p:outputLabel value="Код"></p:outputLabel>
+									<p:inputText
+										value="#{ditTransactionListBean.searchModel.transactionCode}"></p:inputText>
+
+									<p:outputLabel></p:outputLabel>
+									<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+										actionListener="#{ditTransactionListBean.Search}"
+										id="searchBtn" update=":TransactionListForm:datalist"></p:commandButton>
+								</h:panelGrid>
+							</p:panel>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="TransactionListForm">
+							<p:dataTable id="datalist"
+								value="#{ditTransactionListBean.items}" var="item"
+								selectionMode="single"
+								selection="#{ditTransactionListBean.selected}" paginator="true"
+								paginatorPosition="bottom" rowKey="#{item.transaction_id}"
+								rows="30">
+
+								<p:ajax event="rowSelect" update="updateButton" />
+								<p:ajax event="rowUnselect" update="updateButton" />
+
+								<f:facet name="header" id="tableHeader">
+									<p:commandButton id="updateButton" icon="ui-icon-pencil"
+										title="Update" update=":TransactionUpdateForm"
+										oncomplete="PF('TransactionUpdateDialog').show()"
+										disabled="#{empty ditTransactionListBean.selected}"
+										style="float:right;margin-right:5px;" />
+
+									<p:commandButton id="createButton" icon="ui-icon-plus"
+										actionListener="#{ditTransactionListBean.prepareCreate()}"
+										title="Create" update=":TransactionUpdateForm"
+										oncomplete="PF('TransactionUpdateDialog').show()"
+										style="float:right;margin-right:5px;" />
+
+									<div style="clear: both;"></div>
+								</f:facet>
+								<p:column style="width:30px;" sortBy="#{item.transaction_id}">
+									<f:facet name="header">
+										<h:outputText value="ID" />
+									</f:facet>
+									<h:outputText value="#{item.transaction_id}" />
+								</p:column>
+
+								<p:column style="width:150px;">
+									<f:facet name="header">
+										<h:outputText value="Tr Code" />
+									</f:facet>
+									<h:outputText value="#{item.transaction_code}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Название (рус)" />
+									</f:facet>
+									<h:outputText value="#{item.name_ru}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Название (En)" />
+									</f:facet>
+									<h:outputText value="#{item.name_en}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Название (Tr)" />
+									</f:facet>
+									<h:outputText value="#{item.name_tr}" />
+								</p:column>
+
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+			</div>
+
+			<ui:include src="CreateOrUpdate.xhtml" />
+		</div>
+	</div>
+</h:body>
+
+</html>

@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+</f:metadata>		
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+</h:head>
+<h:body>
+	<ui:include src="/template/sessionTimeOut.xhtml" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+	<h:outputStylesheet library="css" name="reports/finance/rfcoj.css" />
+	
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml" >
+				<ui:param name="pageTitle" value="#{msg['breadcrumb.rfcoj']}"/>
+				</ui:include>
+			</ui:insert>
+
+
+			<div id="content" class="container">
+
+				<!--  MAIN PAGE CONTENT GOES HERE  -->
+						<f:view>
+							<h:form id="form">
+						<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,rfcojBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+								<p:growl id="messages" sticky="false" showDetail="true" /> 
+								<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="right">
+										<p:commandButton value="#{msg.print_out}" type="button"
+											icon="ui-icon-print" ajax="false">
+											<p:printer target="table1" />
+										</p:commandButton>
+										<p:commandButton value="Excel" type="push"
+											icon="ui-icon-arrowthickstop-1-s" ajax="false">
+											<p:dataExporter type="xls" target="table1"
+												postProcessor="#{rfcojBean.postProcessXLS}" fileName="report" />
+										</p:commandButton>
+									</f:facet>
+								</p:toolbar>
+							<div style = "display: inline-block;">
+								<div style = "float:left;margin-right:45px;">
+									<table>
+										<tr>
+											<td><h:outputLabel value="#{msg.company}" /></td>
+											<td>
+												<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{rfcojBean.p_bukrs.bukrs}" >
+													<p:ajax listener ="#{rfcojBean.changeBukrs}" />
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.main)}"	var="wa_bukrs" itemValue="#{wa_bukrs.bukrs}" itemLabel="#{wa_bukrs.name}" />
+												</p:selectOneMenu>
+												
+												
+												</td>
+											
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.branch}" /></td>
+											<td>
+													
+												<p:selectOneMenu id="branch" value="#{rfcojBean.p_branch.branch_id}">
+													<p:ajax listener ="#{rfcojBean.loadCashOffices}" />
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{rfcojBean.getUserBranchList(rfcojBean.p_bukrs.bukrs)}"
+														var="branch" itemLabel="#{branch.text45}"
+														itemValue="#{branch.branch_id}" />
+												</p:selectOneMenu>	
+											</td>	
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.cash_office}" /></td>
+											<td>
+													
+												<p:selectOneMenu id="cash1010" value="#{rfcojBean.selectedHkont_1010}">
+													<p:ajax listener ="#{rfcojBean.selectHkontCash()}" />
+													<f:selectItem itemLabel="" itemValue="" />
+													<f:selectItems
+														value="#{rfcojBean.l_hkont_1010}"
+														var="wa_hkont" itemLabel="#{wa_hkont.text45} #{wa_hkont.waers}"
+														itemValue="#{wa_hkont.hkont}" />
+												</p:selectOneMenu>	
+											</td>	
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['hr.bank_account.bank_id']}" /></td>
+											<td>
+													
+												<p:selectOneMenu id="bank1030" value="#{rfcojBean.selectedHkont_1030}">
+													<p:ajax listener ="#{rfcojBean.selectHkontBank()}" />
+													<f:selectItem itemLabel="" itemValue="" />
+													<f:selectItems
+														value="#{rfcojBean.l_hkont_1030}"
+														var="wa_hkont" itemLabel="#{wa_hkont.text45} #{wa_hkont.waers}"
+														itemValue="#{wa_hkont.hkont}" />
+												</p:selectOneMenu>	
+											</td>	
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg['type']}" /></td>
+											<td>
+													
+												<p:selectOneMenu id="shkzg" value="#{rfcojBean.selectedShkzg}">
+													<f:selectItem itemLabel="#{msg.all}" itemValue="0" />
+													<f:selectItem itemLabel="#{msg.coming}" itemValue="S" />
+													<f:selectItem itemLabel="#{msg['hr.staff.expences']}" itemValue="H" />
+												</p:selectOneMenu>	
+											</td>	
+										</tr>
+										
+										<tr>
+											<td><p:outputLabel value="#{msg.date_from} " /> </td>
+											<td><p:calendar size="10"
+													id="fdate" pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{rfcojBean.s_date_from}"
+													converterMessage="Date is invalid.">
+												</p:calendar>
+												<p:outputLabel value=" " />
+												<p:outputLabel value="#{msg.to} " /> 
+												<p:outputLabel value=" " />
+												<p:calendar id="tdate" size="10"
+													pattern="dd.MM.yyyy" autocomplete="off"
+													value="#{rfcojBean.s_date_to}"
+													converterMessage="Date is invalid.">
+												</p:calendar></td>
+										</tr>
+										<tr>
+											<td><h:outputLabel value="#{msg.service}" /></td>
+											<td>
+													
+												<p:selectOneMenu id="ser" value="#{rfcojBean.selectedService}">
+													<f:selectItem itemLabel="#{msg.all}" itemValue="2" />
+													<f:selectItem itemLabel="#{msg.rfcoj_just_services}" itemValue="1" />
+													<f:selectItem itemLabel="#{msg.rfcoj_exclude_services}" itemValue="0" />
+												</p:selectOneMenu>	
+											</td>	
+										</tr>
+										
+										
+
+
+										
+										
+										
+										<tr>
+											<td><p:commandButton value="#{msg.search}" icon="ui-icon-disk"
+													action="#{rfcojBean.show}" update="messages" /></td>
+										</tr>
+									</table>
+								</div>
+								<div  style = "float:right">
+									<p:scrollPanel style="width:500px;height:100%"
+														easing="easeOutElastic" id="bracnhCashScrollPanel">
+														<p:dataTable
+															value="#{rfcojBean.l_as}" var="o"
+															 rowKey="#{o.hkont}" id="outputTableBranchCash"
+															emptyMessage="#{msg.empty_rows}" styleClass="outputTable2"
+															headerClass="outputTableHeade2r" 
+															rowClasses="outputTableOddRow2,outputTableEvenRow2">
+															<p:column >
+																<f:facet name="header"><h:outputLabel  value="#{msg['bseg.hkont.long']}"/></f:facet>
+																
+																<h:outputText value="#{hkontF4Bean.getNameByBukrsHkont(rfcojBean.p_bukrs.bukrs,o.hkont,systemLocale.currentLocale)}" styleClass="input1" />
+															</p:column>
+															<p:column>
+																<f:facet name="header"><h:outputLabel  value="#{msg.amount}"/></f:facet>
+																<h:outputText value="#{o.amount}">
+																	<f:convertNumber pattern="#,###,##0.00" />
+																</h:outputText>	
+															</p:column>
+															<p:column>
+																<f:facet name="header"><h:outputLabel  value="#{msg['bkpf.waers.long']}"/></f:facet>
+																<h:outputText value="#{o.waers}" />
+															</p:column>
+			
+														</p:dataTable>
+														
+														<br />
+														<br />
+														
+													</p:scrollPanel>
+								</div>		
+								</div>
+								<br />
+								<div class="wrapRTClass">
+
+									<p:dataTable value="#{rfcojBean.rt_list}" var="o"
+										paginator="true" rows="20" widgetVar="50" 
+										style="width: 100%;" id="table1" emptyMessage="#{msg.empty_rows}">
+
+										<!--  <p:columnGroup type="header">
+				<p:row>
+					<p:column colspan="6" headerText="Report" />
+				</p:row>
+				<p:row>
+					<p:column headerText="Mo#" />
+					<p:column headerText="Year" />
+					<p:column headerText="Company Code" />
+					<p:column headerText="GL Account" />
+					<p:column headerText="Debt" />
+					<p:column headerText="Credit" />
+				</p:row>
+			</p:columnGroup> -->
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.belnr.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.belnr}" />
+											
+											<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{o.belnr}&#38;gjahr=#{o.gjahr}&#38;bukrs=#{o.bukrs}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton4" 
+												style="float:right;margin-left:2px;margin-right:2px;">
+											</p:button>	
+											
+											<f:facet name="footer">
+												<h:outputText value="#{msg['intotal']}" />
+											</f:facet>	
+										</p:column>
+										<!--<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg.company}" />
+											</f:facet>
+											<h:outputText value="#{o.bukrs}" />
+										</p:column>-->
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.gjahr.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.gjahr}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.blart.long']}" />
+											</f:facet>
+											<h:outputText value="#{blartF4Bean.getName(o.t_blart)}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.bldat.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.t_date}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bseg.shkzg.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.t_s_h}" />
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg.coming}" />
+											</f:facet>
+											<h:outputText value="#{o.t_summa_prihod}" style="color:green">
+												<f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+											<f:facet name="footer">
+												<h:outputText value="#{rfcojBean.summa_total_prihod}"  style="color:green">
+													<f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+											</f:facet>
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['hr.staff.expences']}" />
+											</f:facet>
+											<h:outputText value="#{o.t_summa_rashod}" style="color:red">
+												<f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+											<f:facet name="footer">
+												<h:outputText value="#{rfcojBean.summa_total_rashod}" style="color:red">
+													<f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+											</f:facet>
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg.customer}" />
+											</f:facet>
+											<h:outputText value="#{o.cusFio}" />
+											
+												
+											<p:button target="_blank" outcome="/hr/customer/hrc03.xhtml?customerId=#{o.t_customer}"
+												icon="ui-icon-zoomin" rendered="#{o.t_customer>0}"
+												title="View" id="viewButton1" 
+												style="float:right;margin-left:2px;margin-right:2px;">
+											</p:button>	
+											<f:facet name="footer">
+												<h:outputText value="#{rfcojBean.summa_total_prihod-rfcojBean.summa_total_rashod}"  >
+													<f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+											</f:facet>
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.waers.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.t_waers}" />
+
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.contract_number.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.t_contract_number}" />
+											<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{o.t_contract_number}"
+												icon="ui-icon-zoomin" rendered="#{o.t_contract_number>0}"
+												title="View" id="viewButton2" 
+												style="float:right;margin-left:2px;margin-right:2px;" />
+											</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.bktxt.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.t_bktxt}" />
+
+										</p:column>
+										<p:column>
+											<f:facet name="header">
+												<h:outputText value="#{msg['dmsclist.contract_old_sn']}" />
+											</f:facet>
+											<h:outputText value="#{o.old_sn}" />
+
+										</p:column>
+										<p:column filterBy="#{o.userFio}">
+											<f:facet name="filter">
+								               <p:selectOneMenu id="userSel"  onchange="submit()"
+												                 valueChangeListener="#{rfcojBean.handleChange}" >
+												    <f:selectItem itemLabel="#{msg['all']}" itemValue="0" />             
+												    <f:selectItems value="#{rfcojBean.l_staff_map.entrySet().toArray()}" var="entry"
+												                   itemLabel="#{entry.value}" itemValue="#{entry.key}" />
+												</p:selectOneMenu>
+								            </f:facet>
+											<f:facet name="header">
+												<h:outputText value="#{msg['bkpf.usnam.long']}" />
+											</f:facet>
+											<h:outputText value="#{o.userFio}" />
+
+										</p:column>	
+									</p:dataTable>
+								</div>
+							</h:form>
+						</f:view>
+
+				</div>
+
+		</div>
+	</div>
+</h:body>
+
+</html>

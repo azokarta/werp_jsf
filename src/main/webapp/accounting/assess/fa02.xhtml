@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<f:metadata>
+	<f:view locale="#{systemLocale.currentLocale}" />
+	<f:viewParam name="belnr" value="#{fa02Bean.belnr}" />
+	<f:viewParam name="gjahr" value="#{fa02Bean.gjahr}" />
+	<f:viewParam name="bukrs" value="#{fa02Bean.bukrs}" />
+	<f:event type="preRenderView" listener="#{fa02Bean.init}" />
+</f:metadata>
+
+<h:head>
+	<title>#{userinfo.conreqpath}</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh" content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml"/>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" /> 
+	
+	
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="finance/accounting/fa02.css" />
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b><h:outputLabel value="#{msg.menu}" /></b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.fa02']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+								<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,fa02Bean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+								<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<p:button  outcome="#{fa02Bean.trans_url}" title="Назад" id="new_fi_doc_button" value="Назад" rendered="#{fa02Bean.new_fi_doc}" />
+										<p:commandButton type="push" value="#{msg.save}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{fa02Bean.to_save}" />
+										<p:commandButton type="push" value="#{msg.cancel}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{fa02Bean.storn}" rendered="#{fa02Bean.p_bkpf.storno == 0 and fa02Bean.p_bkpf.blart != 'ST'}" />
+											
+											<p:commandButton type="push" value="#{msg.documents}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{fa02Bean.search_related_docs}" oncomplete = "PF('relatedDocsWidget').show();"/>											
+											
+											
+											<p:commandButton type="push" value="#{msg.docsale}"
+											icon="ui-icon ui-icon-check"
+											actionListener="#{fa02Bean.search_contract_docs}" oncomplete = "PF('relatedContractDocsWidget').show();"/>		
+											
+											<h:outputLabel  style="color: red" id="new_fi_doc_message" value="#{fa02Bean.trans_message}" rendered="#{fa02Bean.new_fi_doc}" />						
+									</f:facet>
+									<f:facet name="right">
+																			
+									</f:facet>
+								</p:toolbar>
+								<p:growl id="messages" sticky="false" showDetail="true" />
+								<table>
+									<tr>
+										<td><h:outputLabel value="#{msg['bkpf.bukrs.long']}" /></td>
+										<td><p:selectOneMenu styleClass="bukrs" id="s_bukrs"
+												value="#{fa02Bean.bukrs_search}">
+												<f:selectItems value="#{fa02Bean.bukrs_list}" var="wa_bukrs"
+													itemLabel="#{wa_bukrs.name}" itemValue="#{wa_bukrs.bukrs}" />
+											</p:selectOneMenu></td>
+
+										<td><h:outputLabel value="#{msg['bkpf.belnr.long']}" /></td>
+										<td><h:inputText id="belnr" maxlength="10"
+												autocomplete="off" value="#{fa02Bean.belnr_search}" /></td>
+
+										<td><h:outputLabel value="#{msg['bkpf.gjahr.long']}" /></td>
+										<td><h:inputText id="gjahr" maxlength="4"
+												autocomplete="off" value="#{fa02Bean.gjahr_search}"
+												converterMessage="Только цифры." /></td>
+
+										<td><p:commandButton value="#{msg.search}" icon="ui-icon-disk"
+												actionListener="#{fa02Bean.to_search}" update="messages" />
+										</td>
+									</tr>
+								</table>
+								<fieldset style = "background-color:#{fa02Bean.bgcolor}">
+									<legend style = "background-color:#EBF0FA;font-weight:bold"><h:outputLabel value="#{msg.header}" /></legend>
+									<p:panelGrid styleClass="searchPanelGrid" >
+							    <p:row>
+        							<p:column><h:outputLabel value="#{msg.company}" /></p:column>
+        							<p:column>
+										<p:selectOneMenu styleClass="bukrs" id="bukrs"	value="#{fa02Bean.p_bkpf.bukrs}" disabled="true">
+											<f:selectItem itemLabel="" itemValue="0" />
+											<f:selectItems value="#{bukrsF4Bean.getByBukrs(userinfo.bukrs,userinfo.sys_admin)}"	var="wa_bukrs" itemLabel="#{wa_bukrs.name}"
+											itemValue="#{wa_bukrs.bukrs}" />
+										</p:selectOneMenu>
+									</p:column>
+									
+									<p:column><h:outputLabel value="#{msg['bkpf.blart.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_blart" styleClass="blart" style="color: #{fa02Bean.p_bkpf.blart=='ST' ? 'red' : 'black'}"
+											maxlength="2" autocomplete="off"
+											value="#{fa02Bean.p_bkpf.blart}" disabled="true" /> <p:commandButton
+											icon="ui-icon-newwin" onclick="PF('docTypeWidget').show();"
+											type="push" styleClass="f4button" />
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.monat.long']}" /></p:column>
+									<p:column>
+										<p:selectOneMenu styleClass="monat" id="bkpf_monat"	value="#{fa02Bean.p_bkpf.monat}" disabled="true">  
+													<f:selectItem  itemLabel="" itemValue="0" />
+													<f:selectItem  itemLabel="1" itemValue="1" />
+													<f:selectItem  itemLabel="2" itemValue="2" />
+													<f:selectItem  itemLabel="3" itemValue="3" />
+													<f:selectItem  itemLabel="4" itemValue="4" />
+													<f:selectItem  itemLabel="5" itemValue="5" />
+													<f:selectItem  itemLabel="6" itemValue="6" />
+													<f:selectItem  itemLabel="7" itemValue="7" />
+													<f:selectItem  itemLabel="8" itemValue="8" />
+													<f:selectItem  itemLabel="9" itemValue="9" />
+													<f:selectItem  itemLabel="10" itemValue="10" />
+													<f:selectItem  itemLabel="11" itemValue="11" />
+													<f:selectItem  itemLabel="12" itemValue="12" />
+												</p:selectOneMenu>
+									</p:column>
+        							
+        							
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.business_area}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="business_area" value="#{fa02Bean.p_bkpf.business_area_id}" disabled="true">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{businessAreaF4Bean.getBAByBA(fa02Bean.p_bkpf.business_area_id)}"
+														var="ba" itemLabel="#{ba.name}"
+														itemValue="#{ba.business_area_id}" />
+												</p:selectOneMenu>
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.budat.long']}" /></p:column>
+        							<p:column><p:calendar id="bkpf_budat" styleClass="budat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{fa02Bean.p_bkpf.budat}"  disabled="true"/></p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.awkey.long']}" /></p:column>
+        							<p:column><h:inputText id="awkey"
+											value="#{fa02Bean.p_bkpf.awkey}" disabled="true"/></p:column>		
+									
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.branch}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="branch"
+													value="#{fa02Bean.p_bkpf.brnch}" disabled="true">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{branchF4Bean.getByBukrsOrBusinessArea(fa02Bean.p_bkpf.bukrs,userinfo.bukrs,fa02Bean.p_bkpf.business_area_id,fa02Bean.p_bkpf.business_area_id,fa02Bean.p_bkpf.brnch,userinfo.branch_id)}"
+														var="branch" itemLabel="#{branch.text45}"
+														itemValue="#{branch.branch_id}" />
+												</p:selectOneMenu>
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.bldat.long']}" /></p:column>										
+									<p:column>
+										<p:calendar id="bkpf_bldat" styleClass="bldat"
+											pattern="dd.MM.yyyy" autocomplete="off"
+											value="#{fa02Bean.p_bkpf.bldat}" disabled="true"/>																			
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.contract_number.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="contract_number"
+											value="#{fa02Bean.p_bkpf.contract_number}" disabled="true"/>
+																							
+											<p:button target="_blank" outcome="/dms/contract/dmsc03.xhtml?contract_number=#{fa02Bean.p_bkpf.contract_number}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton1" 
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+									</p:column>
+									
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.department}" /></p:column>
+									<p:column>
+										<p:selectOneMenu id="department"
+													value="#{fa02Bean.p_bkpf.dep}" disabled="true">
+													<f:selectItem itemLabel="" itemValue="0" />
+													<f:selectItems
+														value="#{departmentF4Bean.l_dep}"
+														var="d" itemLabel="#{d.getName(systemLocale.currentLocale)}"
+														itemValue="#{d.dep_id}" /> 
+												</p:selectOneMenu>
+									</p:column>									
+									<p:column><h:outputLabel value="#{msg['bkpf.waers.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_waers" styleClass="waers"
+											value="#{fa02Bean.p_bkpf.waers}" disabled="true" />
+										<p:commandButton
+											icon="ui-icon-newwin" onclick="PF('erTypeWidget').show();"
+											type="push" styleClass="f4button" />	
+									</p:column>
+									<p:column><h:outputLabel value="#{msg['bkpf.bktxt.long']}" /></p:column>
+									<p:column>
+										<h:inputText id="bkpf_bktxt"
+											value="#{fa02Bean.p_bkpf.bktxt}" />
+									</p:column>
+									
+								</p:row>
+								<p:row>
+									<p:column><h:outputLabel value="#{msg.customer}" /></p:column>
+									<p:column> <h:outputLabel value="#{customerF4Bean.getNameById(fa02Bean.p_bkpf.customer_id)}" />
+										
+												
+											<p:button target="_blank" outcome="/hr/customer/hrc03.xhtml?customerId=#{fa02Bean.p_bkpf.customer_id}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton2" 
+												style="float:right;margin-left:2px;margin-right:2px;" />	
+									</p:column>
+									<p:column><h:outputLabel value="#{msg.ex_rate}" /></p:column>
+									<p:column>
+										<h:inputText
+											id="bkpf_kursf" styleClass="kursf"
+											value="#{fa02Bean.p_bkpf.kursf}" disabled="true" />
+									</p:column>
+									<p:column><h:outputLabel style = "color:red" value="#{msg.doc_canceled}"  rendered="#{fa02Bean.p_bkpf.storno == 1}"/> 
+												<h:outputLabel style = "color:red" value="#{msg.doc_original}"  rendered="#{fa02Bean.p_bkpf.blart == 'ST'}"/></p:column>
+									<p:column>
+										<h:outputLabel style = "color:red" value="#{fa02Bean.p_bkpf_storno.belnr}"  rendered="#{fa02Bean.p_bkpf.storno == 1}"/>
+											
+											<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{fa02Bean.p_bkpf_storno.belnr}&#38;gjahr=#{fa02Bean.p_bkpf_storno.gjahr}&#38;bukrs=#{fa02Bean.p_bkpf.bukrs}"
+												icon="ui-icon-zoomin"  rendered="#{fa02Bean.p_bkpf.storno == 1}"
+												title="View" id="viewButton4" 
+												style="float:right;margin-left:2px;margin-right:2px;">
+											</p:button>
+											
+											<h:outputLabel style = "color:red" value="#{fa02Bean.p_bkpf_original.belnr}"  rendered="#{fa02Bean.p_bkpf.blart == 'ST'}"/>
+											<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{fa02Bean.p_bkpf_original.belnr}&#38;gjahr=#{fa02Bean.p_bkpf_original.gjahr}&#38;bukrs=#{fa02Bean.p_bkpf.bukrs}"
+												icon="ui-icon-zoomin" rendered="#{fa02Bean.p_bkpf.blart == 'ST'}"
+												title="View" id="viewButton5" 
+												style="float:right;margin-left:2px;margin-right:2px;">
+											</p:button>
+									
+									</p:column>
+								</p:row>
+								<p:row>
+									<p:column>
+										<h:outputLabel  value="#{msg.official}" /> 
+										<h:selectBooleanCheckbox id="official_boolean" value="#{fa02Bean.p_bkpf.booleanOfficial}" /> 
+									</p:column>
+									<p:column> 	
+									</p:column>
+									<p:column>
+									</p:column>
+									<p:column>
+									</p:column>
+									<p:column>
+									</p:column>
+									<p:column>
+									</p:column>
+								</p:row>
+							</p:panelGrid>
+									
+						
+									
+
+								</fieldset>
+								<div class="wrapBTClass">
+									<p:scrollPanel style="width:100%;height:300px"
+										easing="easeOutElastic" id="bsegScrollPanel">
+										<p:dataTable value="#{fa02Bean.l_bseg}" var="bseg"
+											widgetVar="dataTableWidgetVar" id="bsegTable"
+											styleClass="employeeTable" headerClass="employeeTableHeader"
+											rowClasses="employeeTableOddRow,employeeTableEvenRow"
+											emptyMessage="#{msg.empty_rows}">
+
+											<p:column style="width: 55px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.buzei.long']}" style="font-size:12px;" /></f:facet>    	 
+										         	   <h:outputLabel value="#{bseg.buzei}" style="font-size:12px;" />
+										      	</p:column>
+											<p:column style="width: 65px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.bschl.long']}" style="font-size:12px;" /></f:facet>
+
+												<h:outputText value="#{bschlF4Bean.getName(bseg.bschl)}" styleClass="input" />
+
+											</p:column>
+											<p:column style="width: 145px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.hkont.long']}" style="font-size:12px;" /></f:facet>
+
+												<h:outputText value="#{hkontF4Bean.getNameByBukrsHkont(bseg.bukrs,bseg.hkont,systemLocale.currentLocale)}" styleClass="input1" />
+
+											</p:column>
+											<p:column style="width: 115px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.dmbtr.long']}" style="font-size:12px;" /></f:facet>
+												<h:outputText value="#{bseg.dmbtr}">
+													<f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+
+											</p:column>
+											<p:column style="width: 115px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.wrbtr.long']}" style="font-size:12px;" /></f:facet>
+												<h:outputText value="#{bseg.wrbtr}">
+													<f:convertNumber pattern="#,###,##0.00" />
+												</h:outputText>
+
+											</p:column>
+											<p:column style="width: 47px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.shkzg.long']}" style="font-size:12px;" /></f:facet>
+												<h:outputText value="#{bseg.shkzg}" />
+
+											</p:column>
+											
+											<p:column style="width: 145px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.matnr.long']}" style="font-size:12px;" /></f:facet>
+												<h:outputText value="#{matnrF4Bean.getName(bseg.matnr)}" styleClass="input1" />
+											</p:column>
+											<p:column style="width: 145px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.werks.long']}" style="font-size:12px;" /></f:facet>
+												<h:outputText value="#{werksF4Bean.getName(bseg.werks)}" styleClass="input1" />
+											</p:column> 
+											<p:column style="width: 115px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.menge.long']}" style="font-size:12px;" /></f:facet>
+												<h:outputText value="#{bseg.menge}" styleClass="input1" />
+											</p:column>
+											<p:column style="width: 75px;">
+												<f:facet name="header"><h:outputLabel value="#{msg['bseg.meins.long']}" style="font-size:12px;" /></f:facet>
+												<h:outputText value="#{bseg.meins}" styleClass="input1" />
+											</p:column>
+
+
+										</p:dataTable>
+
+									</p:scrollPanel>
+
+								</div>
+								<p:dialog header="#{msg.documents}" widgetVar="relatedDocsWidget" dynamic="true"
+									width="700" height="500">
+		
+									<p:dataTable scrollable="true" scrollHeight="400" emptyMessage = "#{msg.empty_rows}"
+										id="relatedDocs" var="o" rowKey="#{o.belnr}"
+										value="#{fa02Bean.related_docs_bkpf}" >
+										<p:column headerText="#{msg['bkpf.belnr.long']}" style="width:7em">
+											<h:outputText value="#{o.belnr}" />
+											<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{o.belnr}&#38;gjahr=#{o.gjahr}&#38;bukrs=#{o.bukrs}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton4" 
+												style="float:right;margin-left:2px;margin-right:2px;">
+											</p:button>
+										</p:column>
+										<p:column headerText="#{msg['bkpf.gjahr.long']}" style="width:3em">
+											<h:outputText value="#{o.gjahr}" />
+										</p:column>
+										<p:column headerText="#{msg['bkpf.blart.long']}" style="width:3em">
+											<h:outputText value="#{o.blart}" />
+										</p:column>
+										<p:column headerText="#{msg['bseg.dmbtr.long']}" style="width:5em">
+											<h:outputText value="#{o.dmbtr}" >
+												<f:convertNumber pattern="#,###,##0.00" />
+											</h:outputText>
+										</p:column>
+										<p:column headerText="#{msg['bseg.wrbtr.long']}" style="width:5em">
+											<h:outputText value="#{o.wrbtr}" >
+												<f:convertNumber pattern="#,###,##0.00" />
+											</h:outputText>
+										</p:column>
+										<p:column headerText="#{msg['bkpf.gjahr.long']}" style="width:3em">
+											<h:outputText value="#{o.gjahr}" />
+										</p:column>
+										<p:column headerText="#{msg.status}" style="width:3em">
+											<h:outputText style = "color:red" value="#{msg.doc_canceled}"  rendered="#{o.storno == 1}" />
+										</p:column>
+									</p:dataTable>
+								</p:dialog>
+								<p:dialog header="#{msg.documents}" widgetVar="relatedContractDocsWidget" dynamic="true"
+									width="700" height="500">
+		
+									<p:dataTable scrollable="true" scrollHeight="400" emptyMessage = "#{msg.empty_rows}"
+										id="relatedConDocs" var="o" rowKey="#{o.belnr}"
+										value="#{fa02Bean.related_docs_contract_bkpf}" >
+										<p:column headerText="#{msg['bkpf.belnr.long']}" style="width:7em">
+											<h:outputText value="#{o.belnr}" />
+											<p:button target="_blank" outcome="/accounting/reports/fa03?belnr=#{o.belnr}&#38;gjahr=#{o.gjahr}&#38;bukrs=#{o.bukrs}"
+												icon="ui-icon-zoomin" 
+												title="View" id="viewButton4" 
+												style="float:right;margin-left:2px;margin-right:2px;">
+											</p:button>
+										</p:column>
+										<p:column headerText="#{msg['bkpf.gjahr.long']}" style="width:3em">
+											<h:outputText value="#{o.gjahr}" />
+										</p:column>
+										<p:column headerText="#{msg['bkpf.blart.long']}" style="width:3em">
+											<h:outputText value="#{o.blart}" />
+										</p:column>
+										<p:column headerText="#{msg['bseg.dmbtr.long']}" style="width:5em">
+											<h:outputText value="#{o.dmbtr}" >
+												<f:convertNumber pattern="#,###,##0.00" />
+											</h:outputText>
+										</p:column>
+										<p:column headerText="#{msg['bseg.wrbtr.long']}" style="width:5em">
+											<h:outputText value="#{o.wrbtr}" >
+												<f:convertNumber pattern="#,###,##0.00" />
+											</h:outputText>
+										</p:column>
+										<p:column headerText="#{msg['bkpf.gjahr.long']}" style="width:3em">
+											<h:outputText value="#{o.gjahr}" />
+										</p:column>
+										<p:column headerText="#{msg.status}" style="width:3em">
+											<h:outputText style = "color:red" value="#{msg.doc_canceled}"  rendered="#{o.storno == 1}" />
+										</p:column>
+									</p:dataTable>
+								</p:dialog>
+							</h:form>
+
+
+						</f:view>
+					</div> 
+
+		</div>
+	</div>
+
+
+</h:body>
+</html>

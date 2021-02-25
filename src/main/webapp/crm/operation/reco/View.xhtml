@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>Просмотр рекомендацию</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+</h:head>
+
+<h:body>
+
+	<style>
+.reco-view-panel {
+	font-size: 14px;
+}
+
+.reco-view-label {
+	border: 0px solid red;
+	text-align: right;
+	font-weight: 600;
+	padding: 5px;
+	font-style: italic;
+}
+
+.reco-view-label label {
+	margin-right: 5px;
+}
+
+.reco-view-value {
+	border: 0px solid red;
+	text-align: left;
+	padding: 5px;
+}
+
+.value-odd {
+	background-color: #fafafb;
+}
+</style>
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle"
+						value="CRM > Рекомендации > Просмотр рекомендацию" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/hr/headerPart.xhtml">
+				<ui:param name="pageHeader" value="#{crmRecoCrudBean.pageHeader}" />
+			</ui:include>
+
+			<h:form id="form" rendered="#{!empty crmRecoCrudBean.selected}">
+				<p:panel styleClass="reco-view-panel">
+					<div class="ui-grid ui-grid-responsive">
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-4">
+								<p:panel header="Общяя информация" toggleable="false"
+									toggleOrientation="vertical" collapsed="false">
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="ФИО мужа" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value">
+											<p:outputLabel
+												value="#{crmRecoCrudBean.selected.husbandName}" />
+										</div>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="ФИО жены" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value">
+											<p:outputLabel value="#{crmRecoCrudBean.selected.wifeName}" />
+										</div>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="Моб. номер" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value value-odd">
+											<p:outputLabel value="#{crmRecoCrudBean.selected.mobPhone}" />
+										</div>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="Дом. номер" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value">
+											<p:outputLabel value="#{crmRecoCrudBean.selected.homePhone}" />
+										</div>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="Раб. номер" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value value-odd">
+											<p:outputLabel value="#{crmRecoCrudBean.selected.workPhone}" />
+										</div>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="Профессия" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value value-odd">
+											<p:outputLabel value="#{crmRecoCrudBean.selected.profession}" />
+										</div>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="Род. отношение" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value value-odd">
+											<p:outputLabel value="#{crmRecoCrudBean.selected.relativeId}" />
+										</div>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="Ребенок" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value value-odd">
+											<p:outputLabel
+												rendered="#{crmRecoCrudBean.selected.hasChild == 1}"
+												value="Есть" />
+
+											<p:outputLabel
+												rendered="#{crmRecoCrudBean.selected.hasChild == 0}"
+												value="Нет" />
+										</div>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="Адрес" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value value-odd">
+											<p:outputLabel value="#{crmRecoCrudBean.selected.address}" />
+										</div>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="Владелец" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value">
+											<p:outputLabel
+												rendered="#{!empty crmRecoCrudBean.selected.owner}"
+												value="#{crmRecoCrudBean.selected.owner.getLF()}" />
+										</div>
+									</div>
+
+									<div class="ui-grid-row">
+										<div class="ui-grid-col-5 reco-view-label">
+											<p:outputLabel value="Ответственный" />
+										</div>
+										<div class="ui-grid-col-7 reco-view-value value-odd">
+											<p:outputLabel
+												rendered="#{!empty crmRecoCrudBean.selected.responsible}"
+												value="#{crmRecoCrudBean.selected.responsible.getLF()}" />
+										</div>
+									</div>
+
+								</p:panel>
+
+							</div>
+							<div class="ui-grid-col-8">
+								<p:panel header="Звонки по рекомендацию" toggleable="false"
+									toggleOrientation="vertical" collapsed="false">
+									<p:dataTable value="#{crmRecoCrudBean.selected.calls}" var="c">
+										<p:column>
+											<f:facet name="header">
+												<p:outputLabel value="Звонил(а)" />
+											</f:facet>
+											<p:outputLabel rendered="#{!empty c.caller}"
+												value="#{c.caller.getLF()}" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">
+												<p:outputLabel value="Дата-время звонка" />
+											</f:facet>
+											<h:outputText value="#{c.dateTime}">
+												<f:convertDateTime pattern="dd.MM.yyyy kk:mm"
+													timeZone="Asia/Almaty"></f:convertDateTime>
+											</h:outputText>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">
+												<p:outputLabel value="Результат звонка" />
+											</f:facet>
+											<p:outputLabel value="#{c.getResultName()}" />
+										</p:column>
+									</p:dataTable>
+								</p:panel>
+							</div>
+						</div>
+
+						<div class="ui-grid-row">
+							<div class="ui-grid-col-4"></div>
+							<div class="ui-grid-col-8">
+								<p:panel header="Демонстрации" toggleable="false"
+									toggleOrientation="vertical" collapsed="false">
+									<p:dataTable value="#{crmRecoCrudBean.selected.demos}" var="d">
+										<p:column>
+											<f:facet name="header">
+												<p:outputLabel value="Дата-время демо" />
+											</f:facet>
+											<h:outputText value="#{d.dateTime}">
+												<f:convertDateTime pattern="dd.MM.yyyy kk:mm"
+													timeZone="Asia/Almaty"></f:convertDateTime>
+											</h:outputText>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">
+												<p:outputLabel value="Дата звонка" />
+											</f:facet>
+											<h:outputText value="#{d.callDate}">
+												<f:convertDateTime pattern="dd.MM.yyyy kk:mm"
+													timeZone="Asia/Almaty"></f:convertDateTime>
+											</h:outputText>
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">
+												<p:outputLabel value="Дилер" />
+											</f:facet>
+											<p:outputLabel rendered="#{!empty d.dealer}"
+												value="#{d.dealer.getLF()}" />
+										</p:column>
+
+										<p:column>
+											<f:facet name="header">
+												<p:outputLabel value="Результат" />
+											</f:facet>
+											<p:outputLabel value="#{d.getResultName()}" />
+										</p:column>
+									</p:dataTable>
+								</p:panel>
+							</div>
+						</div>
+					</div>
+					<br style="clear: both;" />
+				</p:panel>
+			</h:form>
+
+			<p:panel rendered="#{empty crmRecoCrudBean.selected}">
+				<h3>Рекомендация не найдена</h3>
+			</p:panel>
+		</div>
+	</div>
+
+</h:body>
+</html>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Все пользователи системы</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>Menu</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="ДИТ > Пользователи" />
+				</ui:include>
+			</ui:insert>
+
+			<div class="ui-grid-row">
+				<div style="width: 95%; margin: auto;">
+					<h2>Пользователи системы</h2>
+				</div>
+			</div>
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+							<p:panel id="horizontal" header="Расширенный поиск">
+								<h:panelGrid columns="2" cellpadding="10">
+									<p:outputLabel value="Логин"></p:outputLabel>
+									<p:inputText value="#{ditUserListBean.userSearch.username}"></p:inputText>
+
+									<p:outputLabel value="Email"></p:outputLabel>
+									<p:inputText value="#{ditUserListBean.userSearch.email}"></p:inputText>
+
+									<p:outputLabel></p:outputLabel>
+									<p:commandButton value="Поиск" icon="ui-icon-search"
+										id="searchBtn" update=":UserListForm:datalist"
+										actionListener="#{ditUserListBean.Search}"></p:commandButton>
+								</h:panelGrid>
+							</p:panel>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="UserListForm">
+							<p:dataTable id="datalist" value="#{ditUserListBean.userList}"
+								var="item" selectionMode="single"
+								selection="#{ditUserListBean.selected}" paginator="true"
+								paginatorPosition="bottom" rowKey="#{item.user_id}" rows="30">
+
+								<p:ajax event="rowSelect"
+									update="createButton viewButton updateButton" />
+								<p:ajax event="rowUnselect"
+									update="createButton viewButton updateButton" />
+
+								<f:facet name="header">
+									<span style="float:left;">Количество: #{ditUserListBean.rowCount}</span>
+									<p:commandButton id="updateButton" icon="ui-icon-pencil"
+										title="Update" update=":UserCreateForm"
+										oncomplete="PF('UserCreateDialog').show()"
+										disabled="#{empty ditUserListBean.selected}"
+										style="float:right;margin-right:5px;" />
+									<p:commandButton id="viewButton" icon="ui-icon-search"
+										title="View" update=":UserViewForm"
+										oncomplete="PF('UserViewDialog').show()"
+										disabled="#{empty ditUserListBean.selected}"
+										style="float:right;margin-right:5px;" />
+									<p:commandButton id="createButton" icon="ui-icon-plus"
+										title="Create"
+										actionListener="#{ditUserListBean.prepareCreate}"
+										update=":UserCreateForm"
+										oncomplete="PF('UserCreateDialog').show()"
+										style="float:right;margin-right:5px;" />
+									<div style="clear: both;"></div>
+								</f:facet>
+								<p:column sortBy="#{item.user_id}">
+									<f:facet name="header">
+										<h:outputText value="ID" />
+									</f:facet>
+									<h:outputText value="#{item.user_id}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Username" />
+									</f:facet>
+									<h:outputText value="#{item.username}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Компания" />
+									</f:facet>
+									<h:outputText value="#{bukrsF4Bean.getNameByBukrs(item.bukrs)}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Филиал" />
+									</f:facet>
+									<h:outputText value="#{branchF4Bean.getName(item.branch_id)}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Роль" />
+									</f:facet>
+									<h:outputText value="#{roleF4Bean.getName(item.role_id)}" />
+								</p:column>
+								
+								<p:column sortBy="#{item.is_active}">
+									<f:facet name="header">
+										<h:outputText value="Статус" />
+									</f:facet>
+									<h:outputText rendered="#{item.is_active == 1}" value="АКТИВНЫЙ" style="color:green;font-weight:600;" />
+									<h:outputText rendered="#{item.is_active == 0}" value="ОТКЛЮЧЕН" style="color:red;font-weight:600;" />
+								</p:column>
+
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+			</div>
+			<ui:include src="CreateOrUpdate.xhtml" />
+			<ui:include src="View.xhtml" />
+		</div>
+	</div>
+</h:body>
+
+</html>

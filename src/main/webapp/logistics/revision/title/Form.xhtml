@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<h:outputStylesheet name="grid/grid.css" library="primefaces" />
+	<style>
+.itemsTable tr.ui-datatable-even:hover, .itemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+
+.itemsTable tbody tr.ui-datatable-even {
+	background-color: #F5F5F7;
+}
+
+table td.tdKey {
+	border: 0px red solid;
+	width: 150px;
+	padding: 3px;
+	font-style: italic;
+	font-size: 14px;
+}
+
+table td.tdVal {
+	padding: 3px;
+	font-style: normal;
+	font-size: 14px;
+}
+
+table td.tdKey span {
+	float: right;
+	font-weight: 500;
+	margin-right: 3px;
+}
+
+.itemsTable table tbody tr.new-matnr {
+	background: #d6f6ff;
+}
+
+@media print {
+	.matnrPrintDataTable {
+		border: 0;
+		margin: 0;
+		padding: 0;
+		background: none;
+		color: red;
+		font-size: 11px !important;
+	}
+	.matnrPrintDataTable thead th, tbody td, tfoot td {
+		font-size: 11px !important;
+	}
+	.matnrPrintDataTable tbody td {
+		font-size: 11px !important;
+	}
+}
+</style>
+	<br />
+
+	<div class="ui-grid-row" style="margin-bottom: 7px;">
+
+		<h:form id="form">
+			<p:toolbar styleclass="mp_toolbar">
+				<f:facet name="left">
+
+					<p:commandButton type="push" value="Сохранить"
+						rendered="#{logRevTitleCrudBean.mode != 'view'}"
+						actionListener="#{logRevTitleCrudBean.Save}"
+						update=":messages,:form">
+					</p:commandButton>
+
+					<p:button outcome="Update.xhtml" value="Редактировать"
+						rendered="#{logRevTitleCrudBean.canUpdate()}">
+						<f:param name="revId" value="#{logRevTitleCrudBean.revision.id}" />
+						<f:param name="id" value="#{logRevTitleCrudBean.revItemTitle.id}" />
+					</p:button>
+
+				</f:facet>
+			</p:toolbar>
+			<div class="ui-grid-col-3"
+				style="display: block; float: left; border: 1px solid #ddd; background-color: #fff;">
+				<table class="accFormTable">
+					<tr>
+						<td class="tdKey"><span>Документ ревизии</span></td>
+						<td class="tdVal"><h:link
+								outcome="/logistics/revision/View.xhtml"
+								value="№#{logRevTitleCrudBean.revision.id}">
+								<f:param name="id" value="#{logRevTitleCrudBean.revision.id}"></f:param>
+							</h:link></td>
+					</tr>
+					<tr>
+						<td class="tdKey"><span>Компания</span></td>
+						<td class="tdVal"><h:outputText
+								value="#{bukrsF4Bean.getNameByBukrs(logRevTitleCrudBean.revision.bukrs)}"></h:outputText>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Филиал</span></td>
+						<td class="tdVal"><h:outputText
+								value="#{branchF4Bean.getName(logRevTitleCrudBean.revision.branchId)}"></h:outputText>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Склад</span></td>
+						<td class="tdVal"><h:outputText
+								value="#{werksF4Bean.getName(logRevTitleCrudBean.revision.werks)}"></h:outputText>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"><span>Тип материала</span></td>
+						<td class="tdVal"><p:selectOneMenu
+								disabled="#{logRevTitleCrudBean.mode != 'create'}"
+								value="#{logRevTitleCrudBean.revItemTitle.typeId}">
+								<p:ajax listener="#{logRevTitleCrudBean.onItemTypeChanged}"
+									update="matnrList"></p:ajax>
+								<f:selectItem itemLabel="Выберите тип материала" itemValue="0"></f:selectItem>
+								<f:selectItems value="#{logRevTitleCrudBean.itemTypeList}"
+									var="t" itemLabel="#{t.name}" itemValue="#{t.id}"></f:selectItems>
+							</p:selectOneMenu></td>
+					</tr>
+
+					<tr>
+						<td class="tdKey"></td>
+						<td><p:commandButton value="Сформировать"
+								rendered="#{logRevTitleCrudBean.mode == 'create'}"
+								actionListener="#{logRevTitleCrudBean.Generate()}"
+								update="matnrList :messages"></p:commandButton></td>
+					</tr>
+
+				</table>
+
+
+				<br /> <br />
+			</div>
+
+			<div class="ui-grid-col-9" style="display: block; float: left;">
+				<p:panel header="Материалы" id="matnrList">
+					<p:dataTable var="item" value="#{logRevTitleCrudBean.items}"
+						id="itemsTable" rowIndexVar="rowIndex" styleClass="itemsTable"
+						rendered="#{logRevTitleCrudBean.revItemTitle.typeId==1 or logRevTitleCrudBean.revItemTitle.typeId==2}"
+						rowStyleClass="#{item.dbQuantity==0?'new-matnr':''}">
+
+						<f:facet name="header">
+							<p:commandButton style="float:right;"
+								rendered="#{logRevTitleCrudBean.mode == 'update'}"
+								value="Добавить материал"
+								actionListener="#{logRevTitleCrudBean.addMatnrRow()}"
+								update="itemsTable"></p:commandButton>
+
+							<p:commandLink ajax="false" style="float:right;"
+								action="#{logRevTitleCrudBean.downloadMatnrAsExcel()}">
+								<p:graphicImage name="xlsx_export_icon.png" library="img"
+									width="32" />
+							</p:commandLink>
+							<span class="ui-separator" style="float: right;"> <span
+								style="float: right;"
+								class="ui-icon ui-icon-grip-dotted-vertical" />
+							</span>
+
+							<p:commandButton style="float:right;"
+								rendered="#{logRevTitleCrudBean.mode == 'view'}"
+								value="Сформировать акт для печати"
+								actionListener="#{logRevTitleCrudBean.prepareActOutputMap()}"
+								oncomplete="PF('matnrActDialog').show();"
+								update=":matnrActDialog"></p:commandButton>
+							<div style="clear: both;"></div>
+						</f:facet>
+
+						<p:column headerText="№" style="width:25px;text-align:center;">
+							<h:outputText value="#{rowIndex+1}" />
+						</p:column>
+
+						<p:column headerText="Модель">
+							<h:outputText
+								rendered="#{item.dbQuantity == 1 or logRevTitleCrudBean.mode == 'view'}"
+								value="#{item.matnrObject.text45}" />
+							<p:selectOneMenu
+								rendered="#{item.dbQuantity == 0 and logRevTitleCrudBean.mode == 'update'}"
+								value="#{item.matnr}">
+								<f:selectItem itemValue="0" itemLabel="Выберите вид материала"></f:selectItem>
+								<f:selectItems value="#{logRevTitleCrudBean.itemTypeMatnrList}"
+									var="m" itemValue="#{m.matnr}" itemLabel="#{m.text45}"></f:selectItems>
+							</p:selectOneMenu>
+						</p:column>
+
+						<p:column headerText="Заводской номер" style="text-align:center;">
+							<p:outputLabel
+								rendered="#{item.dbQuantity == 1 or logRevTitleCrudBean.mode == 'view'}"
+								value="#{item.barcode}"></p:outputLabel>
+							<p:inputText
+								rendered="#{item.dbQuantity == 0 and logRevTitleCrudBean.mode == 'update'}"
+								value="#{item.barcode}"></p:inputText>
+						</p:column>
+
+						<p:column headerText="Состояние">
+							<p:selectOneMenu value="#{item.stateId}"
+								disabled="#{logRevTitleCrudBean.mode == 'view'}">
+								<f:selectItem itemLabel="Новый" itemValue="1"></f:selectItem>
+								<f:selectItem itemLabel="Подлежит к ремонту" itemValue="4"></f:selectItem>
+								<f:selectItem itemLabel="Подлежит к списанию" itemValue="3"></f:selectItem>
+							</p:selectOneMenu>
+						</p:column>
+
+						<p:column headerText="+ / -">
+							<p:selectOneMenu value="#{item.factQuantity}"
+								disabled="#{logRevTitleCrudBean.mode == 'view' or item.dbQuantity == 0}">
+								<f:selectItem itemLabel="+" itemValue="1"></f:selectItem>
+								<f:selectItem itemLabel="-" itemValue="0"></f:selectItem>
+							</p:selectOneMenu>
+						</p:column>
+					</p:dataTable>
+
+
+					<p:dataTable var="item" value="#{logRevTitleCrudBean.items}"
+						rowIndexVar="rowIndex" styleClass="itemsTable"
+						rendered="#{logRevTitleCrudBean.revItemTitle.typeId!=1 and logRevTitleCrudBean.revItemTitle.typeId!=2}">
+
+						<f:facet name="header">
+							<p:commandButton value="Сформировать"
+								style="float:left;display:none;"
+								actionListener="#{logRevTitleCrudBean.recountItems()}"
+								update=":form:matnrList"
+								rendered="#{logRevTitleCrudBean.mode != 'view'}"></p:commandButton>
+								
+							<p:commandLink ajax="false" style="float:right;"
+								action="#{logRevTitleCrudBean.downloadPartAsExcel()}">
+								<p:graphicImage name="xlsx_export_icon.png" library="img"
+									width="32" />
+							</p:commandLink>
+							<span class="ui-separator" style="float: right;"> <span
+								style="float: right;"
+								class="ui-icon ui-icon-grip-dotted-vertical" />
+							</span>
+
+							<p:commandButton style="float:right;"
+								rendered="#{logRevTitleCrudBean.mode == 'view'}"
+								value="Сформировать акт для печати"
+								actionListener="#{logRevTitleCrudBean.prepareActOutputMap()}"
+								oncomplete="PF('partActDialog').show();" update=":partActDialog"></p:commandButton>
+							<div style="clear: both;"></div>
+
+							<br style="clear: both;" />
+						</f:facet>
+
+						<p:column headerText="№" style="width:25px;text-align:center;">
+							<h:outputText value="#{rowIndex+1}" />
+						</p:column>
+
+						<p:column headerText="Код">
+							<h:outputText value="#{item.matnrObject.code}" />
+						</p:column>
+
+						<p:column headerText="Наименование">
+							<h:outputText value="#{item.matnrObject.text45}" />
+						</p:column>
+
+						<p:column headerText="Цена за ед." style="text-align:center;">
+							<h:outputText value="#{item.unitPrice}" />
+						</p:column>
+
+						<p:column headerText="Количество по Базе"
+							style="text-align:center;">
+							<p:outputLabel value="#{item.dbQuantity}"></p:outputLabel>
+						</p:column>
+
+						<p:column headerText="Недостача" style="text-align:center;">
+							<p:outputLabel value="#{item.deficitQuantity}"></p:outputLabel>
+						</p:column>
+
+						<p:column headerText="Излишка" style="text-align:center;">
+							<p:outputLabel value="#{item.overQuantity}"></p:outputLabel>
+						</p:column>
+
+						<p:column headerText="Факт. кол. на складе"
+							style="text-align:center;">
+							<p:outputLabel rendered="#{logRevTitleCrudBean.mode == 'view'}"
+								value="#{item.factQuantity}"></p:outputLabel>
+							<p:inputText style="width:60px;"
+								rendered="#{logRevTitleCrudBean.mode != 'view'}"
+								value="#{item.factQuantity}"></p:inputText>
+						</p:column>
+
+						<p:column headerText="Количество непригодных"
+							style="text-align:center;">
+							<p:outputLabel value="#{item.unusableQuantity}"></p:outputLabel>
+						</p:column>
+
+						<p:column headerText="Количество пригодных"
+							style="text-align:center;">
+							<p:outputLabel value="0"></p:outputLabel>
+						</p:column>
+
+						<p:column headerText="Излишка (сумма)" style="text-align:center;">
+							<p:outputLabel value="#{item.overAmount}"></p:outputLabel>
+						</p:column>
+
+						<p:column headerText="Недостача (сумма)"
+							style="text-align:center;">
+							<p:outputLabel value="#{item.deficitAmount}"></p:outputLabel>
+						</p:column>
+					</p:dataTable>
+
+				</p:panel>
+			</div>
+		</h:form>
+
+	</div>
+
+
+	<ui:include src="matnrPrintDialog.xhtml"></ui:include>
+	<ui:include src="partPrintDialog.xhtml"></ui:include>
+
+</ui:composition>
+</html>

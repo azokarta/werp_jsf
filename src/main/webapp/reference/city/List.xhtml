@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>#{refCity.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP');
+                         $(this).toggleClass('shiftLeft');
+                         $('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Справочники > #{refCity.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<div style="margin-left: 20px;">
+				<h2>#{refCity.pageHeader}</h2>
+			</div>
+
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm"
+							onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+							<p:panel header="#{msg.advanced_search}">
+								<h:panelGrid columns="2" cellpadding="10">
+
+									<p:outputLabel value="Название "></p:outputLabel>
+									<p:inputText value="#{refCity.name}"></p:inputText>
+
+									<p:outputLabel value="Страна"></p:outputLabel>
+									<p:selectOneMenu value="#{refCity.countryId}">
+										<p:ajax update="state_id"></p:ajax>
+										<f:selectItem itemValue="0" itemLabel="Выберите"></f:selectItem>
+										<f:selectItems value="#{countryF4Bean.country_list}" var="c"
+											itemLabel="#{c.country}" itemValue="#{c.country_id}"></f:selectItems>
+									</p:selectOneMenu>
+									
+									<p:outputLabel value="Область"></p:outputLabel>
+									<p:selectOneMenu id="state_id" value="#{refCity.stateId}">
+										<f:selectItem itemValue="0" itemLabel="Выберите"></f:selectItem>
+										<f:selectItems value="#{refState.getItemsByCountryId(refCity.countryId)}" var="s"
+											itemLabel="#{s.statename}" itemValue="#{s.idstate}"></f:selectItems>
+									</p:selectOneMenu>
+
+									<p:outputLabel></p:outputLabel>
+									<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+										id="searchBtn" update=":CityListForm:datalist"
+										actionListener="#{refCity.loadItems()}"></p:commandButton>
+								</h:panelGrid>
+							</p:panel>
+						</h:form>
+					</div>
+					<div class="ui-grid-col-9">
+						<h:form id="CityListForm">
+							<p:dataTable id="datalist" value="#{refCity.items}" var="item"
+								selectionMode="single" selection="#{refCity.selected}"
+								paginator="true" paginatorPosition="bottom"
+								rowKey="#{item.idcity}" rows="50">
+
+								<f:facet name="header" id="tableHeader">
+									<p:commandButton disabled="#{empty refCity.selected.idcity}"
+										id="updateButton" icon="ui ui-icon-pencil" title="Update"
+										update=":CityCreateDlg"
+										oncomplete="PF('CityCreateDialog').show()"
+										style="float:right;margin-right:5px;" />
+
+									<p:commandButton id="createButton" icon="ui ui-icon-plus"
+										title="Create" actionListener="#{refCity.prepareCreate}"
+										update=":CityCreateDlg"
+										oncomplete="PF('CityCreateDialog').show()"
+										style="float:right;margin-right:5px;" />
+									<div style="clear: both;"></div>
+								</f:facet>
+								<p:ajax event="rowSelect"
+									update="createButton updateButton, :CityCreateForm" />
+								<p:ajax event="rowUnselect"
+									update="createButton updateButton, :CityCreateForm" />
+									
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Название" />
+									</f:facet>
+									<h:outputText value="#{item.name}" />
+								</p:column>
+								
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Область" />
+									</f:facet>
+									<h:outputText value="#{stateF4Bean.getName(item.stateid)}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Страна" />
+									</f:facet>
+									<h:outputText value="#{countryF4Bean.getName(item.countryid)}" />
+								</p:column>
+
+								
+								
+								
+
+							</p:dataTable>
+						</h:form>
+
+						<ui:include src="CreateOrUpdate.xhtml" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

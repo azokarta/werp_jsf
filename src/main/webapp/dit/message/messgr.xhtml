@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>WERP</title>
+	<link rel="icon"  type="image/png"  href="/werp/resources/img/werp.png"  />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+	<h:outputStylesheet name="main2.css" library="css" />
+	<h:outputStylesheet name="main-form.css" library="css" />
+</h:head>
+<h:body>
+
+    <div class="ui-grid ui-grid-responsive">
+        <div class="ui-grid"  id="menubar">
+        	
+            <ui:insert name="header">
+				<ui:include src="/template/header2.xhtml">
+					<ui:param name="pageTitle"
+						value="#{msg['breadcrumb.messgr']}" />
+				</ui:include>
+			</ui:insert>
+        </div>
+        <div class="ui-grid">
+     		   	<p:toolbar styleclass="mp_toolbar">
+									<f:facet name="left">
+										<h:outputLabel style="color:red; font-size:30px;" value="#{goFast.getTransactionName(systemLocale.currentLocale,messageGroupListBean.getTransactionId())}"/>
+									</f:facet>
+								</p:toolbar>
+								<p:separator />
+            <div class="ui-grid">
+            	
+                <div class="ui-grid-col-3">
+                	<h:form id="searchForm" onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+                		<p:toolbar >
+									<f:facet name="left">
+										<h:outputLabel  value="#{msg.advanced_search}"/>
+									</f:facet>
+								</p:toolbar>
+                		<div class="ui-grid-row">
+                			<div class="ui-grid-col-4">
+                				<p:outputLabel value="Название"></p:outputLabel>
+                			</div>
+                			<div class="ui-grid-col-8">
+                				<p:inputText value="#{messageGroupListBean.searchModel.group_name}"></p:inputText>
+                			</div>
+                			
+                			<div class="ui-grid-col-4">
+                			</div>
+                			<div class="ui-grid-col-8">
+                				<p:commandButton value="#{msg.search}" icon="ui-icon-search"
+										actionListener="#{messageGroupListBean.Search}"
+										id="searchBtn" update=":MessageGroupListForm:datalist"></p:commandButton>
+                			</div>
+                		</div>
+                	
+                		
+                	
+                	
+						</h:form>
+                </div>
+                <div class="ui-grid-col-9">
+                	<h:form id="MessageGroupListForm">
+							<p:dataTable id="datalist"
+								value="#{messageGroupListBean.items}" var="item"
+								selectionMode="single"
+								selection="#{messageGroupListBean.selected}" paginator="true"
+								paginatorPosition="bottom" rowKey="#{item.group_id}"
+								rows="30">
+								<p:ajax event="rowSelect" update="updateButton,deleteButton" />
+								<p:ajax event="rowUnselect" update="updateButton,deleteButton" />
+								<f:facet name="header" id="tableHeader">
+									<p:commandButton id="deleteButton" icon="ui-icon-close"
+										actionListener="#{messageGroupListBean.delete}"
+										title="Удалить" 
+										disabled="#{messageGroupListBean.selected.group_id==null}"
+										style="float:right;margin-right:5px;" 
+										/>
+									<p:commandButton id="updateButton" icon="ui-icon-pencil"
+										title="Изменить" update=":MessageGroupUpdateForm"
+										oncomplete="PF('MessageGroupUpdateDialog').show()"
+										disabled="#{messageGroupListBean.selected.group_id==null}"
+										style="float:right;margin-right:5px;" />
+
+									<p:commandButton id="createButton" icon="ui-icon-plus"
+										actionListener="#{messageGroupListBean.prepareCreate()}"
+										title="Создать" update=":MessageGroupUpdateForm,:MessageGroupUpdateDialog"
+										oncomplete="PF('MessageGroupUpdateDialog').show()"
+										style="float:right;margin-right:5px;" />
+									
+									<div style="clear: both;"></div>
+								</f:facet>
+								<p:column style="width:30px;" sortBy="#{item.group_id}">
+									<f:facet name="header">
+										<h:outputText value="ID" />
+									</f:facet>
+									<h:outputText value="#{item.group_id}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Название" />
+									</f:facet>
+									<h:outputText value="#{item.group_name}" />
+								</p:column>
+
+							</p:dataTable>
+							
+						</h:form>
+                </div>
+            </div>
+            
+            
+        </div>
+        
+    </div>
+    <ui:include src="crudMessageGroup.xhtml" />
+</h:body>
+
+</html>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>История материала</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet name="main.css" library="css"></h:outputStylesheet>
+	<h:outputStylesheet name="main-form.css" library="css"></h:outputStylesheet>
+</h:head>
+<h:body>
+	<div class="ui-grid ui-grid-responsive">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml">
+				</ui:include>
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="Логистика > Склад > История материала" />
+				</ui:include>
+			</ui:insert>
+
+			<div class="ui-grid-row">
+				<div style="width: 95%; margin: auto;">
+					<h2>Склад / История материала</h2>
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-3">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel header="Материал">
+							<h:panelGrid columns="2" cellpadding="10">
+								<p:outputLabel value="Материал"></p:outputLabel>
+								<p:outputLabel value="#{matnrHistoryBean.matnrList.matnrName}"></p:outputLabel>
+								
+								<p:outputLabel value="Код"></p:outputLabel>
+								<p:outputLabel value="#{matnrHistoryBean.matnrList.matnrCode}"></p:outputLabel>
+								
+								<p:outputLabel value="Баркод"></p:outputLabel>
+								<p:outputLabel value="#{matnrHistoryBean.matnrList.barcode}"></p:outputLabel>
+								
+								<p:outputLabel value="Состояние"></p:outputLabel>
+								<p:outputLabel value="#{matnrHistoryBean.matnrListStatus}"></p:outputLabel>
+								
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+
+
+				<div class="ui-grid-col-9">
+					<h:form id="MatnrListForm">
+						<p:panel header="История">
+							<p:dataTable id="datalist" value="#{matnrHistoryBean.historyTable}"
+								var="item" paginator="true"
+								paginatorPosition="bottom" rowKey="#{item.movementItemId}" rows="50">
+
+								<f:facet name="header" id="tableHeader">
+									<h:commandLink id="xlsxExport"
+										style="float:right;margin-right:5px;">
+										<p:graphicImage name="xlsx_export_icon.png" library="img"
+											width="32" />
+										<p:dataExporter type="xls" target="datalist"
+											fileName="matnrList"
+											postProcessor="#{matnrListBean.exportXLS}" />
+									</h:commandLink>
+
+									<span class="ui-separator" style="float: right;"> <span
+										style="float: right;"
+										class="ui-icon ui-icon-grip-dotted-vertical" />
+									</span>
+									<div style="clear: both;"></div>
+								</f:facet>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Тип действии" />
+									</f:facet>
+									<h:outputLabel value="#{item.actionType}" ></h:outputLabel>
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Со склада" />
+									</f:facet>
+									<h:outputText value="#{item.fromWerks}" />
+								</p:column>
+								
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="На склад" />
+									</f:facet>
+									<h:outputText value="#{item.toWerks}" />
+								</p:column>
+								<p:column sortBy="#{item.date}" >
+									<f:facet name="header">
+										<h:outputText value="Дата" />
+									</f:facet>
+									<h:outputText value="#{item.date}" >
+										<f:convertDateTime pattern="dd.MM.yyyy" />
+									</h:outputText>
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Инфо" />
+									</f:facet>
+									<h:outputText value="#{item.info}" >
+										
+									</h:outputText>
+								</p:column>
+							</p:dataTable>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+
+</html>

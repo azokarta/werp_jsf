@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog id="NewScheduleDlg" widgetVar="NewScheduleWidget"
+		modal="true" dynamic="true" resizable="false" appendTo="@(body)"		
+		header="Назначение звонка" width="400px" height="150px">
+
+		<h:form id="NewScheduleForm">
+			<div class="ui-grid-row">
+				<div style="float: left;">
+					<fieldset
+						style="border: #ccc solid 1px; width: 270px; height: 75px; margin-top: 5px;">
+						<legend>Назначить звонок</legend>
+						<div style="float: right;">
+							<table>
+								<tr>
+									<td><p:outputLabel>Дата: </p:outputLabel></td>
+									<td><p:calendar id="schedDate" 
+											value="#{formBean.newcrmsBean.newSCS.scheduledDate}"
+											navigator="true" pattern="dd.MM.yyyy HH:mm" mask="true"
+											converterMessage="Date is invalid." /></td>
+								</tr>
+								<tr>
+									<td><h:outputLabel value="Примечание" /></td>
+									<td><p:inputText id="reply" size="38"
+											value="#{formBean.newcrmsBean.newSCS.info}" /></td>
+								</tr>
+							</table>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			
+			<p:toolbar styleclass="mp_toolbar" style="margin-top: 10px;">
+				<f:facet name="left">
+					<p:commandButton type="push" value="#{msg['dmsc.save']}"
+						icon="ui-icon ui-icon-check" update=":messages"
+						actionListener="#{formBean.saveNewSchedule}"
+						oncomplete="PF('NewScheduleWidget').hide()" />
+				</f:facet>
+
+				<f:facet name="right">
+					<p:commandButton type="push" value="#{msg['dmsc.cancel']}"
+						icon="ui-icon ui-icon-cancel" update=":messages"
+						oncomplete="PF('NewScheduleWidget').hide()"
+						actionListener="#{formBean.newcrmsBean.cancelNewSCS}">
+						<p:confirm header="Confirmation"
+							message="Все введенные данные будут утеряны! Вы уверены что хотите отменит?"
+							icon="ui-icon-alert" />
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+						
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

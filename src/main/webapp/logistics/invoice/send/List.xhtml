@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+<f:view locale="#{systemLocale.currentLocale}" />
+<f:metadata>
+	<f:event type="preRenderView"
+		listener="#{logInvoiceListBean.initBean('send')}" />
+</f:metadata>
+<h:head>
+	<title>#{logInvoiceListBean.pageHeader}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<meta http-equiv="refresh"
+		content="#{session.maxInactiveInterval};url=#{request.contextPath}/index.xhtml" />
+
+	<style>
+.activeMenu {
+	
+}
+
+.logItemsTable tr.ui-datatable-even:hover, .logItemsTable tr.ui-datatable-odd:hover
+	{
+	background: #007CBD;
+	color: white;
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg['menu']}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{logInvoiceListBean.pageHeader}" />
+				</ui:include>
+			</ui:insert>
+
+			<ui:include src="/logistics/headerPart.xhtml">
+				<ui:param name="pageHeader"
+					value="#{msg['logistics.send_list_title']}" />
+			</ui:include>
+
+
+			<div class="ui-grid">
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-12">
+						<p:tabMenu activeIndex="#{param.i}">
+							<p:menuitem value="#{msg['logistics.new_docs']}" outcome="List.xhtml"
+								icon="ui-icon-document">
+								<f:param name="i" value="0" />
+							</p:menuitem>
+							<p:menuitem value="#{msg['logistics.closed_docs']}" outcome="List.xhtml"
+								icon="ui-icon-document">
+								<f:param name="i" value="1" />
+							</p:menuitem>
+
+						</p:tabMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row">
+					<div class="ui-grid-col-3">
+						<h:form id="searchForm">
+							<p:panelGrid columns="2" style="width:99%;margin-top:1px;">
+								<f:facet name="header">#{msg['search_panel']}</f:facet>
+
+								<p:outputLabel value="ID"></p:outputLabel>
+								<p:inputText
+									value="#{logInvoiceListBean.invoiceModel.searchModel.id}"></p:inputText>
+
+								<p:outputLabel value="#{msg['company']}"></p:outputLabel>
+								<werp:companySelect elementId="companyId" mode="update"
+									value="#{logInvoiceListBean.invoiceModel.searchModel.bukrs}"
+									onChangeUpdate=":searchForm:toWerksSelect:toWerks, :searchForm:fromWerksSelect:fromWerks">
+								</werp:companySelect>
+
+								<p:outputLabel value="#{msg['logistics.sender_whouse']}"></p:outputLabel>
+								<werp:werksSelect id="fromWerksSelect" elementId="fromWerks"
+									companyValue="#{logInvoiceListBean.invoiceModel.searchModel.bukrs}"
+									value="#{logInvoiceListBean.invoiceModel.searchModel.from_werks}"
+									mode="update">
+								</werp:werksSelect>
+
+								<p:outputLabel value="#{msg['logistics.receiver_whouse']}"></p:outputLabel>
+								<werp:werksSelect id="toWerksSelect" elementId="toWerks"
+									companyValue="#{logInvoiceListBean.invoiceModel.searchModel.bukrs}"
+									value="#{logInvoiceListBean.invoiceModel.searchModel.to_werks}"
+									mode="update">
+								</werp:werksSelect>
+
+								<p:outputLabel value="#{msg['logistics.send_date_from']}"></p:outputLabel>
+								<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{logInvoiceListBean.invoiceModel.searchModel.invoiceDateFrom}"
+									converterMessage="Wrong Date" navigator="true">
+								</p:calendar>
+
+								<p:outputLabel value="#{msg['logistics.send_date_to']}"></p:outputLabel>
+								<p:calendar pattern="dd.MM.yyyy" autocomplete="off"
+									value="#{logInvoiceListBean.invoiceModel.searchModel.invoiceDateTo}"
+									converterMessage="Wrong Date" navigator="true">
+								</p:calendar>
+
+								<p:outputLabel></p:outputLabel>
+								<p:commandButton value="#{msg['search']}"
+									update=":dataForm:invoiceDataTable"></p:commandButton>
+
+							</p:panelGrid>
+						</h:form>
+					</div>
+
+					<div class="ui-grid-col-9">
+						<h:form id="dataForm">
+							<p:dataTable value="#{logInvoiceListBean.invoiceModel}"
+								paginator="true" lazy="true" var="item"
+								tableStyleClass="logItemsTable" rows="50" id="invoiceDataTable">
+								<f:facet name="header" id="tableHeader">
+									<p:button title="#{msg['add']}" rendered="true"
+										outcome="Create.xhtml" value="#{msg['add']}"
+										style="float:right;margin-right:5px;" />
+									<div style="float: left; margin-left: 10px;">#{msg['total']}:
+										#{logInvoiceListBean.invoiceModel.rowCount}</div>
+									<div style="clear: both;"></div>
+								</f:facet>
+
+								<p:column headerText="№" sortBy="#{item.reg_number}"
+									styleClass="numberColumn">
+									<p:outputLabel value="#{item.getFormattedRegNumber()}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['company']}"
+									style="width:100px;text-align:center">
+									<p:outputLabel
+										value="#{bukrsF4Bean.getNameByBukrs(item.bukrs)}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.sender_whouse']}">
+									<p:outputLabel value="#{werksF4Bean.getName(item.from_werks)}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.receiver_whouse']}">
+									<p:outputLabel value="#{werksF4Bean.getName(item.to_werks)}"></p:outputLabel>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.send_date']}">
+									<h:outputText value="#{item.invoice_date}">
+										<f:convertDateTime pattern="dd.MM.yyyy"></f:convertDateTime>
+									</h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.created_at']}">
+									<h:outputText value="#{item.created_at}">
+										<f:convertDateTime pattern="dd.MM.yyyy kk:mm"></f:convertDateTime>
+									</h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.description']}">
+									<h:outputText value="#{item.note}">
+									</h:outputText>
+								</p:column>
+
+								<p:column headerText="#{msg['logistics.status']}" sortBy="#{item.status_id}">
+									<h:outputText value="#{msg['logistics.status_new']}" rendered="#{item.status_id == 1}"></h:outputText>
+									<h:outputText value="#{msg['logistics.status_on_road']}" rendered="#{item.status_id == 3}"></h:outputText>
+									<h:outputText value="#{msg['logistics.status_closed']}" rendered="#{item.status_id == 2}"></h:outputText>
+								</p:column>
+
+								<p:column>
+									<p:button target="_blank" value="#{msg['logistics.view']}" outcome="View.xhtml?id=#{item.id}"
+										icon="ui-icon-search" title="#{msg['logistics.view']}">
+									</p:button>
+								</p:column>
+							</p:dataTable>
+						</h:form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

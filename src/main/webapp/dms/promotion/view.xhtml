@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+	<f:view locale="#{systemLocale.currentLocale}" />
+
+<ui:composition>
+
+	<p:dialog id="PromotionViewDlg" widgetVar="PromotionViewDialog"
+		modal="true" resizable="false" appendTo="@(body)"
+		header="#{msg['dmsc.view']}">
+		<h:form id="PromotionViewForm">
+			<h:panelGroup id="display">
+				<p:panelGrid columns="2"
+					rendered="#{dmsplistBean.selectedPT != null}">
+
+					<h:outputText value="ID" />
+					<h:outputText value="#{dmsplistBean.selectedPT.promo.id}"
+						title="ID" />
+
+					<h:outputText value="#{msg['dmsc.ptNumber']}" />
+					<h:outputText value="#{dmsplistBean.selectedPT.promo.pm_number}"
+						title="Promo Number" />
+
+					<p:outputLabel value="#{msg['dmsc.hint_title']}" for="name" />
+					<p:inputText id="name" size="55" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.name}"
+						title="#{msg['dmsc.hint_title']}" />
+
+					<p:outputLabel value="#{msg['dmsc.hint_start']}" for="dateStart" />
+					<p:calendar id="dateStart" pattern="dd.MM.yyyy" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.date_start}" title="Start"
+						showOn="button" />
+
+					<p:outputLabel value="#{msg['dmsc.hint_end']}" for="dateEnd" />
+					<p:calendar id="dateEnd" pattern="dd.MM.yyyy" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.date_end}" title="End"
+						showOn="button" />
+
+					<p:outputLabel value="#{msg['dmsc.bukrs']}" for="bukrs" />
+					<p:selectOneMenu id="bukrs" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.bukrs}" >
+						<p:ajax listener="#{dmsplistBean.updateByNewBukrs}" />
+						<f:selectItems value="#{dmsplistBean.bukrs_list}" var="bukrs"
+							itemLabel="#{bukrs.name}" itemValue="#{bukrs.bukrs}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel value="#{msg['dmsc.matnr']}" for="tovar" />
+					<p:selectOneMenu id="tovar" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.contract_type}" >						
+						<f:selectItem itemLabel="Все" itemValue="0" />
+						<f:selectItems value="#{dmsplistBean.p_contractTypeF4Bean.contractType_list}" var="ct"
+							itemLabel="#{ct.name}" itemValue="#{ct.contract_type_id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['dmsc.scope']}" for="scope" />
+					<p:selectOneMenu id="scope" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.pm_scope}" >
+						<p:ajax listener="#{dmsplistBean.updateZoneDisables}" />
+						<f:selectItem itemLabel="#{msg['dmsc.scopeINT']}" itemValue="INT" />
+						<f:selectItem itemLabel="#{msg['dmsc.scopeREG']}" itemValue="REG" />
+						<f:selectItem itemLabel="#{msg['dmsc.scopeGEN']}" itemValue="GEN" />
+						<f:selectItem itemLabel="#{msg['dmsc.scopeCOM']}" itemValue="COM" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['dmsc.country']}" for="countryId" />
+					<p:selectOneMenu id="countryId" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.country_id}">
+						<f:selectItems
+							value="#{dmsplistBean.p_countryF4Bean.country_list}"
+							var="country" itemLabel="#{country.country}"
+							itemValue="#{country.country_id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['dmsc.reg']}" for="regId" />
+					<p:selectOneMenu id="regId" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.region_id}">
+						<f:selectItems value="#{dmsplistBean.region_list}" var="reg"
+							itemLabel="#{reg.text45}" itemValue="#{reg.branch_id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['dmsc.branch']}" for="branchId" />
+					<p:selectOneMenu id="branchId" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.branch_id}" >
+						<f:selectItems value="#{dmsplistBean.branch_list}" var="branch"
+							itemLabel="#{branch.text45}" itemValue="#{branch.branch_id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['dmsc.type']}" for="type" />
+					<p:selectOneMenu id="type" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.pm_type}" >
+						<p:ajax listener="#{dmsplistBean.updateTypeDisables}" />
+						<f:selectItem itemLabel="#{msg['dmsc.ptGift']}" itemValue="1" />
+						<f:selectItem itemLabel="#{msg['dmsc.ptDiscount']}" itemValue="2" />
+						<f:selectItem itemLabel="#{msg['dmsc.ptBonus']}" itemValue="3" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['dmsc.matnr']}" for="matnr" />
+					<p:selectOneMenu id="matnr" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.matnr}" style="width:500px" >
+						<f:selectItems value="#{dmsplistBean.p_matnr_list}" var="matnr"
+							itemLabel="#{matnr.text45}" itemValue="#{matnr.matnr}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['dmsc.ptDiscount']}" for="discount" />
+					<p:column>
+						<p:inputText id="discount" disabled="true"
+							value="#{dmsplistBean.selectedPT.promo.discount}" 
+							title="Discount" />&nbsp;
+						<p:outputLabel value="%" for="discount" />
+					</p:column>
+
+					<p:outputLabel value="#{msg['dmsc.ptBonus']}" for="bonus" />
+					<p:column>
+						<p:inputText id="bonus" disabled="true"
+							value="#{dmsplistBean.selectedPT.promo.bonus}" title="Bonus" />&nbsp;
+						<p:outputLabel value="#{msg['dmsc.cunit']}" for="bonus" />
+					</p:column>
+
+					<p:outputLabel value="#{msg['dmsc.hint_fromDealer']}" for="fromDealer" />
+					<p:column>
+						<table>
+							<tr>
+								<td><p:inputText id="fromDealer" disabled="true"
+										value="#{dmsplistBean.selectedPT.promo.from_dealer}"
+										title="From dealer" /></td>
+								<td><p:selectOneMenu id="fdCurrency" disabled="true"
+										value="#{dmsplistBean.selectedPT.promo.fd_currency}">
+										<f:selectItems
+											value="#{dmsplistBean.p_currencyF4Bean.currency_list}"
+											var="curr" itemLabel="#{curr.text20}"
+											itemValue="#{curr.currency}" />
+									</p:selectOneMenu></td>
+							</tr>
+						</table>
+					</p:column>
+
+					<p:outputLabel value="#{msg['dmsc.hint']}" for="info" />
+					<p:inputText id="info" size="55" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.info}" title="Info" />
+
+					<p:outputLabel value="#{msg['dmsc.active']}" for="isActive" />
+					<p:selectOneMenu id="isActive" disabled="true"
+						value="#{dmsplistBean.selectedPT.promo.is_active}"> 
+						<f:selectItem itemLabel="" itemValue="-1" />
+						<f:selectItem itemLabel="#{msg['dmsc.active']}" itemValue="1" />
+						<f:selectItem itemLabel="#{msg['dmsc.activeNot']}" itemValue="0" />
+					</p:selectOneMenu>
+										
+				</p:panelGrid>
+				<p:commandButton value="#{msg['dmsc.close']}"
+					onclick="PromotionViewDialog.hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

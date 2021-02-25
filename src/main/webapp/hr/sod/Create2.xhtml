@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+
+	<p:dialog id="SodCreateDlg" widgetVar="SodCreateDialog" modal="true"
+		resizable="false" appendTo="@(body)"
+		header="#{msg['hr.official_data.add_off_data']}">
+		<h:form id="SodCreateForm">
+			<h:panelGroup id="display">
+
+				<p:panelGrid columns="2" rendered="#{sodBean.selected != null}">
+
+					<p:outputLabel value="#{msg.company}" />
+					<p:selectOneMenu value="#{sodBean.selected.bukrs}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+						<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="b"
+							itemLabel="#{b.name}" itemValue="#{b.bukrs}"></f:selectItems>
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['hr.official_data.salary']}" />
+					<p:inputText value="#{sodBean.selected.salary}">
+						<p:ajax event="blur" listener="#{sodBean.countSod()}" update="soc_contr ipn pension osms osmsFromStaff"></p:ajax>
+					</p:inputText>
+
+					<p:outputLabel value="#{msg['hr.official_data.currency']}" />
+					<p:selectOneMenu value="#{sodBean.selected.currency}">
+						<f:selectItem itemLabel="#{msg.select}" itemValue="" />
+						<f:selectItems value="#{currencyF4Bean.currency_list}"
+							var="currency" itemLabel="#{currency.text20}"
+							itemValue="#{currency.currency}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['hr.official_data.pension']}" />
+					<p:inputText id="pension" value="#{sodBean.selected.pension}">
+						<f:convertNumber pattern="#0.00" />
+					</p:inputText>
+
+					<p:outputLabel value="#{msg['hr.official_data.ipn']}" />
+					<p:inputText id="ipn" value="#{sodBean.selected.ipn}" >
+						<f:convertNumber pattern="#0.00" />
+					</p:inputText>
+
+					<p:outputLabel
+						value="#{msg['hr.official_data.social_contribution']}" />
+					<p:inputText id="soc_contr" value="#{sodBean.selected.social_contribution}">
+						<f:convertNumber pattern="#0.00" />
+					</p:inputText>
+					
+					<p:outputLabel
+						value="ОСМС" />
+					<p:inputText id="osms" value="#{sodBean.selected.osms}">
+						<f:convertNumber pattern="#0.00" />
+					</p:inputText>
+					
+					<p:outputLabel
+						value="ОСМС с работника" />
+					<p:inputText id="osmsFromStaff" value="#{sodBean.selected.osmsFromStaff}">
+						<f:convertNumber pattern="#0.00" />
+					</p:inputText>
+
+					<p:outputLabel value="#{msg['hr.official_data.post']}" />
+					<p:inputText value="#{sodBean.selected.post}" />
+
+					<p:outputLabel value="#{msg['hr.official_data.sub_company_id']}" />
+					<p:selectOneMenu value="#{sodBean.selected.sub_company_id}">
+						<f:selectItem itemLabel="Выберите" itemValue="0" />
+						<f:selectItems value="#{refSubCompany.recordList}" var="company"
+							itemLabel="#{company.name_ru}" itemValue="#{company.sc_id}" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['hr.official_data.salary_type']}" />
+					<p:selectOneMenu value="#{sodBean.selected.salary_type}">
+						<f:selectItem itemLabel="#{msg['hr.salary.monthly']}"
+							itemValue="monthly" />
+						<f:selectItem itemLabel="#{msg['hr.salary.daily']}"
+							itemValue="daily" />
+						<f:selectItem itemLabel="#{msg['hr.salary.hourly']}"
+							itemValue="hourly" />
+					</p:selectOneMenu>
+
+					<p:outputLabel value="#{msg['hr.official_data.comment']}" />
+					<p:inputTextarea value="#{sodBean.selected.comment}"></p:inputTextarea>
+
+				</p:panelGrid>
+
+				<p:commandButton actionListener="#{sodBean.Save}"
+					value="#{msg.save}" update="#{updateElement},:messages" />
+				<p:commandButton actionListener="#{sodBean.Reset}"
+					value="#{msg.cancel}" oncomplete="PF('SodCreateDialog').hide()" />
+			</h:panelGroup>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

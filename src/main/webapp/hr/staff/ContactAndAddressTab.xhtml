@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<h:form id="ContactAndAddressForm">
+		<div class="ui-grid-col-4" style="text-align: left;">
+			<p:panelGrid style="width:90%;" styleClass="staffTable"
+				rendered="#{!empty hrStaffBean.staff.staff_id}">
+				<f:facet name="header">
+					<p:outputPanel>
+						<p:commandButton icon="ui-icon-pencil" title="Редактировать"
+							actionListener="#{hrStaffBean.setEditMode(true)}"
+							update="addressDataForm" rendered="false">
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-disk" title="#{msg.save}"
+							actionListener="#{hrStaffBean.Save}"
+							update="addressDataForm, :messages"
+							rendered="#{hrStaffBean.editMode}" />
+					</p:outputPanel>
+				</f:facet>
+				<p:row>
+					<p:column colspan="2">
+						<h3>#{msg['hr.staff.contact']}</h3>
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.homephone']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.homephone}"
+							rendered="#{!hrStaffBean.editMode}" />
+						<p:inputText value="#{hrStaffBean.staff.homephone}"
+							rendered="#{hrStaffBean.editMode}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.workphone']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.workphone}"
+							rendered="#{!hrStaffBean.editMode}" />
+						<p:inputText value="#{hrStaffBean.staff.workphone}"
+							rendered="#{hrStaffBean.editMode}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.mobile']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.mobile}"
+							rendered="#{!hrStaffBean.editMode}" />
+						<p:inputText value="#{hrStaffBean.staff.mobile}"
+							rendered="#{hrStaffBean.editMode}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.mobile1']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.mobile1}"
+							rendered="#{!hrStaffBean.editMode}" />
+						<p:inputText value="#{hrStaffBean.staff.mobile1}"
+							rendered="#{hrStaffBean.editMode}" />
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.mobile2']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.mobile2}"
+							rendered="#{!hrStaffBean.editMode}" />
+						<p:inputText value="#{hrStaffBean.staff.mobile2}"
+							rendered="#{hrStaffBean.editMode}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.corp_email']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.corp_email}"
+							rendered="#{!hrStaffBean.editMode}" />
+						<p:inputText value="#{hrStaffBean.staff.corp_email}"
+							rendered="#{hrStaffBean.editMode}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.email']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.email}"
+							rendered="#{!hrStaffBean.editMode}" />
+						<p:inputText value="#{hrStaffBean.staff.email}"
+							rendered="#{hrStaffBean.editMode}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.email2']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<p:outputLabel value="#{hrStaffBean.staff.email2}"
+							rendered="#{!hrStaffBean.editMode}" />
+						<p:inputText value="#{hrStaffBean.staff.email2}"
+							rendered="#{hrStaffBean.editMode}" />
+					</p:column>
+				</p:row>
+
+			</p:panelGrid>
+		</div>
+
+		<div class="ui-grid-col-4" style="text-align: left;">
+			<p:panelGrid style="width:90%;" styleClass="staffTable"
+				rendered="#{!empty hrStaffBean.staff.staff_id}">
+				<f:facet name="header">
+					<p:outputLabel value="&nbsp;"></p:outputLabel>
+				</f:facet>
+				<p:row>
+					<p:column colspan="2">
+						<h3>#{msg['hr.staff.registration_address']}</h3>
+					</p:column>
+				</p:row>
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.country_id']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{countryF4Bean.getName(hrStaffBean.residenceAddress.countryId)}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.state_id']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{stateF4Bean.getName(hrStaffBean.residenceAddress.stateId)}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.city_id']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{cityF4Bean.getName(hrStaffBean.residenceAddress.cityId)}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="Район" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{cityregF4Bean.getName(hrStaffBean.residenceAddress.regId)}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.postcode']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{hrStaffBean.residenceAddress.postalCode}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.mkr_district']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{hrStaffBean.residenceAddress.microdistrict}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.village']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{hrStaffBean.residenceAddress.village}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.avenue']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{hrStaffBean.residenceAddress.avenue}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="Ул.(просп./мкр.)" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{hrStaffBean.residenceAddress.street}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.house']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText style="width:3em;"
+							value="#{hrStaffBean.residenceAddress.ap_number}" />
+						<h:outputLabel value=" / " />
+						<h:outputText style="width:3em;"
+							value="#{hrStaffBean.residenceAddress.ap_drob}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.apartment']} №" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText style="width:3em;"
+							value="#{hrStaffBean.residenceAddress.flat_number}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.mob_tel']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText
+							value="#{hrStaffBean.residenceAddress.telMob1}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column colspan="2">
+						<h3>#{msg['hr.staff.living_place']}</h3>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.country_id']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{countryF4Bean.getName(hrStaffBean.livingAddress.countryId)}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.state_id']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{stateF4Bean.getName(hrStaffBean.livingAddress.stateId)}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.staff.city_id']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{cityF4Bean.getName(hrStaffBean.livingAddress.cityId)}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="Район" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{cityregF4Bean.getName(hrStaffBean.livingAddress.regId)}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.postcode']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{hrStaffBean.livingAddress.postalCode}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.mkr_district']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{hrStaffBean.livingAddress.microdistrict}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.village']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{hrStaffBean.livingAddress.village}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.avenue']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{hrStaffBean.livingAddress.avenue}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="Ул.(просп./мкр.)" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText value="#{hrStaffBean.livingAddress.street}"></h:outputText>
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.house']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText style="width:3em;"
+							value="#{hrStaffBean.livingAddress.ap_number}" />
+						<h:outputLabel value=" / " />
+						<h:outputText style="width:3em;"
+							value="#{hrStaffBean.livingAddress.ap_drob}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.apartment']} №" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText style="width:3em;"
+							value="#{hrStaffBean.livingAddress.flat_number}" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="key">
+						<p:outputLabel value="#{msg['hr.mob_tel']}" />
+					</p:column>
+					<p:column styleClass="value">
+						<h:outputText
+							value="#{hrStaffBean.livingAddress.telMob1}" />
+					</p:column>
+				</p:row>
+				
+			</p:panelGrid>
+		</div>
+		<br style="clear: both;" />
+	</h:form>
+</ui:composition>
+</html>

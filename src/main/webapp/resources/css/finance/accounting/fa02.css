@@ -1,0 +1,70 @@
+body 
+{
+    background-color: #EBF0FA;
+    
+}
+.bukrs{
+	font-size:12px;
+
+}
+.budat .ui-inputfield, .bldat .ui-inputfield{
+	font-size:12px;
+	width:75px;
+}
+.ui-datepicker{
+	width:250px;
+}
+.bukrs, .blart, .monat, .waers{
+	width:35px;
+}
+.kursf{
+	width:50px;
+}
+.xblnr, .bktxt, .bvorg{
+	width:200px;
+}
+.blart_button, .bschl_button, .hkont_button, .lifnr_button, .kunnr_button, .matnr_button, .werks_button, .meins_button, .waers_button, .bukrs_button{
+	width:21px;
+	height:21px;
+	vertical-align: bottom
+}
+
+.f4button{ 
+ 	width:21px;
+	height:21px;
+	vertical-align: bottom
+}
+#employee{
+	float: left;
+} 
+#salary_position{
+	margin-left: 320px;
+} 
+.ui-selectonemenu-panel { 
+   font-size:12px; 
+}
+.ui-selectonemenu{
+	font-size:12px; 
+}
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled{
+	opacity:.70 !important;
+}
+
+.ui-datatable tbody td{
+	font-size:12px; 
+}
+
+.wrapBTClass .ui-datatable table{
+	width: auto;
+}
+
+.urlLinks{
+	text-decoration:none;
+}
+.searchPanelGrid.ui-panelgrid>*>tr,
+.searchPanelGrid.ui-panelgrid .ui-panelgrid-cell {
+	background-color: #EBF0FA;
+    border: none;
+    font-size:12px;
+}

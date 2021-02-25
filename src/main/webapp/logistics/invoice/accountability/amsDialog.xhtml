@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition>
+	<style>
+.sign_place {
+	border-bottom: 0px #ddd solid;
+}
+
+.sign_place hr {
+	margin-top: 10px;
+}
+
+.sign_place span {
+	margin-top: 13px;
+	font-style: oblique;
+}
+
+.sign_slash {
+	margin-top: 0px;
+	float: left;
+	display: block;
+}
+</style>
+	<p:dialog id="amsDlg" widgetVar="amsDlg" modal="true" resizable="false"
+		appendTo="@(body)" dynamic="true"
+		header="Отметка состояния материалов" width="800" height="500">
+		<h:form id="amsDlgForm">
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+
+					<ui:repeat var="tb" value="#{crudBean.amsOutputTable}">
+						<p:dataTable id="amsDataTable" value="#{tb.items}" var="item"
+							emptyMessage="#{msg.no_records}"
+							rowClasses="employeeTableOddRow,employeeTableEvenRow"
+							style="margin-bottom:20px;">
+							<f:facet name="header">
+								<p:outputLabel style="float:left;"
+									value="#{tb.matnrObject.text45} (#{tb.barcode})"></p:outputLabel>
+								<p:commandButton style="float:right;" value="Добавить"
+									update="amsDataTable"
+									actionListener="#{crudBean.addAmsRow(tb)}"></p:commandButton>
+								<div style="clear: both;"></div>
+							</f:facet>
+
+							<p:column style="width: 25%;">
+								<f:facet name="header">Зап. часть</f:facet>
+								<h:outputText value="#{item.matnrObject.text45}"></h:outputText>
+								<p:commandButton icon="ui-icon-newwin" type="push"
+									actionListener="#{crudBean.setCurrentAmsRow(item)}"
+									oncomplete="PF('amsMatnrDlg').show();" styleClass="f4button">
+								</p:commandButton>
+							</p:column>
+
+							<p:column style="width: 100px;">
+								<f:facet name="header">Код</f:facet>
+								<h:outputText value="#{item.code}"></h:outputText>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">Примечание</f:facet>
+								<p:inputTextarea style="width:100%;" value="#{item.note}"></p:inputTextarea>
+							</p:column>
+
+						</p:dataTable>
+					</ui:repeat>
+
+				</div>
+			</div>
+
+			<div class="ui-grid-row">
+				<div class="ui-grid-col-12">
+
+
+					<p:commandButton value="Сохранить" type="push"
+						style="margin-bottom: 20px" actionListener="#{crudBean.saveAms()}"
+						update=":messages,:form">
+					</p:commandButton>
+					&nbsp;
+					<p:commandButton value="Отмена" oncomplete="PF('amsDlg').hide()" />
+
+				</div>
+			</div>
+		</h:form>
+	</p:dialog>
+
+	<p:dialog id="amsMatnrDlg" widgetVar="amsMatnrDlg" modal="true"
+		resizable="false" appendTo="@(body)" dynamic="true"
+		header="Список зап. частей" width="700" height="500">
+		<h:form>
+			<p:dataTable value="#{crudBean.spareParts}" var="p"
+				selectionMode="single" rowKey="#{p.matnr}">
+				<p:ajax event="rowDblselect"
+					listener="#{crudBean.onSelectSparePart}" update=":amsDlgForm"
+					oncomplete="PF('amsMatnrDlg').hide();"></p:ajax>
+				<p:column>
+					<f:facet name="header">Код</f:facet>
+					<h:outputText value="#{p.code}"></h:outputText>
+				</p:column>
+
+				<p:column>
+					<f:facet name="header">Наименование</f:facet>
+					<h:outputText value="#{p.text45}"></h:outputText>
+				</p:column>
+
+			</p:dataTable>
+		</h:form>
+	</p:dialog>
+
+</ui:composition>
+</html>

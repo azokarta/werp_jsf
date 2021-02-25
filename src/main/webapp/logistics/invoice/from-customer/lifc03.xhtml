@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<f:view locale="#{systemLocale.currentLocale}" />
+<f:metadata>
+	<f:viewParam name="invoiceId" value="#{lifc01Bean.invoiceId}" />
+	<f:event type="preRenderView" listener="#{lifc01Bean.init}" />
+</f:metadata>
+<h:head>
+	<title>#{msg['logistics.invoice']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<style>
+.page-header {
+	border: solid 1px #ddd;
+}
+
+.page-header h2 {
+	margin-left: 5px;
+}
+</style>
+</h:head>
+
+<h:body>
+	<h:outputStylesheet library="css" name="main.css" />
+	<h:outputStylesheet library="css" name="main-form.css" />
+
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{msg['breadcrumb.lifc01']}" />
+				</ui:include>
+			</ui:insert>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form" rendered="#{!empty lifc01Bean.invoice.id and empty lifc01Bean.invoice.awkey}">
+						<p:toolbar styleclass="mp_toolbar">
+							<f:facet name="left">
+								<p:button
+									outcome="/logistics/invoice/from-customer/lifc01.xhtml"
+									value="#{msg.edit}" align="right" icon="ui-icon ui-icon-pencil">
+									<f:param name="invoiceId" value="#{lifc01Bean.invoice.id}" />
+								</p:button>
+							</f:facet>
+							
+							<f:facet name="right">
+								<p:commandButton value="Назад" onclick="history.go(-1);"></p:commandButton>
+							</f:facet>
+							
+						</p:toolbar>
+
+						<div class="page-header">
+							<h2>Счет фактура №#{lifc01Bean.invoice.id}</h2>
+						</div>
+
+						<div class="ui-grid-row" style="padding-bottom: 10px;">
+							<div style="display: inline; float: left; padding-right: 10px;">
+								<table>
+									<tr>
+										<td><h:outputLabel value="#{msg.company}" /></td>
+										<td><p:selectOneMenu id="bukrs"
+												value="#{lifc01Bean.invoice.bukrs}" disabled="true">
+												<f:selectItems value="#{bukrsF4Bean.bukrs_list}" var="bukrs"
+													itemLabel="#{bukrs.name}" itemValue="#{bukrs.bukrs}" />
+											</p:selectOneMenu></td>
+
+										<td>#{msg.currency}</td>
+										<td><p:selectOneMenu disabled="true"
+												value="#{lifc01Bean.invoice.currency}">
+												<f:selectItem itemLabel="#{msg.select}" itemValue=""></f:selectItem>
+												<f:selectItems value="#{currencyF4Bean.currency_list}"
+													var="c" itemLabel="#{c.text20}" itemValue="#{c.currency}" />
+											</p:selectOneMenu></td>
+									</tr>
+
+									<tr>
+										<td><h:outputLabel value="#{msg.customer}" /></td>
+										<td>
+										<p:inputText disabled="true" rendered="#{!empty lifc01Bean.selectedCustomer}" value="#{lifc01Bean.selectedCustomer.name}"></p:inputText>
+</td>
+
+										<td>Заказ</td>
+										<td><h:inputText id="orderOut"
+												rendered="#{!empty lifc01Bean.selectedOrder}"
+												value="№ #{lifc01Bean.selectedOrder.id}" size="45"
+												maxlength="45" styleClass="input1" disabled="true" /></td>
+									</tr>
+									<tr>
+										<td>#{msg['logistics.invoice.invoice_date']}</td>
+										<td><p:calendar yearRange="1940:2020" disabled="true"
+												pattern="dd.MM.yyyy" autocomplete="off" navigator="true"
+												locale="#{systemLocale.currentLocale.getLanguage()}"
+												value="#{lifc01Bean.invoice.invoice_date}"
+												converterMessage="Date is invalid.">
+											</p:calendar></td>
+										<td>#{msg['logistics.invoice.factory_number']}</td>
+										<td><p:inputText disabled="true"
+												value="#{lifc01Bean.invoice.factory_number}"></p:inputText>
+										</td>
+									</tr>
+
+									<tr>
+										<td>#{msg['logistics.invoice.delivery_term']}</td>
+										<td><p:selectOneMenu disabled="true"
+												value="#{lifc01Bean.invoice.delivery_term}">
+												<f:selectItem itemLabel="#{msg.select}" itemValue="0"></f:selectItem>
+												<f:selectItems value="#{lifc01Bean.invoiceDeliveryTerm}"
+													var="item" itemLabel="#{item.getName(userinfo.u_language)}"
+													itemValue="#{item.idt_id}" />
+											</p:selectOneMenu></td>
+
+										<td>#{msg['logistics.invoice.payment_term']}</td>
+										<td><p:selectOneMenu disabled="true"
+												value="#{lifc01Bean.invoice.payment_term}">
+												<f:selectItem itemLabel="#{msg.select}" itemValue="0"></f:selectItem>
+												<f:selectItems value="#{lifc01Bean.invoicePaymentTerms}"
+													var="item" itemLabel="#{item.getName(userinfo.u_language)}"
+													itemValue="#{item.ipt_id}" />
+											</p:selectOneMenu></td>
+									</tr>
+
+									<tr>
+										<td>#{msg['logistics.invoice.total_discount']}</td>
+										<td><p:inputText disabled="true"
+												value="#{lifc01Bean.invoice.total_discount}"></p:inputText>
+										</td>
+
+										<td>#{msg['logistics.invoice.comment']}</td>
+										<td><p:inputTextarea disabled="true"
+												value="#{lifc01Bean.invoice.comment}"></p:inputTextarea></td>
+									</tr>
+
+									<tr>
+										<td>#{msg['logistics.invoice.summ']}</td>
+										<td><p:inputText id="total_summ" style="color:blue;"
+												value="#{lifc01Bean.invoice.summ}" disabled="true"></p:inputText>
+										</td>
+
+										<td></td>
+										<td></td>
+									</tr>
+
+								</table>
+							</div>
+						</div>
+						<br />
+
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade"
+							align="center">
+							<p:commandButton value="Да" type="button" align="center"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="Нет" type="button" align="center"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+
+
+						<div class="ui-grid-row" style="padding-bottom: 10px;">
+							<div class="wrapRTClass">
+								<p:dataTable id="itemsListTable"
+									value="#{lifc01Bean.invoiceItems}" var="item"
+									widgetVar="dataTableWidgetVar" emptyMessage="#{msg.no_records}"
+									styleClass="employeeTable" headerClass="employeeTableHeader"
+									rowClasses="employeeTableOddRow,employeeTableEvenRow">
+
+									<p:column style="width: 35%;">
+										<f:facet name="header">Материал</f:facet>
+										<h:inputText id="b_matnr"
+											value="#{matnrF4Bean.getName(item.matnr_id)}" size="45"
+											maxlength="45" styleClass="input1" disabled="true" />
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">Количество</f:facet>
+										<h:inputText value="#{item.quantity}" size="8" maxlength="10"
+											styleClass="input1" disabled="true">
+										</h:inputText>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">Unit price</f:facet>
+										<h:inputText value="#{item.unit_price}" size="8"
+											maxlength="10" styleClass="input1" disabled="true">
+										</h:inputText>
+									</p:column>
+
+									<p:column>
+										<f:facet name="header">Сумма</f:facet>
+										<h:inputText value="#{item.summ}" size="8" maxlength="10"
+											styleClass="input1" disabled="true">
+										</h:inputText>
+									</p:column>
+								</p:dataTable>
+							</div>
+						</div>
+					</h:form>
+					
+					<p:panelGrid rendered="#{empty lifc01Bean.invoice.id}" columns="3" layout="grid">
+						<h2>Invoice Not Found!</h2>
+					</p:panelGrid>
+					
+					<p:panelGrid rendered="#{!empty lifc01Bean.invoice.awkey}" columns="3" layout="grid">
+						<h3>Невозможно редактировать счет фактуру, так как над документом совершено действие</h3>
+					</p:panelGrid>
+					
+				</f:view>
+			</div>
+
+		</div>
+	</div>
+
+
+</h:body>
+</html>

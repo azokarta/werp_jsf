@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+
+<ui:composition>
+	<style>
+.field-row {
+	margin-top: 10px;
+}
+
+.field-label {
+	border: solid 0px red;
+	font-size: 14px;
+	font-weight: 600;
+	font-style: italic;
+}
+
+.field-label label {
+	float: right;
+	margin-right: 5px;
+}
+
+.field-value {
+	border: solid 0px red;
+}
+
+.field-value input, textarea, .ui-selectonemenu {
+	width: 80%;
+}
+
+.field-value .ui-selectonemenu {
+	
+}
+</style>
+	<p:dialog header="#{crmCallCrudBean.dialogHeader}"
+		widgetVar="CallCreateUpdateDialog" id="CallCreateUpdateDialog"
+		minHeight="100" width="700" style="padding:10px;" appendTo="@(body)"
+		modal="true" resizable="false">
+		<h:form id="CallCreateUpdateDialogForm"
+			rendered="#{!empty crmCallCrudBean.selected}">
+			<p:toolbar styleclass="mp_toolbar">
+				<f:facet name="left">
+					<p:commandButton type="push" value="#{msg['dmsc.save']}"
+						icon="ui-icon ui-icon-check"
+						actionListener="#{crmCallCrudBean.save()}" update=":messages">
+					</p:commandButton>
+				</f:facet>
+			</p:toolbar>
+			<br />
+			<div class="ui-grid ui-grid-responsive">
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Номер по которому звонили" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu
+							disabled="#{!empty crmCallCrudBean.selected.phoneNumber}"
+							value="#{crmCallCrudBean.selected.phoneNumber}">
+							<f:selectItem itemLabel="Не выбрано" itemValue=""></f:selectItem>
+							<f:selectItems value="#{crmCallCrudBean.phoneNumbers}" var="pn"
+								itemValue="#{pn}" itemLabel="#{pn}"></f:selectItems>
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Результат звонка" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:selectOneMenu value="#{crmCallCrudBean.selected.resultId}">
+							<p:ajax listener="#{crmCallCrudBean.onResultChange}"
+								update="reasonId recallDateTime" />
+							<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+							<f:selectItems value="#{crmCallCrudBean.callResults.entrySet()}"
+								var="e" itemLabel="#{e.value}" itemValue="#{e.key}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+
+				<p:panel id="reasonId" style="border:0px;">
+					<div class="ui-grid-row field-row">
+						<div class="ui-grid-col-3 field-label">
+							<p:outputLabel value="Причина отказа" id="reasonLabel" />
+						</div>
+						<div class="ui-grid-col-9 field-value">
+							<p:selectOneMenu value="#{crmCallCrudBean.selected.reasonId}"
+								id="reasonValue"
+								disabled="#{crmCallCrudBean.selected.resultId != 2}">
+								<f:selectItem itemLabel="Не выбрано" itemValue="0" />
+								<f:selectItems value="#{crmCallCrudBean.reasons}" var="reason"
+									itemLabel="#{reason.name}" itemValue="#{reason.id}"></f:selectItems>
+							</p:selectOneMenu>
+						</div>
+					</div>
+				</p:panel>
+
+				<p:panel id="recallDateTime" style="border:0px;">
+					<div class="ui-grid-row field-row">
+						<div class="ui-grid-col-3 field-label">
+							<p:outputLabel value="Дата-время перезвона" />
+						</div>
+						<div class="ui-grid-col-9 field-value">
+							<p:calendar value="#{crmCallCrudBean.selected.recallDateTime}"
+								pattern="dd.MM.yyyy HH:mm"
+								disabled="#{crmCallCrudBean.selected.resultId != 3 and crmCallCrudBean.selected.resultId != 4}" />
+						</div>
+					</div>
+				</p:panel>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Дата время звонка" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:calendar value="#{crmCallCrudBean.selected.dateTime}"
+							pattern="dd.MM.yyyy HH:mm" />
+					</div>
+				</div>
+
+				<div class="ui-grid-row field-row">
+					<div class="ui-grid-col-3 field-label">
+						<p:outputLabel value="Примечание" />
+					</div>
+					<div class="ui-grid-col-9 field-value">
+						<p:inputTextarea value="#{crmCallCrudBean.selected.note}"></p:inputTextarea>
+					</div>
+				</div>
+
+			</div>
+		</h:form>
+	</p:dialog>
+	<ui:include src="/crm/operation/demo/CreateUpdateDialog.xhtml">
+		<ui:param name="showSaveBtn" value="false"></ui:param>
+		<ui:param name="showCustomSaveBtn" value="true"></ui:param>
+		<ui:param name="saveActionBean" value="#{crmCallCrudBean}"></ui:param>
+		<ui:param name="saveAction" value="saveWithDemo"></ui:param>
+	</ui:include>
+</ui:composition>
+</html>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:werp="http://java.sun.com/jsf/composite/werp">
+<f:view locale="#{systemLocale.currentLocale}" />
+<h:head>
+	<title>#{msg['hr.pyramid.hierarchy']}</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="cache-control" content="no-store" />
+	<h:outputStylesheet library="css" name="main.css" />
+	<style>
+.disabled-row {
+	background-color: red;
+}
+
+
+</style>
+</h:head>
+
+<h:body>
+	<div class="ui-grid-row">
+		<div id="leftPanel" class="leftPanel">
+			<ui:insert name="sidebar">
+				<ui:include src="/template/sidebar.xhtml" />
+			</ui:insert>
+		</div>
+		<div class="leftPanelButton"
+			onclick="$('#leftPanel').toggleClass('shiftLeftP'); $(this).toggleClass('shiftLeft');$('.rightContainer').toggleClass('shiftLeftMain');">
+			<span style="color: white;"><b>#{msg.menu}</b></span>
+		</div>
+		<div class="rightContainer">
+			<ui:insert name="header">
+				<ui:include src="/template/header.xhtml">
+					<ui:param name="pageTitle" value="#{hrp03Bean.breadcrumb}" />
+				</ui:include>
+			</ui:insert>
+			<div class="ui-grid-row" style="margin-top: 10px;">
+				<div class="ui-grid-col-12">
+					<h:form id="searchForm"
+						onkeypress="if(event.keyCode == 13){document.getElementById('searchForm:searchBtn').click();return false;}">
+						<p:panel style="margin-bottom:10px">
+							<h:panelGrid columns="3" cellpadding="2">
+								<p:outputLabel value="#{msg.company}"></p:outputLabel>
+								<werp:companySelect elementId="companyId"
+									mode="update"
+									value="#{hrp03Bean.bukrs}">
+								</werp:companySelect>
+								<p:commandButton value="#{msg['form']}" icon="ui-icon-search"
+									id="searchBtn" update=":form:treeTable,:messages"
+									actionListener="#{hrp03Bean.search}"></p:commandButton>
+							</h:panelGrid>
+						</p:panel>
+					</h:form>
+				</div>
+			</div>
+
+			<div id="content" class="container">
+				<f:view>
+					<h:form id="form">
+						<div id="divTreetable">
+							<p:treeTable id="treeTable" value="#{hrp03Bean.root}"
+								var="pyramid" style="margin-bottom:20px" resizableColumns="true" tableStyleClass="pyrDataTable">
+								<f:facet name="header">
+									<p:commandButton rendered="false" id="createButton" icon="ui ui-icon-plus"
+										title="#{msg['hr.pyramid.create']}"
+										actionListener="#{hrpCrud.prepareCreate(0)}"
+										update=":PyramidCreateDlg"
+										oncomplete="PF('PyramidCreateDialog').show()"
+										style="float:right;margin-right:5px;">
+										<f:actionListener binding="#{hrsDialogBean.Reset()}"></f:actionListener>
+									</p:commandButton>
+
+									<div style="clear: both;"></div>
+								</f:facet>
+
+								<p:column headerText="#{msg['hr.pyramid.fio']}">
+									<h:outputText value="#{pyramid.staff.getLF()}"></h:outputText>
+								</p:column>
+								<p:column headerText="#{msg['position']}">
+									<h:outputText
+										value="#{positionBean.getPositionLabel(pyramid.position_id)}" />
+								</p:column>
+								<p:column headerText="#{msg['branch']}">
+									<h:outputText
+										value="#{branchBean.getBranchLabel(pyramid.branch_id)}" />
+								</p:column>
+								<p:column headerText="#{msg.actions}" style="width:150px;" rendered="#{hrp03Bean.hasPermissionToUpdate}">
+									<p:commandButton title="#{msg['hr.pyramid.create']}"
+										rendered="true"
+										oncomplete="PF('PyramidCreateDialog').show()"
+										icon="ui-icon ui-icon-circle-plus" update=":PyramidCreateDlg"
+										actionListener="#{hrpCrud.prepareCreate(pyramid.pyramid_id)}">
+										<f:actionListener binding="#{hrsDialogBean.Reset()}"></f:actionListener>
+										<f:actionListener binding="#{hrpCrud.setCreateMode()}"></f:actionListener>
+									</p:commandButton>
+
+									<p:commandButton title="#{msg['hr.pyramid.update']}"
+										oncomplete="PF('PyramidCreateDialog').show()"
+										actionListener="#{hrpCrud.setSelected(pyramid)}"
+										icon="ui-icon ui-icon-pencil" update=":PyramidCreateDlg">
+										<f:actionListener
+											binding="#{hrsDialogBean.setSelected(pyramid.staff_id)}"></f:actionListener>
+										<f:actionListener binding="#{hrpCrud.setUpdateMode()}"></f:actionListener>
+									</p:commandButton>
+
+									<p:commandButton title="#{msg['hr.pyramid.delete']}"
+										actionListener="#{hrpCrud.Delete(pyramid.pyramid_id)}"
+										icon="ui-icon ui-icon-circle-close" update=":form, :messages">
+										<p:confirm header="Confirmation" message="Are you sure?"
+											icon="ui-icon-alert" />
+									</p:commandButton>
+								</p:column>
+							</p:treeTable>
+						</div>
+						<p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+							<p:commandButton value="Yes" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+						</p:confirmDialog>
+					</h:form>
+
+					<ui:include src="CreateOrUpdate.xhtml" />
+				</f:view>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>
