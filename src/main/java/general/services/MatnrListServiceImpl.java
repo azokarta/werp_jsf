@@ -244,6 +244,11 @@ public class MatnrListServiceImpl implements MatnrListService {
 
 			itemsQtyMap.put(m.getMatnr(), itemTempQty);
 
+			if(barcode == null || barcode.trim().length() == 0) {
+				mlDao.batchInsert(prepareMlFromInvoiceItem(in, ii, userData.getUserid()));
+                          	continue;
+                        }
+
 			for (int i = 0; i < q; i++) {
 				MatnrList mlTemp = null;
 				MatnrList ml = new MatnrList();
@@ -326,6 +331,31 @@ public class MatnrListServiceImpl implements MatnrListService {
 		}
 
 	}
+
+	private List<MatnrList> prepareMlFromInvoiceItem (Invoice in, InvoiceItem ii, Long createdBy ){
+		List<MatnrList> out = new ArrayList<>();
+		for(int k = 0; k < ii.getQuantity().intValue(); k++) {
+			MatnrList ml = new MatnrList();
+			ml.setBarcode(null);
+			ml.setBukrs(in.getBukrs());
+			ml.setCreated_by(createdBy);
+			ml.setCreated_date(Calendar.getInstance().getTime());
+			ml.setCustomer_id(in.getCustomer_id());
+			ml.setDmbtr(0D);
+			ml.setGjahr(Calendar.getInstance().get(Calendar.YEAR));
+			ml.setInvoice(in.getId());
+			ml.setMatnr(ii.getMatnr());
+			ml.setMenge(1D);
+			ml.setPosting_id(in.getId());
+			ml.setStaff_id(0L);
+			ml.setStatus(MatnrList.STATUS_RECEIVED);
+			ml.setWerks(in.getTo_werks());
+			ml.setMatnr_list_id(null);
+			out.add(ml);
+		}
+
+		return out;
+        }
 
 	@Override
 	public void doWriteoff(Invoice in, Long userId) throws DAOException {

@@ -40,4 +40,6 @@ public interface MatnrListDao extends GenericDao<MatnrList> {
 	public List<MatnrList> findStaffMatnrListByMatnrWerksStatus(Long staffId, Long matnr, List<String> werksIds,String status);
 	
 	public MatnrList findOneByBarcodeWerksStatus(String barcode,List<String> werksIds,String status);
+
+	List<MatnrList> batchInsert(List<MatnrList> matnrLists);
 }

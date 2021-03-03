@@ -351,4 +351,20 @@ public class MatnrListDaoImpl extends GenericDaoImpl<MatnrList>implements MatnrL
 		return result.get(0);
 	}
 
+  @Override
+  public List<MatnrList> batchInsert(List<MatnrList> matnrLists) {
+	  int batchSize = 500;
+	  for ( int i = 0; i < matnrLists.size(); i++ ) {
+		  if ( i > 0 && i % batchSize == 0 ) {
+			  //flush a batch of inserts and release memory
+			  em.flush();
+			  em.clear();
+		  }
+		  MatnrList curr = matnrLists.get(i);
+		  em.persist( curr );
+	  }
+
+	  return null;
+  }
+
 }

@@ -224,6 +224,7 @@ public class ActionBean implements Serializable {
 		private String name;
 		private String label;
 		private String type;
+		private boolean disabled = false;
 
 		public String getType() {
 			return type;
@@ -249,6 +250,14 @@ public class ActionBean implements Serializable {
 			this.name = name;
 		}
 
+		public boolean isDisabled() {
+			return disabled;
+		}
+
+		public void setDisabled(boolean disabled) {
+			this.disabled = disabled;
+		}
+
 		public Button(String name, String type) {
 			super();
 			this.name = name;
@@ -257,6 +266,7 @@ public class ActionBean implements Serializable {
 		}
 
 		public void doAction() {
+			setDisabled(true);
 			if (getName().equals("update")) {
 				if (invoice.getType_id().equals(Invoice.TYPE_WRITEOFF)) {
 					GeneralUtil.doRedirect("/logistics/invoice/writeoff/Update.xhtml?id=" + invoice.getId());
@@ -361,6 +371,8 @@ public class ActionBean implements Serializable {
 					doCancelWriteoffDoc();
 				}
 			}
+
+			setDisabled(false);
 		}
 
 	}
