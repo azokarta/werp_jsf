@@ -1148,6 +1148,8 @@ public class MatnrListServiceImpl implements MatnrListService {
 				cond += String.format(" AND barcode = '%s' ", barcode);
 			} else if(writtenOffMLIds.containsKey(ii.getMatnr())) {
 				cond += " AND matnr_list_id IN(" + String.join(",", writtenOffMLIds.get(ii.getMatnr())) + ") ";
+			} else {
+				cond += " AND status = 'SOLD' ";
 			}
 
 			List<MatnrList> mlList = mlDao.findAllSold(cond, q);
