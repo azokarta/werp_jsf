@@ -1,5 +1,6 @@
 package general.dao.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +70,34 @@ public class FmglflextDaoImpl extends GenericDaoImpl<Fmglflext> implements Fmglf
     }
 	//  LEFT JOIN
 	//on h.hkont = f.hkont and h.bukrs = f.bukrs
+	public List<Fmglflext> getDailyFinDocGroupedByHkont(String a_bukrs, List<String> al_hkont){
+		String select = "select sum(CASE WHEN (d.shkzg = 'S') THEN d.amount ELSE (d.amount * -1) END) as beg_amount, d.hkont, d.waers "
+				+ " FROM daily_fin_doc d  "
+				+ " where d.bukrs= :bukrs and  d.hkont IN (:hkont)  group by d.bukrs, d.hkont, d.waers";
+
+		Query query = this.em.createNativeQuery(select);
+		query.setParameter("bukrs", a_bukrs);
+		query.setParameter("hkont", al_hkont);
+		List<Fmglflext> fgl =  new ArrayList<Fmglflext>();
+
+//		System.out.println("ffffffffffffffffffffffffffffffffff");
+		List<Object[]> results = query.getResultList();
+		for (Object[] result : results) {
+			Fmglflext wa_fgl = new Fmglflext();
+//			System.out.println(result[0]);
+			BigDecimal bd = (BigDecimal) result[0];
+			if (result[0]==null) wa_fgl.setBeg_amount((double) 0); else wa_fgl.setBeg_amount(bd.doubleValue());
+
+//			System.out.println("sdjdjdjdjdjdjdjdjdjdjdjdjdjdjdjdjdjdjdjdjdj");
+			wa_fgl.setHkont(String.valueOf(result[1]));
+			if (result[2]==null) wa_fgl.setWaers("USD"); else wa_fgl.setWaers(String.valueOf(result[2]));
+
+			fgl.add(wa_fgl);
+		}
+
+		return fgl;
+	}
+
 	public List<Fmglflext> getBalanceByBukrsGjahrHkontList(String a_bukrs,int a_gjahr,List<String> al_hkont, String a_fields){
 		String select = "select sum(CASE WHEN (f.drcrk = 'S') THEN ("+a_fields+") ELSE (("+a_fields+") * -1) END) as beg_amount, f.hkont, f.waers "
 				+ "FROM Fmglflext f  "

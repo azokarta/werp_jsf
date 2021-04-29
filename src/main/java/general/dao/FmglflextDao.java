@@ -17,4 +17,5 @@ public interface FmglflextDao  extends GenericDao<Fmglflext>{
 	public List<Object[]> getBalanceFrep6(String a_bukrs,int a_gjahr,String a_whereClause,String a_fields);
 	public List<Fmglflext> findAll(String a_bukrs);
 	public List<Fmglflext> findAll(String a_bukrs,int a_gjahr);
+	public List<Fmglflext> getDailyFinDocGroupedByHkont(String a_bukrs, List<String> al_hkont);
 }

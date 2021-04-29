@@ -75,6 +75,27 @@ public class FmglflextServiceImpl implements FmglflextService{
 			{
 				l_fmg = fmgDao.getBalanceByBukrsGjahr(a_bukrs, a_gjahr, fields);
 			}
+
+			//Adding Daily Fin Doc///////////////////////////////////////////////////////////
+			Map<String, Fmglflext> fmglflextMap = new HashMap<>();
+
+			for(Fmglflext wa: l_fmg){
+				fmglflextMap.put(wa.getHkont(),wa);
+			}
+			List<Fmglflext> l_daily = fmgDao.getDailyFinDocGroupedByHkont(a_bukrs, sl_hkont);
+			System.out.println(l_daily.size());
+			System.out.println(a_bukrs);
+			System.out.println(sl_hkont);
+			for (Fmglflext wa : l_daily) {
+				Fmglflext fmglflext = new Fmglflext();
+				fmglflext = fmglflextMap.get(wa.getHkont());
+				if (fmglflext!=null){
+					fmglflext.setBeg_amount(fmglflext.getBeg_amount()+wa.getBeg_amount());
+				}else{
+					l_fmg.add(wa);
+				}
+			}
+			///////////////////////////////////////////////////////////////////////////////
 			return l_fmg;
 				
 		}

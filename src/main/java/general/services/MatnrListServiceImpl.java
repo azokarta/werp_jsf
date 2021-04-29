@@ -853,6 +853,7 @@ public class MatnrListServiceImpl implements MatnrListService {
 
 			List<MatnrList> mlList = mlDao.findAll(cond, q);
 			if (q != mlList.size()) {
+				System.out.println("MMMM: " + ii.getMatnr() + " " + q + " " + mlList.size());
 				throw new DAOException(getPreparedErrorMsgNotFoundInWerks(m, barcode));
 			}
 

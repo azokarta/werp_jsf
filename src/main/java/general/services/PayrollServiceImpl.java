@@ -4556,11 +4556,11 @@ public class PayrollServiceImpl implements PayrollService{
 
 						if (wa_tp_nach.getStaff_id().equals(17150L))
 						{
-							wa_tp_nach.setAmount(countProdazhKazakhstan*95);
+							wa_tp_nach.setAmount(countProdazhKazakhstan*105);
 						}
 						if (wa_tp_nach.getStaff_id().equals(19699L))
 						{
-							wa_tp_nach.setAmount(countProdazhKazakhstan*95);
+							wa_tp_nach.setAmount(countProdazhKazakhstan*105);
 						}
 						if (wa_tp_nach.getStaff_id().equals(20236L))
 						{

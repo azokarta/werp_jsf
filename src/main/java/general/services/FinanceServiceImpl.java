@@ -30,6 +30,7 @@ import general.dao.HkontDao;
 import general.dao.InvoiceDao;
 import general.dao.PayrollDao;
 import general.dao.TableIdLimitDao;
+import general.dao2.IDailyFinDocRepo;
 import general.tables.Bkpf;
 import general.tables.Branch;
 import general.tables.Bschl;
@@ -41,6 +42,8 @@ import general.tables.Hkont;
 import general.tables.Invoice;
 import general.tables.Payroll;
 import general.tables.TableIdLimit;
+import general.tables2.BsegIdentity;
+import general.tables2.DailyFinDoc;
 import user.User;
 
 import org.springframework.beans.BeanUtils;
@@ -59,6 +62,10 @@ public class FinanceServiceImpl implements FinanceService{
 	
 	@Autowired
     private BsikDao bsikDao;
+
+
+	@Autowired
+	private IDailyFinDocRepo iDailyFinDocRepo;
 		
 		
 	@Autowired
@@ -1148,176 +1155,178 @@ public class FinanceServiceImpl implements FinanceService{
 			
 			
 
-			for (Bseg wa_bseg : l_bseg) { 		
-				
-				
-							
-				
+			for (Bseg wa_bseg : l_bseg) {
 				if (wa_bseg.getSgtxt()!=null && wa_bseg.getSgtxt().length()>50)
 				{
 					wa_bseg.setSgtxt(wa_bseg.getSgtxt().substring(0,50));
 				}
-				Fmglflext p_fmglflext = new Fmglflext();
-				Fmglflext2 p_fmglflext2 = new Fmglflext2(); 
-				//if (fmglflextDao.countByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg())>0){
-				//	p_fmglflext = fmglflextDao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg());
-				//}
-				/*p_fmglflext = fmglflextDao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg());
-				if (p_fmglflext==null || p_fmglflext.getBukrs()==null || p_fmglflext.getGjahr()==0 || p_fmglflext.getHkont()==null || p_fmglflext.getDrcrk()==null)
-				{
-					p_fmglflext.setBukrs(a_bkpf.getBukrs());
-					p_fmglflext.setGjahr(a_bkpf.getGjahr());
-					p_fmglflext.setHkont(wa_bseg.getHkont());
-					p_fmglflext.setDrcrk(wa_bseg.getShkzg());
-				} */
-				try 
-				{
-					p_fmglflext = fmglflextDao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg());
-				}
-				catch (NoResultException ex) 
-				{
-					p_fmglflext.setBukrs(a_bkpf.getBukrs());
-					p_fmglflext.setGjahr(a_bkpf.getGjahr());
-					p_fmglflext.setHkont(wa_bseg.getHkont());
-					p_fmglflext.setDrcrk(wa_bseg.getShkzg());
-					p_fmglflext = fmglflextDao.create(p_fmglflext); 
-				}
-				//if (fmglflext2Dao.countByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg(), a_bkpf.getBrnch())>0){
-				//	p_fmglflext2 = fmglflext2Dao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg(), a_bkpf.getBrnch());
-				//}
-				/*p_fmglflext2 = fmglflext2Dao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg(), a_bkpf.getBrnch());
-				if (p_fmglflext2==null || p_fmglflext2.getBukrs()==null || p_fmglflext2.getGjahr()==0 || p_fmglflext2.getHkont()==null || p_fmglflext2.getDrcrk()==null || p_fmglflext2.getBranch_id()==0)
-				{
-					p_fmglflext2.setBukrs(a_bkpf.getBukrs());
-					p_fmglflext2.setGjahr(a_bkpf.getGjahr());
-					p_fmglflext2.setHkont(wa_bseg.getHkont());
-					p_fmglflext2.setDrcrk(wa_bseg.getShkzg());
-					p_fmglflext2.setBranch_id(a_bkpf.getBrnch());
-					
-				}*/
-				try 
-				{
-					if (a_bkpf.getBrnch()==null)
-					{
-						throw new DAOException("Branch id is null for fmglflext2");
-					}
-					p_fmglflext2 = fmglflext2Dao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg(), a_bkpf.getBrnch());
-				}
-				catch (NoResultException ex) 
-				{
-					p_fmglflext2.setBukrs(a_bkpf.getBukrs());
-					p_fmglflext2.setGjahr(a_bkpf.getGjahr());
-					p_fmglflext2.setHkont(wa_bseg.getHkont());
-					p_fmglflext2.setDrcrk(wa_bseg.getShkzg());
-					p_fmglflext2.setBranch_id(a_bkpf.getBrnch());
-					p_fmglflext2 = fmglflext2Dao.create(p_fmglflext2); 
-				}
 
-				double summa = 0;  
-				Hkont wa_hkont = new Hkont(); 
-				//if (hkontDao.countByIds(wa_bseg.getBukrs(), wa_bseg.getHkont())>0){
-				//	wa_hkont = hkontDao.findByIds(wa_bseg.getBukrs(), wa_bseg.getHkont());
-				//}
-				/*wa_hkont = hkontDao.findByIds(wa_bseg.getBukrs(), wa_bseg.getHkont());
-				if (wa_hkont == null || wa_hkont.getBukrs()==null || wa_hkont.getHkont()==null)
-				{
-					throw new DAOException("No such general ledger account");
-				} 
-				*/
-				try 
+
+				Hkont wa_hkont = new Hkont();
+				try
 				{
 					wa_hkont = hkontDao.findByIds(wa_bseg.getBukrs(), wa_bseg.getHkont());
 				}
-				catch (NoResultException ex) 
+				catch (NoResultException ex)
 				{
 					throw new DAOException("No such general ledger account");
 				}
+
+				double summa = 0;
+				String waers = "";
 				if (wa_hkont.getWaers()==null || wa_hkont.getWaers().equals("USD")){
-				   	summa = wa_bseg.getDmbtr(); 
-				   	if (p_fmglflext.getWaers()==null){
-				   		p_fmglflext.setWaers("USD");
-				   	}
-				   	if (p_fmglflext2.getWaers()==null){
-				   		p_fmglflext2.setWaers("USD");
-				   	}
+					summa = wa_bseg.getDmbtr();
+					waers = "USD";
 				}
 				else{
 					summa = wa_bseg.getWrbtr();
+					waers = wa_hkont.getWaers();
+
+				}
+
+
+
+				Calendar date20210426 = Calendar.getInstance();
+				date20210426.set(2021,03,26);
+
+
+				if (budatCal.after(date20210426)){
+					//
+//					System.out.println("jana balance");
+					DailyFinDoc dailyFinDoc = new DailyFinDoc();
+					BsegIdentity bsegIdentity = new BsegIdentity(a_bkpf.getBukrs(),a_bkpf.getBelnr(),a_bkpf.getGjahr(),wa_bseg.getBuzei());
+					dailyFinDoc.setBsegId(bsegIdentity);
+					dailyFinDoc.setBrnch(a_bkpf.getBrnch());
+					dailyFinDoc.setBudat(a_bkpf.getBudat());
+					dailyFinDoc.setAmount(summa);
+					dailyFinDoc.setHkont(wa_bseg.getHkont());
+					dailyFinDoc.setMonat(a_bkpf.getMonat());
+					dailyFinDoc.setWaers(waers);
+					dailyFinDoc.setShkzg(wa_bseg.getShkzg());
+					iDailyFinDocRepo.create(dailyFinDoc);
+
+
+
+
+
+				}
+				else{
+//					System.out.println("eski balance");
+					Fmglflext p_fmglflext = new Fmglflext();
+					Fmglflext2 p_fmglflext2 = new Fmglflext2();
+					try
+					{
+						p_fmglflext = fmglflextDao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg());
+					}
+					catch (NoResultException ex)
+					{
+						p_fmglflext.setBukrs(a_bkpf.getBukrs());
+						p_fmglflext.setGjahr(a_bkpf.getGjahr());
+						p_fmglflext.setHkont(wa_bseg.getHkont());
+						p_fmglflext.setDrcrk(wa_bseg.getShkzg());
+					}
+
+
+					try
+					{
+						if (a_bkpf.getBrnch()==null)
+						{
+							throw new DAOException("Branch id is null for fmglflext2");
+						}
+						p_fmglflext2 = fmglflext2Dao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg(), a_bkpf.getBrnch());
+					}
+					catch (NoResultException ex)
+					{
+						p_fmglflext2.setBukrs(a_bkpf.getBukrs());
+						p_fmglflext2.setGjahr(a_bkpf.getGjahr());
+						p_fmglflext2.setHkont(wa_bseg.getHkont());
+						p_fmglflext2.setDrcrk(wa_bseg.getShkzg());
+						p_fmglflext2.setBranch_id(a_bkpf.getBrnch());
+					}
+
 					if (p_fmglflext.getWaers()==null){
-				   		p_fmglflext.setWaers(wa_hkont.getWaers());
-				   	}
-				   	if (p_fmglflext2.getWaers()==null){
-				   		p_fmglflext2.setWaers(wa_hkont.getWaers());
-				   	}
+						p_fmglflext.setWaers(waers);
+					}
+					if (p_fmglflext2.getWaers()==null){
+						p_fmglflext2.setWaers(waers);
+					}
+
+
+
+					if (a_bkpf.getMonat() == 1)
+					{
+						p_fmglflext.setMonth1(p_fmglflext.getMonth1()+ summa);
+						p_fmglflext2.setMonth1(p_fmglflext2.getMonth1()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 2)
+					{
+						p_fmglflext.setMonth2(p_fmglflext.getMonth2()+ summa);
+						p_fmglflext2.setMonth2(p_fmglflext2.getMonth2()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 3)
+					{
+						p_fmglflext.setMonth3(p_fmglflext.getMonth3()+ summa);
+						p_fmglflext2.setMonth3(p_fmglflext2.getMonth3()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 4)
+					{
+						p_fmglflext.setMonth4(p_fmglflext.getMonth4()+ summa);
+						p_fmglflext2.setMonth4(p_fmglflext2.getMonth4()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 5)
+					{
+						p_fmglflext.setMonth5(p_fmglflext.getMonth5()+ summa);
+						p_fmglflext2.setMonth5(p_fmglflext2.getMonth5()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 6)
+					{
+						p_fmglflext.setMonth6(p_fmglflext.getMonth6()+ summa);
+						p_fmglflext2.setMonth6(p_fmglflext2.getMonth6()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 7)
+					{
+						p_fmglflext.setMonth7(p_fmglflext.getMonth7()+ summa);
+						p_fmglflext2.setMonth7(p_fmglflext2.getMonth7()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 8)
+					{
+						p_fmglflext.setMonth8(p_fmglflext.getMonth8()+ summa);
+						p_fmglflext2.setMonth8(p_fmglflext2.getMonth8()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 9)
+					{
+						p_fmglflext.setMonth9(p_fmglflext.getMonth9()+ summa);
+						p_fmglflext2.setMonth9(p_fmglflext2.getMonth9()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 10)
+					{
+						p_fmglflext.setMonth10(p_fmglflext.getMonth10()+ summa);
+						p_fmglflext2.setMonth10(p_fmglflext2.getMonth10()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 11)
+					{
+						p_fmglflext.setMonth11(p_fmglflext.getMonth11()+ summa);
+						p_fmglflext2.setMonth11(p_fmglflext2.getMonth11()+ summa);
+					}
+					else if (a_bkpf.getMonat() == 12)
+					{
+						p_fmglflext.setMonth12(p_fmglflext.getMonth12()+ summa);
+						p_fmglflext2.setMonth12(p_fmglflext2.getMonth12()+ summa);
+					}
+
+					fmglflextDao.create(p_fmglflext);
+					fmglflext2Dao.create(p_fmglflext2);
 				}
-				if (a_bkpf.getMonat() == 1)
-				{	
-					p_fmglflext.setMonth1(p_fmglflext.getMonth1()+ summa);
-					p_fmglflext2.setMonth1(p_fmglflext2.getMonth1()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 2)
-				{	
-					p_fmglflext.setMonth2(p_fmglflext.getMonth2()+ summa);
-					p_fmglflext2.setMonth2(p_fmglflext2.getMonth2()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 3)
-				{	
-					p_fmglflext.setMonth3(p_fmglflext.getMonth3()+ summa);
-					p_fmglflext2.setMonth3(p_fmglflext2.getMonth3()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 4)
-				{	
-					p_fmglflext.setMonth4(p_fmglflext.getMonth4()+ summa);
-					p_fmglflext2.setMonth4(p_fmglflext2.getMonth4()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 5)
-				{	
-					p_fmglflext.setMonth5(p_fmglflext.getMonth5()+ summa);
-					p_fmglflext2.setMonth5(p_fmglflext2.getMonth5()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 6)
-				{	
-					p_fmglflext.setMonth6(p_fmglflext.getMonth6()+ summa);
-					p_fmglflext2.setMonth6(p_fmglflext2.getMonth6()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 7)
-				{	
-					p_fmglflext.setMonth7(p_fmglflext.getMonth7()+ summa);
-					p_fmglflext2.setMonth7(p_fmglflext2.getMonth7()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 8)
-				{	
-					p_fmglflext.setMonth8(p_fmglflext.getMonth8()+ summa);
-					p_fmglflext2.setMonth8(p_fmglflext2.getMonth8()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 9)
-				{	
-					p_fmglflext.setMonth9(p_fmglflext.getMonth9()+ summa);
-					p_fmglflext2.setMonth9(p_fmglflext2.getMonth9()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 10)
-				{	
-					p_fmglflext.setMonth10(p_fmglflext.getMonth10()+ summa);
-					p_fmglflext2.setMonth10(p_fmglflext2.getMonth10()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 11)
-				{	
-					p_fmglflext.setMonth11(p_fmglflext.getMonth11()+ summa);
-					p_fmglflext2.setMonth11(p_fmglflext2.getMonth11()+ summa);
-				}
-				else if (a_bkpf.getMonat() == 12)
-				{	
-					p_fmglflext.setMonth12(p_fmglflext.getMonth12()+ summa);
-					p_fmglflext2.setMonth12(p_fmglflext2.getMonth12()+ summa);
-				} 
-				
+
+
+
+
+
 				if (a_bkpf.getMonat()>curDate.get(Calendar.MONTH)+1)
 				{
 					throw new DAOException("Финанс. ошибка. Обратитесь IT отделу.");
 				}
-				bsegDao.create(wa_bseg); 
-				fmglflextDao.update(p_fmglflext); 
-				fmglflext2Dao.update(p_fmglflext2); 
+				bsegDao.create(wa_bseg);
 			}
 			
 			
@@ -1778,11 +1787,11 @@ public class FinanceServiceImpl implements FinanceService{
 			for (Map.Entry<String,Double> entry : l_cashBankAmountBseg.entrySet()) {
 		    	double amount = 0;
 		    	amount = (Double) entry.getValue();
-		    	System.out.println(fmglflextDao.findByBukrsGjahrAmount(a_bkpf.getBukrs(), a_bkpf.getGjahr(), entry.getKey()));
-		    	if (amount>fmglflextDao.findByBukrsGjahrAmount(a_bkpf.getBukrs(), a_bkpf.getGjahr(), entry.getKey()))
-		    	{
-		    		throw new DAOException("Не достаточно средтсв.");  
-		    	}
+//		    	System.out.println(fmglflextDao.findByBukrsGjahrAmount(a_bkpf.getBukrs(), a_bkpf.getGjahr(), entry.getKey()));
+//		    	if (amount>fmglflextDao.findByBukrsGjahrAmount(a_bkpf.getBukrs(), a_bkpf.getGjahr(), entry.getKey()))
+//		    	{
+//		    		throw new DAOException("Не достаточно средтсв.");
+//		    	}
 			}    
 			
 			
