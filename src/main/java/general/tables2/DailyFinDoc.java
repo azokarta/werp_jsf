@@ -37,10 +37,13 @@ public class DailyFinDoc implements Serializable {
     @Column(name = "shkzg")
     private String shkzg;
 
+    @Column(name = "status")
+    private Integer status;
+
     public DailyFinDoc() {
     }
 
-    public DailyFinDoc(BsegIdentity bsegId, Date budat, Integer monat, Long brnch, String hkont, String waers, Double amount, String shkzg) {
+    public DailyFinDoc(BsegIdentity bsegId, Date budat, Integer monat, Long brnch, String hkont, String waers, Double amount, String shkzg, Integer status) {
         this.bsegId = bsegId;
         this.budat = budat;
         this.monat = monat;
@@ -49,6 +52,7 @@ public class DailyFinDoc implements Serializable {
         this.waers = waers;
         this.amount = amount;
         this.shkzg = shkzg;
+        this.status = status;
     }
 
     public BsegIdentity getBsegId() {
@@ -113,5 +117,13 @@ public class DailyFinDoc implements Serializable {
 
     public void setShkzg(String shkzg) {
         this.shkzg = shkzg;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

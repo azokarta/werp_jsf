@@ -1184,139 +1184,141 @@ public class FinanceServiceImpl implements FinanceService{
 
 				}
 
+				DailyFinDoc dailyFinDoc = new DailyFinDoc();
+				BsegIdentity bsegIdentity = new BsegIdentity(a_bkpf.getBukrs(),a_bkpf.getBelnr(),a_bkpf.getGjahr(),wa_bseg.getBuzei());
+				dailyFinDoc.setBsegId(bsegIdentity);
+				dailyFinDoc.setBrnch(a_bkpf.getBrnch());
+				dailyFinDoc.setBudat(a_bkpf.getBudat());
+				dailyFinDoc.setAmount(summa);
+				dailyFinDoc.setHkont(wa_bseg.getHkont());
+				dailyFinDoc.setMonat(a_bkpf.getMonat());
+				dailyFinDoc.setWaers(waers);
+				dailyFinDoc.setShkzg(wa_bseg.getShkzg());
+				dailyFinDoc.setStatus(0);
+				iDailyFinDocRepo.create(dailyFinDoc);
 
 
-				Calendar date20210426 = Calendar.getInstance();
-				date20210426.set(2021,03,26);
-
-
-				if (budatCal.after(date20210426)){
-					//
-//					System.out.println("jana balance");
-					DailyFinDoc dailyFinDoc = new DailyFinDoc();
-					BsegIdentity bsegIdentity = new BsegIdentity(a_bkpf.getBukrs(),a_bkpf.getBelnr(),a_bkpf.getGjahr(),wa_bseg.getBuzei());
-					dailyFinDoc.setBsegId(bsegIdentity);
-					dailyFinDoc.setBrnch(a_bkpf.getBrnch());
-					dailyFinDoc.setBudat(a_bkpf.getBudat());
-					dailyFinDoc.setAmount(summa);
-					dailyFinDoc.setHkont(wa_bseg.getHkont());
-					dailyFinDoc.setMonat(a_bkpf.getMonat());
-					dailyFinDoc.setWaers(waers);
-					dailyFinDoc.setShkzg(wa_bseg.getShkzg());
-					iDailyFinDocRepo.create(dailyFinDoc);
-
-
-
-
-
-				}
-				else{
-//					System.out.println("eski balance");
-					Fmglflext p_fmglflext = new Fmglflext();
-					Fmglflext2 p_fmglflext2 = new Fmglflext2();
-					try
-					{
-						p_fmglflext = fmglflextDao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg());
-					}
-					catch (NoResultException ex)
-					{
-						p_fmglflext.setBukrs(a_bkpf.getBukrs());
-						p_fmglflext.setGjahr(a_bkpf.getGjahr());
-						p_fmglflext.setHkont(wa_bseg.getHkont());
-						p_fmglflext.setDrcrk(wa_bseg.getShkzg());
-					}
-
-
-					try
-					{
-						if (a_bkpf.getBrnch()==null)
-						{
-							throw new DAOException("Branch id is null for fmglflext2");
-						}
-						p_fmglflext2 = fmglflext2Dao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg(), a_bkpf.getBrnch());
-					}
-					catch (NoResultException ex)
-					{
-						p_fmglflext2.setBukrs(a_bkpf.getBukrs());
-						p_fmglflext2.setGjahr(a_bkpf.getGjahr());
-						p_fmglflext2.setHkont(wa_bseg.getHkont());
-						p_fmglflext2.setDrcrk(wa_bseg.getShkzg());
-						p_fmglflext2.setBranch_id(a_bkpf.getBrnch());
-					}
-
-					if (p_fmglflext.getWaers()==null){
-						p_fmglflext.setWaers(waers);
-					}
-					if (p_fmglflext2.getWaers()==null){
-						p_fmglflext2.setWaers(waers);
-					}
-
-
-
-					if (a_bkpf.getMonat() == 1)
-					{
-						p_fmglflext.setMonth1(p_fmglflext.getMonth1()+ summa);
-						p_fmglflext2.setMonth1(p_fmglflext2.getMonth1()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 2)
-					{
-						p_fmglflext.setMonth2(p_fmglflext.getMonth2()+ summa);
-						p_fmglflext2.setMonth2(p_fmglflext2.getMonth2()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 3)
-					{
-						p_fmglflext.setMonth3(p_fmglflext.getMonth3()+ summa);
-						p_fmglflext2.setMonth3(p_fmglflext2.getMonth3()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 4)
-					{
-						p_fmglflext.setMonth4(p_fmglflext.getMonth4()+ summa);
-						p_fmglflext2.setMonth4(p_fmglflext2.getMonth4()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 5)
-					{
-						p_fmglflext.setMonth5(p_fmglflext.getMonth5()+ summa);
-						p_fmglflext2.setMonth5(p_fmglflext2.getMonth5()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 6)
-					{
-						p_fmglflext.setMonth6(p_fmglflext.getMonth6()+ summa);
-						p_fmglflext2.setMonth6(p_fmglflext2.getMonth6()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 7)
-					{
-						p_fmglflext.setMonth7(p_fmglflext.getMonth7()+ summa);
-						p_fmglflext2.setMonth7(p_fmglflext2.getMonth7()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 8)
-					{
-						p_fmglflext.setMonth8(p_fmglflext.getMonth8()+ summa);
-						p_fmglflext2.setMonth8(p_fmglflext2.getMonth8()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 9)
-					{
-						p_fmglflext.setMonth9(p_fmglflext.getMonth9()+ summa);
-						p_fmglflext2.setMonth9(p_fmglflext2.getMonth9()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 10)
-					{
-						p_fmglflext.setMonth10(p_fmglflext.getMonth10()+ summa);
-						p_fmglflext2.setMonth10(p_fmglflext2.getMonth10()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 11)
-					{
-						p_fmglflext.setMonth11(p_fmglflext.getMonth11()+ summa);
-						p_fmglflext2.setMonth11(p_fmglflext2.getMonth11()+ summa);
-					}
-					else if (a_bkpf.getMonat() == 12)
-					{
-						p_fmglflext.setMonth12(p_fmglflext.getMonth12()+ summa);
-						p_fmglflext2.setMonth12(p_fmglflext2.getMonth12()+ summa);
-					}
-
-					fmglflextDao.create(p_fmglflext);
-					fmglflext2Dao.create(p_fmglflext2);
-				}
+//				Calendar date20210426 = Calendar.getInstance();
+//				date20210426.set(2021,03,26);
+//
+//
+//				if (budatCal.after(date20210426)){
+//					//
+////					System.out.println("jana balance");
+//
+//
+//
+//
+//
+//
+//				}
+//				else{
+////					System.out.println("eski balance");
+//					Fmglflext p_fmglflext = new Fmglflext();
+//					Fmglflext2 p_fmglflext2 = new Fmglflext2();
+//					try
+//					{
+//						p_fmglflext = fmglflextDao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg());
+//					}
+//					catch (NoResultException ex)
+//					{
+//						p_fmglflext.setBukrs(a_bkpf.getBukrs());
+//						p_fmglflext.setGjahr(a_bkpf.getGjahr());
+//						p_fmglflext.setHkont(wa_bseg.getHkont());
+//						p_fmglflext.setDrcrk(wa_bseg.getShkzg());
+//					}
+//
+//
+//					try
+//					{
+//						if (a_bkpf.getBrnch()==null)
+//						{
+//							throw new DAOException("Branch id is null for fmglflext2");
+//						}
+//						p_fmglflext2 = fmglflext2Dao.findByIds(a_bkpf.getBukrs(), a_bkpf.getGjahr(), wa_bseg.getHkont(), wa_bseg.getShkzg(), a_bkpf.getBrnch());
+//					}
+//					catch (NoResultException ex)
+//					{
+//						p_fmglflext2.setBukrs(a_bkpf.getBukrs());
+//						p_fmglflext2.setGjahr(a_bkpf.getGjahr());
+//						p_fmglflext2.setHkont(wa_bseg.getHkont());
+//						p_fmglflext2.setDrcrk(wa_bseg.getShkzg());
+//						p_fmglflext2.setBranch_id(a_bkpf.getBrnch());
+//					}
+//
+//					if (p_fmglflext.getWaers()==null){
+//						p_fmglflext.setWaers(waers);
+//					}
+//					if (p_fmglflext2.getWaers()==null){
+//						p_fmglflext2.setWaers(waers);
+//					}
+//
+//
+//
+//					if (a_bkpf.getMonat() == 1)
+//					{
+//						p_fmglflext.setMonth1(p_fmglflext.getMonth1()+ summa);
+//						p_fmglflext2.setMonth1(p_fmglflext2.getMonth1()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 2)
+//					{
+//						p_fmglflext.setMonth2(p_fmglflext.getMonth2()+ summa);
+//						p_fmglflext2.setMonth2(p_fmglflext2.getMonth2()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 3)
+//					{
+//						p_fmglflext.setMonth3(p_fmglflext.getMonth3()+ summa);
+//						p_fmglflext2.setMonth3(p_fmglflext2.getMonth3()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 4)
+//					{
+//						p_fmglflext.setMonth4(p_fmglflext.getMonth4()+ summa);
+//						p_fmglflext2.setMonth4(p_fmglflext2.getMonth4()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 5)
+//					{
+//						p_fmglflext.setMonth5(p_fmglflext.getMonth5()+ summa);
+//						p_fmglflext2.setMonth5(p_fmglflext2.getMonth5()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 6)
+//					{
+//						p_fmglflext.setMonth6(p_fmglflext.getMonth6()+ summa);
+//						p_fmglflext2.setMonth6(p_fmglflext2.getMonth6()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 7)
+//					{
+//						p_fmglflext.setMonth7(p_fmglflext.getMonth7()+ summa);
+//						p_fmglflext2.setMonth7(p_fmglflext2.getMonth7()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 8)
+//					{
+//						p_fmglflext.setMonth8(p_fmglflext.getMonth8()+ summa);
+//						p_fmglflext2.setMonth8(p_fmglflext2.getMonth8()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 9)
+//					{
+//						p_fmglflext.setMonth9(p_fmglflext.getMonth9()+ summa);
+//						p_fmglflext2.setMonth9(p_fmglflext2.getMonth9()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 10)
+//					{
+//						p_fmglflext.setMonth10(p_fmglflext.getMonth10()+ summa);
+//						p_fmglflext2.setMonth10(p_fmglflext2.getMonth10()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 11)
+//					{
+//						p_fmglflext.setMonth11(p_fmglflext.getMonth11()+ summa);
+//						p_fmglflext2.setMonth11(p_fmglflext2.getMonth11()+ summa);
+//					}
+//					else if (a_bkpf.getMonat() == 12)
+//					{
+//						p_fmglflext.setMonth12(p_fmglflext.getMonth12()+ summa);
+//						p_fmglflext2.setMonth12(p_fmglflext2.getMonth12()+ summa);
+//					}
+//
+//					fmglflextDao.create(p_fmglflext);
+//					fmglflext2Dao.create(p_fmglflext2);
+//				}
 
 
 
